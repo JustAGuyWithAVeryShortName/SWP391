@@ -1,74 +1,77 @@
-<!DOCTYPE html>
+Aborting commit due to empty commit message.<!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>SmokeLite - Quit Smoking & Live Healthier</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" th:href="@{/css/style.css}">
 
-    <link href="https://fonts.googleapis.com/css2?family=Sedgwick+Ave&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<header>
-    <div>
-        <img th:src="@{/images/1.png}" alt="Banner" />
+<header class="main-header">
+    <div class="logo-container">
+        <img th:src="@{/images/1.png}" alt="SmokeLite Logo" class="logo" />
     </div>
 
-    <nav>
-        <a href="#">Home</a>
-        <a href="#">About us</a>
-        <a href="#">Account</a>
+    <nav class="main-nav">
+        <a href="#" class="nav-item active">Home</a> <a href="#" class="nav-item">About us</a>
+        <a href="#" class="nav-item">Account</a>
     </nav>
 </header>
 
-<section class="blog-section">
-    <div class="text-box">
-        <h2>Blog</h2>
-        <p class="intro1"><strong>SmokeLite is an online platform</strong> dedicated to helping individuals quit smoking and
-            embrace a healthier, smoke-free life.</p>
-        <p class="intro2">We understand that quitting smoking is a challenging journey, but you don’t have to go through it alone.
-            At SmokeLite, we provide you with the tools, guidance, and community support you need to stay motivated
-            and succeed —one breath at a time.</p>
+<section class="hero-section">
+    <div class="hero-content">
+        <h2 class="hero-title">Take Control. Live Smoke-Free.</h2>
+        <p class="hero-intro1"><strong>SmokeLite is an online platform</strong> dedicated to helping individuals quit smoking and embrace a healthier, smoke-free life.</p>
+        <p class="hero-intro2">We understand that quitting smoking is a challenging journey, but you don’t have to go through it alone. At SmokeLite, we provide you with the tools, guidance, and community support you need to stay motivated and succeed —one breath at a time.</p>
+        <button class="btn-primary hero-cta">Get Started Today</button>
     </div>
-    <div class="image-box">
-        <img th:src="@{/images/2.png}" alt="Man quitting smoking">
+    <div class="hero-image">
+        <img th:src="@{/images/2.png}" alt="Man happily quitting smoking" class="responsive-image">
     </div>
 </section>
 
-<section class="about-section">
-    <h3>Why You Should Trust Us?<br>Get Know About Us!</h3>
-    <p>At SmokeLite, we don’t just offer tools—we offer understanding, guidance, and proven support. Our platform
-        was built on evidence-based methods and insights from real people who’ve walked the path to a smoke-free
-        life....</p>
-    <button>Read More</button>
-</section>
-
-<section class="features">
-    <h3>Features</h3>
-    <div class="feature-grid">
-        <div>User Registration & Membership</div>
-        <div>Current Smoking Status Tracking</div>
-        <div>Plan Builder</div>
-        <div>Progress Tracker</div>
-        <div>Notifications</div>
-        <div>Achievement Badges</div>
-        <div>Rating & Feedback System</div>
-        <div>Live Coaching Support</div>
+<section class="about-us-section">
+    <div class="container">
+        <h3 class="section-title">Why Trust SmokeLite ?</h3>
+        <p class="section-description">At SmokeLite, we don’t just offer tools—we offer understanding, guidance, and proven support. Our platform was built on evidence-based methods and insights from real people who’ve walked the path to a smoke-free life....</p>
+        <button class="btn-primary">Read More</button>
     </div>
 </section>
 
-<footer>
-    <div class="address">
-        <p><strong>Address</strong></p>
-        <p>Thu Duc, Hcm</p>
-        <div class="socials">
-            <a href="#"><img src="https://img.icons8.com/ios-filled/24/facebook--v1.png" alt="Facebook" /></a>
-            <a href="#"><img src="https://img.icons8.com/ios-filled/24/github.png" alt="GitHub" /></a>
-            <a href="#"><img src="https://img.icons8.com/ios-filled/24/whatsapp.png" alt="WhatsApp" /></a>
+<section class="features-section">
+    <div class="container">
+        <h3 class="section-title">Features</h3>
+        <div class="feature-grid">
+            <div class="feature-item">User Registration & Membership</div>
+            <div class="feature-item">Current Smoking Status Tracking</div>
+            <div class="feature-item">Plan Builder</div>
+            <div class="feature-item">Progress Tracker</div>
+            <div class="feature-item">Notifications</div>
+            <div class="feature-item">Achievement Badges</div>
+            <div class="feature-item">Rating & Feedback System</div>
+            <div class="feature-item">Live Coaching Support</div>
         </div>
     </div>
-</footer>
+</section>
 
+<footer class="main-footer">
+    <div class="container">
+        <div class="footer-address">
+            <p class="footer-heading"><strong>Address</strong></p>
+            <p>Thu Duc, Hcm</p>
+            <div class="social-icons">
+                <a href="#" class="social-link"><img src="https://img.icons8.com/ios-filled/24/facebook--v1.png" alt="Facebook" /></a>
+                <a href="#" class="social-link"><img src="https://img.icons8.com/ios-filled/24/github.png" alt="GitHub" /></a>
+                <a href="#" class="social-link"><img src="https://img.icons8.com/ios-filled/24/whatsapp.png" alt="WhatsApp" /></a>
+            </div>
+        </div>
+        <p class="copyright">&copy; 2025 SmokeLite. All Rights Reserved.</p>
+    </div>
+</footer>
 
 </body>
 </html>
