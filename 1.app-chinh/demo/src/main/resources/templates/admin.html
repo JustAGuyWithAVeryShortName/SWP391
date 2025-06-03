@@ -14,9 +14,10 @@
             align-items: center;
             justify-content: space-between;
             padding: 15px;
+            background-color: #e0e5e7;
         }
         .section-title {
-            background: #f2f2f2;
+            background: #f2f6fc;
             padding: 10px;
             border-radius: 5px;
             text-align: center;
@@ -41,7 +42,7 @@
         <img  th:src="@{/images/1.png}" alt="SmokeLite" height="175" width="175">
     </a>
     <div  class="ms-auto">
-        <img src="https://cdn-icons-png.flaticon.com/512/1077/1077012.png" alt="User" width="40">
+        <img th:src="@{/images/3.png}" alt="Admin Icon" width="80">
 
     </div>
 </nav>
@@ -52,7 +53,7 @@
         <div class="col-md-3">
             <div class="card card-stat">
                 <div>
-                    <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" width="30">
+                    <img th:src="@{/images/4.png}" width="50">
                     <p class="m-0">Today Member</p>
                 </div>
                 <h4>10</h4>
@@ -61,7 +62,7 @@
         <div class="col-md-3">
             <div class="card card-stat">
                 <div>
-                    <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" width="30">
+                    <img th:src="@{/images/5.png}" width="50">
                     <p class="m-0">Total Member</p>
                 </div>
                 <h4>100</h4>
@@ -70,7 +71,7 @@
         <div class="col-md-3">
             <div class="card card-stat">
                 <div>
-                    <img src="https://cdn-icons-png.flaticon.com/512/1828/1828778.png" width="30">
+                    <img th:src="@{/images/6.png}" width="50">
                     <p class="m-0">Total Blog</p>
                 </div>
                 <h4>57</h4>
@@ -79,7 +80,7 @@
         <div class="col-md-3">
             <div class="card card-stat">
                 <div>
-                    <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" width="30">
+                    <img th:src="@{/images/7.png}" width="50">
                     <p class="m-0">Total Rating</p>
                 </div>
                 <h4>45</h4>
@@ -132,7 +133,9 @@
             <div class="card p-3">
                 <div class="section-title">Rating & Feedback</div>
                 <div class="overflow-auto" style="max-height: 150px;">
+                    <img th:src="@{/images/3.png}" alt="User Icon" width="40" style="vertical-align:middle;margin:0px 10px">
                     <p><strong>User A</strong><br>★★★★★<br>Great coach!</p>
+                    <img th:src="@{/images/3.png}" alt="User Icon" width="40" style="vertical-align:middle;margin:0px 10px">
                     <p><strong>User B</strong><br>★★★★☆<br>Helpful sessions!</p>
                 </div>
                 <button class="btn edit-btn">View all</button>
