@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>SmokeLite - Quit Smoking & Live Healthier</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/home.css}">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
@@ -17,8 +17,14 @@
     </div>
 
     <nav class="main-nav">
-        <a href="#" class="nav-item active">Home</a> <a href="#" class="nav-item">About us</a>
-        <a href="#" class="nav-item">Account</a>
+        <a href="#" class="nav-item active">Home</a>
+        <a href="#" class="nav-item">About us</a>
+        <a th:href="@{/login}" class="nav-item">Account</a>
+
+        <form th:action="@{/logout}" method="post" style="display: inline;">
+            <input type="submit" value="Logout" class="nav-item btn btn-link" style="text-decoration: none; padding: 0; border: none; background: none; color: inherit;" />
+        </form>
+
     </nav>
 </header>
 
@@ -72,6 +78,8 @@
         <p class="copyright">&copy; 2025 SmokeLite. All Rights Reserved.</p>
     </div>
 </footer>
+
+
 
 </body>
 </html>
