@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="UTF-8">
   <title>Đăng nhập - SmokeLite</title>
@@ -39,12 +39,23 @@
     <button type="submit">Đăng nhập</button>
   </form>
 
+  <!-- Nếu đã đăng nhập -->
+  <div sec:authorize="isAuthenticated()">
+    <p>Tên người dùng: <span th:text="${#authentication.name}"></span></p>
+    <p>Email: <span th:text="${#authentication.principal.attributes['email']}"></span></p>
+  </div>
+
+
   <div class="register-link">
     <p>Bạn chưa có tài khoản? <a th:href="@{/register/showRegisterForm}">Đăng ký</a></p>
     <p>Hoặc đăng nhập bằng:</p>
     <div class="social-buttons">
-      <button><i class="fab fa-facebook-f"></i></button>
-      <button><i class="fab fa-google"></i></button>
+
+      <a th:href="@{/oauth2/authorization/google}" class="google-login-button">
+        <button> <i class="fab fa-google"></i></button>
+      </a>
+
+
       <button><i class="fab fa-twitter"></i></button>
       <button><i class="fab fa-github"></i></button>
     </div>

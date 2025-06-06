@@ -42,16 +42,17 @@ public class SecurityConfiguration {
                         .defaultSuccessUrl("/home", true)
                         .permitAll()
                 )
-                .logout(logout -> logout
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/home", true)
+                ) .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login1?logout")
+                        .logoutSuccessUrl("/home?home")
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
-                        .permitAll()
-                );
+                        .permitAll());
 
         return http.build();
     }
-
 
 }
