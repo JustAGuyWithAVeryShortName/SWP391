@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>About Us - SmokeLite</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header class="main-header">
+    <div class="logo-container">
+        <img th:src="@{/images/1.png}" alt="SmokeLite Logo" class="logo" />
+    </div>
+    <nav class="main-nav">
+        <a th:href="@{/Main/0}" class="nav-item">Home</a>
+        <a th:href="@{/about}" class="nav-item active">About Us</a>
+        <a th:href="@{/login}" class="nav-item">Account</a>
+    </nav>
+</header>
+
+<section class="hero-section">
+    <div class="container hero-content">
+        <h1 class="hero-title">Our Mission at SmokeLite</h1>
+        <p class="hero-intro1">
+            SmokeLite was founded with a single goal: to empower people to take control of their health by quitting smoking.
+        </p>
+        <p class="hero-intro2">
+            We combine technology, behavioral science, and human compassion to create a personalized quit journey that’s effective and sustainable. Whether you're just starting or need support after a relapse, we're here for you.
+        </p>
+    </div>
+</section>
+
+<section class="team-section">
+    <div class="container">
+        <h2 class="section-title">Meet the Team</h2>
+        <div class="team-grid">
+            <div class="team-member">
+                <img th:src="@{/images/member1.png}" alt="Cao Thành Danh">
+                <p><strong>Cao Thành Danh</strong> - Front-end Developer</p>
+            </div>
+            <div class="team-member">
+                <img th:src="@{/images/member2.png}" alt="Nguyễn Công Thiên Ân">
+                <p><strong>Nguyễn Công Thiên Ân</strong> - Leader</p>
+            </div>
+            <div class="team-member">
+                <img th:src="@{/images/member2.png}" alt="Nguyễn Tấn Đạt">
+                <p><strong>Nguyễn Tấn Đạt</strong> - Leader</p>
+            </div>
+            <!-- Add more members as needed -->
+        </div>
+    </div>
+</section>
+
+<footer class="main-footer">
+    <div class="container">
+        <div class="footer-content-wrapper">
+            <div class="footer-address">
+                <p class="footer-heading">Address</p>
+                <p>Thu Duc, HCM</p>
+                <div class="social-icons">
+                    <a href="#" class="social-link"><img src="https://img.icons8.com/ios-filled/24/facebook--v1.png" alt="Facebook" /></a>
+                    <a href="#" class="social-link"><img src="https://img.icons8.com/ios-filled/24/github.png" alt="GitHub" /></a>
+                    <a href="#" class="social-link"><img src="https://img.icons8.com/ios-filled/24/whatsapp.png" alt="WhatsApp" /></a>
+                </div>
+            </div>
+        </div>
+        <p class="copyright">&copy; 2025 SmokeLite. All Rights Reserved.</p>
+    </div>
+</footer>
+
+</body>
+</html>
+<link rel="stylesheet" th:href="@{/css/about us.css}">
