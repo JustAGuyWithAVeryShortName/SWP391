@@ -11,4 +11,10 @@ CREATE TABLE Users (
     role VARCHAR(10) NOT NULL DEFAULT 'Guest' CHECK (role IN ('Guest', 'Member', 'Coach', 'Admin')),
     
 );
+
+
+INSERT INTO Users (username, password, email, first_name, last_name, role)
+VALUES
+('admin', '123', 'admin@example.com', 'Admin', 'User', 'Admin');
+
  drop table Users

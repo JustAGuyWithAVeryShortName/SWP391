@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>SmokeLite - Quit Smoking & Live Healthier</title>
@@ -17,13 +17,18 @@
     </div>
 
     <nav class="main-nav">
-        <a href="#" class="nav-item active">Home</a>
-        <a href="#" class="nav-item">About us</a>
+        <a th:href="@{/home}" class="nav-item active">Home</a>
+        <a th:href="@{/about_us}" class="nav-item">About us</a>
         <a th:href="@{/login}" class="nav-item">Account</a>
+
+        <!-- Nút Admin chỉ hiện nếu là ADMIN -->
+        <a th:href="@{/admin}" class="nav-item" sec:authorize="hasAuthority('Admin')">Admin</a>
 
         <form th:action="@{/logout}" method="post" style="display: inline;">
             <input type="submit" value="Logout" class="nav-item btn btn-link" style="text-decoration: none; padding: 0; border: none; background: none; color: inherit;" />
         </form>
+
+
 
     </nav>
 </header>
