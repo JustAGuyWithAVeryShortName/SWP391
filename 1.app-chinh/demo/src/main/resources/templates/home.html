@@ -8,17 +8,19 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 <body>
 
 <header class="main-header">
     <div class="logo-container">
-        <img th:src="@{/images/1.png}" alt="SmokeLite Logo" class="logo" />
+        <a th:href="@{/home}"> <img th:src="@{/images/1.png}" alt="SmokeLite Logo" class="logo" />
+        </a>
     </div>
 
     <nav class="main-nav">
         <a th:href="@{/home}" class="nav-item active">Home</a>
-        <a th:href="@{/about_us}" class="nav-item">About us</a>
+        <a th:href="@{/about_us}" class="nav-item">About Us</a>
         <a th:href="@{/login}" class="nav-item">Account</a>
 
         <!-- Nút Admin chỉ hiện nếu là ADMIN -->
@@ -49,7 +51,7 @@
     <div class="container">
         <h3 class="section-title">Why Trust SmokeLite ?</h3>
         <p class="section-description">At SmokeLite, we don’t just offer tools—we offer understanding, guidance, and proven support. Our platform was built on evidence-based methods and insights from real people who’ve walked the path to a smoke-free life....</p>
-        <button class="btn-primary">Read More</button>
+        <a th:href="@{/about_us}" class="btn-primary">Read More</a>
     </div>
 </section>
 
@@ -85,6 +87,6 @@
 </footer>
 
 
-
+<a href="#" class="back-to-top"><i class="fas fa-arrow-up"></i></a>
 </body>
 </html>

@@ -1,76 +1,123 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>About Us - SmokeLite</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" th:href="@{/css/about_us.css}">
+    <title>About Us - SmokeLite</title>
+
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/about_us.css}">
 </head>
 <body>
 
 <header class="main-header">
     <div class="logo-container">
-        <img th:src="@{/images/1.png}" alt="SmokeLite Logo" class="logo" />
+        <a th:href="@{/home}"> <img th:src="@{/images/1.png}" alt="SmokeLite Logo" class="logo" />
+        </a>
     </div>
     <nav class="main-nav">
         <a th:href="@{/home}" class="nav-item">Home</a>
-        <a th:href="@{/about}" class="nav-item active">About Us</a>
+        <a th:href="@{/about_us}" class="nav-item active">About Us</a>
         <a th:href="@{/login}" class="nav-item">Account</a>
+
+        <a th:href="@{/admin}" class="nav-item" sec:authorize="hasAuthority('Admin')">Admin</a>
+
+        <form th:action="@{/logout}" method="post" style="display: inline;">
+            <input type="submit" value="Logout" class="nav-item btn btn-link" style="text-decoration: none; padding: 0; border: none; background: none; color: inherit; cursor: pointer;" />
+        </form>
     </nav>
 </header>
 
-<section class="hero-section">
-    <div class="container hero-content">
-        <h1 class="hero-title">Our Mission at SmokeLite</h1>
-        <p class="hero-intro1">
-            SmokeLite was founded with a single goal: to empower people to take control of their health by quitting smoking.
-        </p>
-        <p class="hero-intro2">
-            We combine technology, behavioral science, and human compassion to create a personalized quit journey that’s effective and sustainable. Whether you're just starting or need support after a relapse, we're here for you.
-        </p>
-    </div>
-</section>
-
-<section class="team-section">
-    <div class="container">
-        <h2 class="section-title">Meet the Team</h2>
-        <div class="team-grid">
-            <div class="team-member">
-                <img th:src="@{/images/member1.png}" alt="Cao Thành Danh">
-                <p><strong>Cao Thành Danh</strong> - Front-end Developer</p>
-            </div>
-            <div class="team-member">
-                <img th:src="@{/images/member2.png}" alt="Nguyễn Công Thiên Ân">
-                <p><strong>Nguyễn Công Thiên Ân</strong> - Leader</p>
-            </div>
-            <div class="team-member">
-                <img th:src="@{/images/member2.png}" alt="Nguyễn Tấn Đạt">
-                <p><strong>Nguyễn Tấn Đạt</strong> - Leader</p>
-            </div>
-            <!-- Add more members as needed -->
+<main>
+    <section class="hero-section">
+        <div class="container">
+            <h1>About Us</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li><a href="#">HOME</a></li>
+                    <li>/</li>
+                    <li><a href="#">ABOUT US</a></li>
+                    <li>/</li>
+                    <li aria-current="page">ACCOUNT</li>
+                </ol>
+            </nav>
         </div>
-    </div>
-</section>
+    </section>
+
+    <section class="trust-us-section section-padding">
+        <div class="container grid-2">
+            <div class="trust-us-images">
+                <img th:src="@{/images/8.png}" alt="Senior doctor with patient" class="img-fluid img-1">
+                <img th:src="@{/images/10.png}" alt="Smiling doctor" class="img-fluid img-2">
+            </div>
+            <div class="trust-us-content">
+                <span class="section-tag">About Us</span>
+                <h2>Why You Should Trust Us? Get Know About Us!</h2>
+                <p>We are a dedicated team of health professionals, psychologists, and developers passionate about helping people quit smoking. With real-world experience and science-backed methods, we offer solutions that are safe, effective, and tailored to your needs.</p>
+                <p>We’re not just providing tools — we’re walking with you on your journey to a smoke-free life.</p>
+                <ul class="features-list">
+                    <li><i class="far fa-check-circle"></i> Quality health care</li>
+                    <li><i class="far fa-check-circle"></i> Only Qualified Coachs</li>
+                    <li><i class="far fa-check-circle"></i> Medical Research Professionals</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="choose-us-section section-padding">
+        <div class="container">
+            <div class="grid-2">
+                <div class="choose-us-content">
+                    <span class="section-tag-light">Features</span>
+                    <h2>Why Choose Us</h2>
+                    <p>Because we understand that quitting smoking takes more than just willpower — it requires a clear plan and timely support. Our platform helps you track your progress, receive daily motivation, and access expert guidance personalized to your journey.</p>
+                    <p>No ads, no judgment — just real support and proven success from hundreds of users who’ve made it.</p>
+                    <div class="features-grid">
+                        <div class="feature-item">
+                            <div class="feature-icon"><i class="fas fa-user-md"></i></div>
+                            <p>Experience<br>Coachs</p>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon"><i class="fas fa-check-circle"></i></div>
+                            <p>Quality<br>Services</p>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon"><i class="fas fa-comments"></i></div>
+                            <p>Positive<br>Consultation</p>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon"><i class="fas fa-headphones"></i></div>
+                            <p>24 Hours<br>Support</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="choose-us-image">
+                    <img th:src="@{/images/9.png}" alt="Doctor consulting patient" class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
 
 <footer class="main-footer">
     <div class="container">
-        <div class="footer-content-wrapper">
-            <div class="footer-address">
-                <p class="footer-heading">Address</p>
-                <p>Thu Duc, HCM</p>
-                <div class="social-icons">
-                    <a href="#" class="social-link"><img src="https://img.icons8.com/ios-filled/24/facebook--v1.png" alt="Facebook" /></a>
-                    <a href="#" class="social-link"><img src="https://img.icons8.com/ios-filled/24/github.png" alt="GitHub" /></a>
-                    <a href="#" class="social-link"><img src="https://img.icons8.com/ios-filled/24/whatsapp.png" alt="WhatsApp" /></a>
-                </div>
+        <div class="footer-address">
+            <p class="footer-heading"><strong>Address</strong></p>
+            <p>Thu Duc, Hcm</p>
+            <div class="social-icons">
+                <a href="#" class="social-link"><img src="https://img.icons8.com/ios-filled/24/facebook--v1.png" alt="Facebook" /></a>
+                <a href="#" class="social-link"><img src="https://img.icons8.com/ios-filled/24/github.png" alt="GitHub" /></a>
+                <a href="#" class="social-link"><img src="https://img.icons8.com/ios-filled/24/whatsapp.png" alt="WhatsApp" /></a>
             </div>
         </div>
         <p class="copyright">&copy; 2025 SmokeLite. All Rights Reserved.</p>
     </div>
 </footer>
 
+<a href="#" class="back-to-top"><i class="fas fa-arrow-up"></i></a>
+
 </body>
 </html>
-

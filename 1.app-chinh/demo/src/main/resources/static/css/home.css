@@ -370,3 +370,22 @@ img {
         margin: 0 10px;
     }
 }
+.back-to-top {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background-color: var(--primary-color);
+    color: var(--white-color);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    /* Opacity và visibility sẽ luôn là 1 và visible nếu không có JS để thay đổi */
+    opacity: 1;
+    visibility: visible;
+    transition: all 0.4s; /* Giữ transition để có hiệu ứng mượt mà nếu sau này thêm JS */
+    z-index: 1000;
+}
