@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>User Dashboard - SmokeLite</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/userpage_complete.css}">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+<header class="main-header">
+    <div class="logo-container">
+        <a th:href="@{/home}"> <img th:src="@{/images/1.png}" alt="SmokeLite Logo" class="logo" />
+        </a>
+    </div>
+    <nav class="main-nav">
+        <a th:href="@{/home}" class="nav-item">Home</a>
+        <a th:href="@{/about_us}" class="nav-item">About Us</a>
+        <a th:href="@{/login}" class="nav-item active">Account</a>
+        <a th:href="@{/admin}" class="nav-item" sec:authorize="hasAuthority('Admin')">Admin</a>
+        <form th:action="@{/logout}" method="post" style="display: inline;">
+            <input type="submit" value="Logout" class="nav-item btn btn-link" />
+        </form>
+    </nav>
+</header>
+
+<main class="main-content">
+    <div class="container">
+        <div class="welcome-box">
+            <h2>Welcome Back, User!</h2>
+            <p>Your journey to a smoke-free life continues. Stay strong, you're doing great!</p>
+        </div>
+
+        <div class="grid-box">
+            <div class="card">
+                <i class="fas fa-calendar-check icon"></i>
+                <h3>My Quitting Plan</h3>
+                <p>Review and update your personalized plan to quit smoking.</p>
+                <a href="#" class="btn-primary" data-tooltip="View Details">View My Plan</a>
+            </div>
+            <div class="card">
+                <i class="fas fa-chart-line icon"></i>
+                <h3>Track Progress</h3>
+                <p>See your health improvements, money saved, and milestones.</p>
+                <a href="#" class="btn-primary" data-tooltip="See My Stats">View Progress</a>
+            </div>
+            <div class="card">
+                <i class="fas fa-users icon"></i>
+                <h3>Community Support</h3>
+                <p>Connect with others, share experiences, and get motivated.</p>
+                <a href="#" class="btn-primary" data-tooltip="Join Discussion">Find Support</a>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer class="main-footer">
+    <div class="container">
+        <div class="footer-address">
+            <p class="footer-heading"><strong>Address</strong></p>
+            <p>Thu Duc, Hcm</p>
+            <div class="social-icons">
+                <a href="#" class="social-link"><img src="https://img.icons8.com/ios-filled/24/facebook--v1.png" alt="Facebook" /></a>
+                <a href="#" class="social-link"><img src="https://img.icons8.com/ios-filled/24/github.png" alt="GitHub" /></a>
+                <a href="#" class="social-link"><img src="https://img.icons8.com/ios-filled/24/whatsapp.png" alt="WhatsApp" /></a>
+            </div>
+        </div>
+        <p class="copyright">&copy; 2025 SmokeLite. All Rights Reserved.</p>
+    </div>
+</footer>
+
+<a href="#" class="back-to-top"><i class="fas fa-arrow-up"></i></a>
+
+</body>
+</html>

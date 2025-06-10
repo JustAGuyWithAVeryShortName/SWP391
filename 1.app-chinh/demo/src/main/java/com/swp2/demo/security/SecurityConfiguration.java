@@ -50,12 +50,12 @@ public class SecurityConfiguration {
                 .formLogin(form -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/authenticateTheUser")
-                        .defaultSuccessUrl("/home", true)
+                        .defaultSuccessUrl("/dashboard", true)
                         .permitAll()
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/login")
-                        .defaultSuccessUrl("/home", true)
+                        .defaultSuccessUrl("/dashboard" , true)
                 ) .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/home?home")
