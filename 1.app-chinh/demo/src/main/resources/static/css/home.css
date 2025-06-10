@@ -90,6 +90,7 @@ img {
 
 .main-nav {
     display: flex;
+    align-items: center;
 }
 
 .main-nav .nav-item {
@@ -100,6 +101,8 @@ img {
     border-bottom: 2px solid transparent;
     text-decoration: none;
     transition: color 0.25s ease, border-bottom-color 0.25s ease;
+    font-size: 1em; /* Ensure consistent font size */
+    line-height: 1.5;
 }
 
 .main-nav .nav-item:hover,

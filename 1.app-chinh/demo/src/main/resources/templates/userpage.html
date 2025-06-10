@@ -19,6 +19,7 @@
     </div>
     <nav class="main-nav">
         <a th:href="@{/home}" class="nav-item">Home</a>
+        <a th:href="@{/member}" class="nav-item">Member</a>
         <a th:href="@{/about_us}" class="nav-item">About Us</a>
         <a th:href="@{/login}" class="nav-item active">Account</a>
         <a th:href="@{/admin}" class="nav-item" sec:authorize="hasAuthority('Admin')">Admin</a>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Membership Registration</title>
+    <link rel="stylesheet" th:href="@{/css/member.css}">
+
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+</head>
+
+<body>
+
+<header class="main-header">
+    <div class="logo-container">
+        <a th:href="@{/home}"> <img th:src="@{/images/1.png}" alt="SmokeLite Logo" class="logo" />
+        </a>
+    </div>
+    <nav class="main-nav">
+        <a th:href="@{/home}" class="nav-item">Home</a>
+        <a th:href="@{/member}" class="nav-item active">Member</a>
+        <a th:href="@{/about_us}" class="nav-item">About Us</a>
+        <a th:href="@{/login}" class="nav-item">Account</a>
+
+        <a th:href="@{/admin}" class="nav-item" sec:authorize="hasAuthority('Admin')">Admin</a>
+
+        <form th:action="@{/logout}" method="post" style="display: inline;">
+            <input type="submit" value="Logout" class="nav-item btn btn-link" style="text-decoration: none; padding: 0; border: none; background: none; color: inherit; cursor: pointer;" />
+        </form>
+    </nav>
+</header>
+
+<section class="membership-section">
+    <h2>Choose Your Membership Plan</h2>
+    <div class="plans">
+        <div class="plan">
+            <h3>Basic</h3>
+            <div class="price">₫100,000 / tháng</div>
+            <ul>
+                <li>Access basic features</li>
+                <li>Email support</li>
+                <li>Community Forum</li>
+            </ul>
+            <button>Register</button>
+        </div>
+
+        <div class="plan">
+            <h3>Premium</h3>
+            <div class="price">₫250,000 / tháng</div>
+            <ul>
+                <li>All Basic features</li>
+                <li>Progress Tracker</li>
+                <li>Exclusive Resources</li>
+            </ul>
+            <button>Register</button>
+        </div>
+
+        <div class="plan">
+            <h3>VIP</h3>
+            <div class="price">₫500,000 / tháng</div>
+            <ul>
+                <li>All Premium features</li>
+                <li>1:1 Live Coaching</li>
+                <li>Priority Support</li>
+            </ul>
+            <button>Register</button>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="address">
+        <p><strong>Address</strong></p>
+        <p>Thu Duc, HCM</p>
+        <div class="socials">
+            <a href="#"><img src="https://img.icons8.com/ios-filled/24/facebook--v1.png" alt="Facebook" /></a>
+            <a href="#"><img src="https://img.icons8.com/ios-filled/24/github.png" alt="GitHub" /></a>
+            <a href="#"><img src="https://img.icons8.com/ios-filled/24/whatsapp.png" alt="WhatsApp" /></a>
+        </div>
+    </div>
+</footer>
+</body>
+
+</html>

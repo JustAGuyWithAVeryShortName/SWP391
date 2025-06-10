@@ -40,6 +40,7 @@ public class SecurityConfiguration {
                                 "/css/**",
                                 "/images/**",
                                 "/js/**",
+                                "/member",
                                 "/about_us").permitAll()
 
                         .requestMatchers("/admin/**").hasAuthority("Admin")

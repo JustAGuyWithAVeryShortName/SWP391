@@ -44,8 +44,15 @@
   <!-- Nếu đã đăng nhập -->
   <div sec:authorize="isAuthenticated()">
     <p>Tên người dùng: <span th:text="${#authentication.name}"></span></p>
-    <p>Email: <span th:text="${#authentication.principal.attributes['email']}"></span></p>
+
+    <!-- Chỉ hiển thị Email nếu đăng nhập bằng OAuth2 -->
+    <div th:if="${#authentication.principal instanceof T(org.springframework.security.oauth2.core.oidc.user.OidcUser)}">
+      <p>Email: <span th:text="${#authentication.principal.attributes['email']}"></span></p>
+    </div>
   </div>
+
+
+
 
 
   <div class="register-link">
