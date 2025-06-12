@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Smoking Survey</title>
+    <style>
+        body { font-family: sans-serif; background: #f0f2f5; padding: 2rem; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h2 { text-align: center; margin-bottom: 1.5rem; color: #333; }
+        .question { margin-bottom: 1.5rem; border-bottom: 1px solid #eee; padding-bottom: 1rem; }
+        .question p { font-size: 1.1rem; }
+        label { display: block; margin: 0.5rem 0 0.5rem 1.2rem; cursor: pointer; position: relative; }
+        input[type="radio"] { margin-right: 0.5rem; }
+        button {
+            display: block;
+            width: 100%;
+            margin-top: 1rem;
+            padding: 0.8rem 1rem;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        button:hover { background-color: #45a049; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Smoking Survey</h2>
+    <form th:action="@{/questionnaire}" method="post">
+        <div th:each="q, iterStat : ${questions}" class="question">
+            <p><strong th:text="|${iterStat.index + 1}. ${q.questionText}|"></strong></p>
+
+            <div th:each="option : ${q.options}">
+                <label>
+                    <input type="radio" th:name="${'answer' + iterStat.index}" th:value="${option}" required />
+                    <span th:text="${option}"></span>
+                </label>
+            </div>
+        </div>
+        <button type="submit">Submit</button>
+    </form>
+</div>
+</body>
+</html>

@@ -82,6 +82,8 @@ body {
     height: 70px;
     transform: scale(1.8);
     transform-origin: left center;
+    transition: transform 0.3s ease;
+    margin-top: 10px;
 }
 
 .main-nav {
@@ -224,23 +226,6 @@ body {
     outline: none;
 }
 
-.btn-primary::before {
-    content: attr(data-tooltip);
-    position: absolute;
-    bottom: 120%;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: var(--dark-text-color);
-    color: var(--white-color);
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 0.85em;
-    white-space: nowrap;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-    z-index: 10;
-}
 
 .btn-primary:hover::before, .btn-primary:focus-visible::before {
     opacity: 1;

@@ -41,6 +41,7 @@ public class SecurityConfiguration {
                                 "/images/**",
                                 "/js/**",
                                 "/member",
+                                "/questionnaire",
                                 "/about_us").permitAll()
 
                         .requestMatchers("/admin/**").hasAuthority("Admin")
