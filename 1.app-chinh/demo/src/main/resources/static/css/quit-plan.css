@@ -1,0 +1,177 @@
+/* === BIẾN SỐ & THIẾT LẬP CHUNG === */
+:root {
+    /* Bảng màu được cân nhắc kỹ hơn */
+    --primary-color: #007bff; /* Xanh dương hiện đại, dễ tiếp cận */
+    --secondary-color: #6c757d; /* Xám cho các hành động phụ */
+    --success-color: #28a745; /* Xanh lá cho thành công, tương đồng với bản cũ */
+    --bg-color: #f8f9fa;      /* Màu nền xám rất nhẹ */
+    --surface-color: #ffffff; /* Màu nền của các card, container */
+    --text-color: #343a40;    /* Màu chữ tối, dễ đọc */
+    --border-color: #dee2e6;  /* Màu viền nhẹ nhàng */
+
+    /* Biến cho các thuộc tính dùng chung */
+    --border-radius: 12px;
+    --box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); /* Đổ bóng mềm mại hơn */
+    --transition-speed: 0.2s;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 2rem;
+    line-height: 1.6; /* Cải thiện khả năng đọc */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* === BỐ CỤC & CONTAINER === */
+.container {
+    width: 100%;
+    max-width: 650px;
+    background-color: var(--surface-color);
+    padding: 2.5rem; /* Tăng padding để thoáng hơn */
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    transition: transform var(--transition-speed) ease;
+}
+
+/* === TYPOGRAPHY (Kiểu chữ) === */
+h1 {
+    color: var(--text-color);
+    font-size: 2.25rem;
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.subtitle {
+    text-align: center;
+    color: var(--secondary-color);
+    margin-bottom: 2.5rem;
+}
+
+/* === FORM ELEMENTS (Các thành phần Form) === */
+.form-group {
+    margin-bottom: 1.75rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.75rem;
+    font-weight: 600; /* Đậm hơn để nổi bật */
+    font-size: 1.05rem;
+}
+
+input[type="date"],
+textarea,
+select {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    color: var(--text-color);
+    background-color: #fff;
+    box-sizing: border-box; /* Quan trọng để padding không làm vỡ layout */
+    transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+}
+
+/* CẢI TIẾN LỚN: Thêm hiệu ứng :focus để cải thiện UX */
+input[type="date"]:focus,
+textarea:focus,
+select:focus {
+    outline: none; /* Bỏ viền mặc định của trình duyệt */
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.15); /* Hiệu ứng "glow" */
+}
+
+textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* CẢI TIẾN: Tạo kiểu cho Checkbox để đồng nhất giao diện */
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 500;
+    padding: 0.75rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: background-color var(--transition-speed) ease;
+}
+.checkbox-group label:hover {
+    background-color: #f8f9fa;
+}
+.checkbox-group input[type="checkbox"] {
+    /* Làm cho checkbox to và dễ nhấn hơn */
+    width: 1.2em;
+    height: 1.2em;
+    accent-color: var(--primary-color);
+}
+
+
+/* === BUTTONS === */
+.button-group {
+    display: flex;
+    flex-direction: column; /* Hoặc row tùy thiết kế */
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+/* Thiết lập cơ bản cho tất cả các nút */
+.btn {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    transition: all var(--transition-speed) ease;
+}
+
+/* CẢI TIẾN: Phân cấp nút Primary và Secondary */
+
+/* Nút chính: Nền màu, nổi bật nhất */
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+.btn-primary:hover {
+    background-color: #0069d9; /* Màu đậm hơn khi hover */
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
+    transform: translateY(-2px); /* Hiệu ứng nhấc lên */
+}
+.btn-primary:active {
+    transform: translateY(0); /* Hiệu ứng nhấn xuống */
+    box-shadow: none;
+}
+
+/* Nút phụ: Chỉ có viền, ít nổi bật hơn */
+.btn-secondary {
+    background-color: transparent;
+    color: var(--secondary-color);
+    border-color: var(--border-color);
+}
+.btn-secondary:hover {
+    background-color: var(--secondary-color);
+    color: white;
+    border-color: var(--secondary-color);
+}
+
+/* Ví dụ áp dụng cho HTML */
+/* <button class="btn btn-primary">Tạo Kế hoạch</button> */
+/* <button class="btn btn-secondary">Lưu Nháp</button> */
