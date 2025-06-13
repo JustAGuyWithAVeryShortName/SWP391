@@ -42,6 +42,7 @@ public class SecurityConfiguration {
                                 "/js/**",
                                 "/member",
                                 "/questionnaire",
+                                "/forgot-password",
                              //   "/change-password",
                                 "/about_us").permitAll()
 
@@ -65,6 +66,7 @@ public class SecurityConfiguration {
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
                         .permitAll());
+
 
         return http.build();
     }
