@@ -35,7 +35,7 @@
 
     <div class="bottom-options">
       <label><input type="checkbox" checked /> Nhớ tài khoản</label>
-      <a href="#">Quên mật khẩu?</a>
+      <a th:href="@{/change-password}">Quên mật khẩu?</a>
     </div>
 
     <button type="submit">Đăng nhập</button>
@@ -61,7 +61,7 @@
     <div class="social-buttons">
 
       <a th:href="@{/oauth2/authorization/google}" class="google-login-button">
-        <button> <i class="fab fa-google"></i></button>
+        <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo" style="height: 20px">
       </a>
 
 
