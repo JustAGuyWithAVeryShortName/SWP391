@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Login - SmokeLite</title>
+  <link rel="stylesheet" th:href="@{/css/login.css}">
+
+  <!-- FontAwesome CDN for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+<div class="login-container">
+  <h2>Login</h2>
+
+  <div th:if="${param.error}" class="error-message">
+    Login failed, please check your username or password!
+  </div>
+
+  <form th:action="@{/authenticateTheUser}" method="post">
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" required autofocus />
+    </div>
+
+    <div class="form-group password-wrapper">
+      <label for="password">Password</label>
+      <div class="password-input">
+        <input type="password" id="password" name="password" required />
+        <span id="togglePassword">Show</span>
+      </div>
+    </div>
+
+    <div class="bottom-options">
+      <label><input type="checkbox" checked /> Remember me</label>
+      <a href="#">Forgot password?</a>
+    </div>
+
+    <button type="submit">Login</button>
+  </form>
+
+  <!-- If logged in -->
+  <div sec:authorize="isAuthenticated()">
+    <p>Username: <span th:text="${#authentication.name}"></span></p>
+
+    <!-- Show email only if logged in with OAuth2 -->
+    <div th:if="${#authentication.principal instanceof T(org.springframework.security.oauth2.core.oidc.user.OidcUser)}">
+      <p>Email: <span th:text="${#authentication.principal.attributes['email']}"></span></p>
+    </div>
+  </div>
+
+  <div class="register-link">
+    <p>Don't have an account? <a th:href="@{/register/showRegisterForm}">Register</a></p>
+    <p>Or login with:</p>
+    <div class="social-buttons">
+      <a th:href="@{/oauth2/authorization/google}" class="google-login-button">
+        <i class="fab fa-google"></i>
+        Sign in with Google
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+  const passwordInput = document.getElementById("password");
+  const togglePassword = document.getElementById("togglePassword");
+
+  togglePassword.addEventListener("click", function () {
+    const isPassword = passwordInput.type === "password";
+    passwordInput.type = isPassword ? "text" : "password";
+    togglePassword.textContent = isPassword ? "Hide" : "Show";
+  });
+</script>
+
+</body>
+</html>
