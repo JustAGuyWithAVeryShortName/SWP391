@@ -4,7 +4,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Đăng nhập - SmokeLite</title>
+  <title>Login - SmokeLite</title>
   <link rel="stylesheet" th:href="@{/css/login.css}">
 
   <!-- FontAwesome CDN for icons -->
@@ -12,65 +12,61 @@
 </head>
 <body>
 <div class="login-container">
-  <h2>Đăng nhập</h2>
+  <h2>Login</h2>
 
   <div th:if="${param.error}" class="error-message">
-    Đăng nhập không thành công, vui lòng kiểm tra lại mật khẩu hoặc tài khoản!
+    Login failed, please check your username or password!
   </div>
 
   <form th:action="@{/authenticateTheUser}" method="post">
     <div class="form-group">
-      <label for="username">Tên đăng nhập</label>
+      <label for="username">Username</label>
       <input type="text" id="username" name="username" required autofocus />
     </div>
 
     <div class="form-group password-wrapper">
-      <label for="password">Mật khẩu</label>
+      <label for="password">Password</label>
       <div class="password-input">
         <input type="password" id="password" name="password" required />
-        <span id="togglePassword">Hiện</span>
+        <span id="togglePassword">Show</span>
       </div>
     </div>
 
-
     <div class="bottom-options">
+
       <label><input type="checkbox" checked /> Nhớ tài khoản</label>
       <a th:href="@{/change-password}">Quên mật khẩu?</a>
+
     </div>
 
-    <button type="submit">Đăng nhập</button>
+    <button type="submit">Login</button>
   </form>
 
-  <!-- Nếu đã đăng nhập -->
+  <!-- If logged in -->
   <div sec:authorize="isAuthenticated()">
-    <p>Tên người dùng: <span th:text="${#authentication.name}"></span></p>
+    <p>Username: <span th:text="${#authentication.name}"></span></p>
 
-    <!-- Chỉ hiển thị Email nếu đăng nhập bằng OAuth2 -->
+    <!-- Show email only if logged in with OAuth2 -->
     <div th:if="${#authentication.principal instanceof T(org.springframework.security.oauth2.core.oidc.user.OidcUser)}">
       <p>Email: <span th:text="${#authentication.principal.attributes['email']}"></span></p>
     </div>
   </div>
 
-
-
-
-
   <div class="register-link">
-    <p>Bạn chưa có tài khoản? <a th:href="@{/register/showRegisterForm}">Đăng ký</a></p>
-    <p>Hoặc đăng nhập bằng:</p>
+    <p>Don't have an account? <a th:href="@{/register/showRegisterForm}">Register</a></p>
+    <p>Or login with:</p>
     <div class="social-buttons">
-
       <a th:href="@{/oauth2/authorization/google}" class="google-login-button">
+<<<<<<< HEAD
         <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo" style="height: 20px">
+=======
+        <i class="fab fa-google"></i>
+        Sign in with Google
+>>>>>>> 229fe1ee275329b81e793f8fcd888daba32d1223
       </a>
-
-
     </div>
   </div>
 </div>
-
-
-
 
 <script>
   const passwordInput = document.getElementById("password");
@@ -79,10 +75,9 @@
   togglePassword.addEventListener("click", function () {
     const isPassword = passwordInput.type === "password";
     passwordInput.type = isPassword ? "text" : "password";
-    togglePassword.textContent = isPassword ? "Ẩn" : "Hiện";
+    togglePassword.textContent = isPassword ? "Hide" : "Show";
   });
 </script>
-
 
 </body>
 </html>

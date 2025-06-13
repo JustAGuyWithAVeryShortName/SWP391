@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Bảng Điều Khiển Cai Thuốc</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        /* --- BIẾN MÀU VÀ THIẾT LẬP CƠ BẢN --- */
+        :root {
+            --primary-color: #007bff;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --light-gray: #f8f9fa;
+            --bg-color: #f0f2f5; /* Một màu nền hơi xám để làm nổi bật container */
+            --text-color: #343a40;
+            --secondary-text-color: #6c757d;
+            --border-color: #dee2e6;
+            --shadow-color: rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 2rem;
+            color: var(--text-color);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* --- BỐ CỤC CHÍNH --- */
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            background: #ffffff;
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px var(--shadow-color);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1.5rem;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0;
+            color: var(--text-color);
+        }
+
+        .motivation-quote {
+            font-style: italic;
+            color: var(--secondary-text-color);
+            margin-top: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2.5rem;
+        }
+
+        /* --- THẺ THỐNG KÊ (STAT CARDS) --- */
+        .stat-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            grid-column: 1 / -1; /* Trải dài toàn bộ chiều rộng */
+            margin-bottom: 1.5rem;
+        }
+
+        .card {
+            background: var(--light-gray);
+            padding: 1.5rem 2rem;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card .icon {
+            font-size: 2.8rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .card.success .icon {
+            color: var(--success-color);
+        }
+
+        .card .value {
+            font-size: 2.8rem;
+            font-weight: 700;
+            line-height: 1.2;
+            color: var(--text-color);
+        }
+
+        .card .label {
+            color: var(--secondary-text-color);
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        /* --- KHU VỰC CHI TIẾT KẾ HOẠCH & LỊCH --- */
+        .plan-details, .calendar-section {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .plan-details h3, .calendar-section h3 {
+            margin-top: 0;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .plan-details p {
+            line-height: 1.7;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+        .plan-details p > i { margin-right: 8px; color: var(--primary-color); }
+        .plan-details strong { color: var(--text-color); font-weight: 600; }
+
+        .plan-details ul {
+            padding-left: 25px;
+            list-style-type: '✓ '; /* Thêm dấu tick cho list */
+            line-height: 1.8;
+        }
+        .plan-details ul li { padding-left: 10px; }
+
+        /* Chi tiết kế hoạch tùy chỉnh */
+        .plan-details pre {
+            white-space: pre-wrap;
+            font-family: inherit;
+            font-size: 1rem;
+            margin-top: 0.5rem;
+            background: var(--light-gray);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            line-height: 1.6;
+        }
+
+        /* --- THANH TIẾN TRÌNH (PROGRESS BAR) --- */
+        .progress-bar-container {
+            background-color: #e9ecef;
+            border-radius: 50px;
+            padding: 3px;
+            margin-top: 1.5rem;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background-color: var(--success-color);
+            background-image: linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
+            background-size: 1rem 1rem;
+            border-radius: 50px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            transition: width 0.6s ease-in-out;
+        }
+
+        /* --- LỊCH --- */
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-top: 1rem;
+        }
+
+        .calendar-header {
+            font-weight: 600;
+            text-align: center;
+            padding-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--secondary-text-color);
+        }
+
+        .calendar-day {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            aspect-ratio: 1 / 1; /* Giữ ô vuông */
+            border-radius: 8px;
+            font-size: 0.9rem;
+            border: 1px solid transparent;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .calendar-day.empty { background-color: transparent; }
+        .calendar-day.pre-plan, .calendar-day.disabled { color: #ccc; }
+        .calendar-day.future { background-color: var(--light-gray); border-color: var(--border-color); }
+        .calendar-day.past { background-color: #e2f5ea; border-color: #c3e6cb; color: #155724; font-weight: 600; }
+        .calendar-day.post-plan { background-color: var(--success-color); color: white; }
+
+        .calendar-day.today {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 700;
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(0, 123, 255, 0.5);
+        }
+
+
+        /* --- FOOTER & NÚT CHỈNH SỬA --- */
+        .footer {
+            margin-top: 2.5rem;
+            text-align: center;
+        }
+
+        .edit-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.8rem 1.8rem;
+            border: 2px solid var(--primary-color);
+            border-radius: 50px;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .edit-link:hover {
+            background-color: var(--primary-color);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+<div class="container" th:if="${plan != null}">
+    <header class="header">
+        <h2>Bảng Điều Khiển Của Bạn</h2>
+        <p class="motivation-quote">"Hành trình vạn dặm bắt đầu từ một bước chân."</p>
+    </header>
+
+    <div class="stat-cards" th:if="${stats != null}">
+        <div class="card success">
+            <div class="icon"><i class="fa-solid fa-leaf"></i></div>
+            <div class="value" th:text="${stats.daysSmokeFree}">0</div>
+            <div class="label">Ngày không khói thuốc</div>
+        </div>
+        <div class="card">
+            <div class="icon"><i class="fa-solid fa-calendar-check"></i></div>
+            <div class="value" th:text="${stats.daysRemaining}">0</div>
+            <div class="label">Ngày tới mục tiêu</div>
+        </div>
+    </div>
+
+
+    <div class="main-content">
+        <section class="plan-details">
+            <h3><i class="fa-solid fa-bullseye"></i> Kế Hoạch Của Bạn</h3>
+            <p><strong><i class="fa-solid fa-flag-checkered"></i> Mục tiêu:</strong> <span th:text="${#temporals.format(plan.targetDate, 'dd-MM-yyyy')}"></span></p>
+            <p><strong><i class="fa-solid fa-shoe-prints"></i> Phương pháp:</strong> <span th:text="${plan.stages}"></span></p>
+            <div>
+                <strong><i class="fa-solid fa-lightbulb"></i> Lý do của bạn:</strong>
+                <ul>
+                    <li th:each="reason : ${plan.reasons}" th:text="${reason}">Lý do mẫu</li>
+                </ul>
+            </div>
+            <div th:if="${plan.customPlan != null and !plan.customPlan.isBlank()}">
+                <strong><i class="fa-solid fa-list-check"></i> Chi tiết kế hoạch:</strong>
+                <pre style="white-space: pre-wrap; font-family: inherit; margin-top: 5px; background: #f8f9fa; padding: 1rem; border-radius: 8px;" th:text="${plan.customPlan}"></pre>
+            </div>
+            <div th:if="${progress != null}" style="margin-top: 1.5rem;">
+                <p><strong><i class="fa-solid fa-person-running"></i> Tiến trình của bạn:</strong></p>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" th:style="'width:' + ${progress} + '%'" th:text="${progress + '%'}"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="calendar-section" th:if="${calendar != null}">
+            <h3 th:text="'Lịch Trình Tháng ' + ${#temporals.format(T(java.time.YearMonth).parse(calendar.monthName()), 'M/yyyy')}">Lịch Trình Tháng</h3>
+
+            <div class="calendar">
+                <div class="calendar-header" th:each="dayName : ${calendar.weekDays()}" th:text="${dayName}"></div>
+
+                <div th:each="day : ${calendar.days()}"
+                     th:classappend="${day.status()}"
+                     class="calendar-day">
+                    <span th:text="${day.dayNumber() != 0 ? day.dayNumber() : ''}"></span>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer class="footer">
+        <a href="/quit-plan" class="edit-link"><i class="fa-solid fa-pen-to-square"></i> Chỉnh sửa Kế hoạch</a>
+    </footer>
+</div>
+</body>
+</html>
