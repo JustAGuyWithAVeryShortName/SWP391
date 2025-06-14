@@ -11,15 +11,15 @@ CREATE TABLE Users (
     role VARCHAR(10) NOT NULL DEFAULT 'Guest' CHECK (role IN ('Guest', 'Member', 'Coach', 'Admin'))
     
 );
-CREATE TABLE PasswordResetToken (
+CREATE TABLE password_reset_token (
     id BIGINT PRIMARY KEY IDENTITY(1,1),
     token NVARCHAR(255) NOT NULL,
-    user_id INT NOT NULL UNIQUE,
-    expiryDate DATETIME2 NOT NULL,
+    user_id INT NOT NULL,
+    expiry_date DATETIME2 NOT NULL,
     CONSTRAINT FK_User_PasswordReset FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
 
-INSERT INTO PasswordResetToken (token, user_id, expiryDate)
+INSERT INTO password_reset_token (token, user_id, expiry_date)
 VALUES ('9f3c75c2-91a4-4d13-aea4-78d021cd3f90', 1, DATEADD(HOUR, 2, GETDATE()));
 
 
@@ -27,5 +27,6 @@ INSERT INTO Users (username, password, email, first_name, last_name, role)
 VALUES
 ('admin', '123', 'admin@example.com', 'Admin', 'User', 'Admin');
 
- drop table Users
+ drop table password_reset_token
+ select * from password_reset_token
  select * from Users
