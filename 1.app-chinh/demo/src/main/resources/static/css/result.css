@@ -1,24 +1,20 @@
-/* ==========================================================================
-   1. CSS Variables (Custom Properties) - Khai báo biến
-   ========================================================================== */
 :root {
     --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 
     /* Colors */
-    --color-background: #f0f2f5;
-    --color-surface: #fff;
-    --color-text-primary: #1f2937; /* Đổi thành màu xám đậm hơn */
-    --color-text-secondary: #374151;
+    --color-background: #f4f6f8;
+    --color-surface: #ffffff;
+    --color-text-primary: #1e293b;
+    --color-text-secondary: #475569;
     --color-primary: #1e40af;
     --color-primary-accent: #3b82f6;
     --color-secondary: #6c757d;
-    --color-secondary-dark: #5a6268;
+    --color-secondary-dark: #495057;
     --color-border: #e2e8f0;
-    --color-surface-alt: #f8fafc; /* Màu nền phụ sáng hơn một chút */
+    --color-surface-alt: #f8fafc;
     --color-success: #16a34a;
     --color-success-dark: #15803d;
 
-    /* === CẢI TIẾN: Bảng màu rủi ro tinh chỉnh === */
     --color-risk-high-bg: #fee2e2;
     --color-risk-high-text: #b91c1c;
     --color-risk-medium-bg: #ffedd5;
@@ -26,177 +22,188 @@
     --color-risk-low-bg: #dcfce7;
     --color-risk-low-text: #166534;
 
-    /* Sizing & Spacing */
+    /* Spacing */
+    --spacing-xs: 0.5rem;
     --spacing-sm: 1rem;
     --spacing-md: 1.5rem;
     --spacing-lg: 2rem;
     --spacing-xl: 2.5rem;
 
     /* Borders & Shadows */
+    --border-radius-sm: 6px;
     --border-radius-md: 10px;
-    --border-radius-lg: 12px;
-    /* === CẢI TIẾN: Shadow mềm mại và đẹp hơn === */
-    --shadow-md: 0 10px 30px -10px rgba(0, 30, 80, 0.15);
-    --shadow-lg: 0 20px 40px -10px rgba(0, 30, 80, 0.2);
-    --shadow-button: 0 4px 15px rgba(0, 0, 0, 0.1);
+    --border-radius-lg: 16px;
+    --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 10px 30px -10px rgba(0, 30, 80, 0.12);
+    --shadow-lg: 0 20px 40px -10px rgba(0, 30, 80, 0.18);
+    --shadow-button: 0 4px 12px rgba(0, 0, 0, 0.1);
 
     /* Transitions */
-    --transition-duration: 0.3s;
-    --transition-timing: ease;
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
 }
 
-/* ==========================================================================
-   2. Base Styles & Resets
-   ========================================================================== */
-*, *::before, *::after { box-sizing: border-box; }
+/* Base Reset & Body */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
 
 body {
+    margin: 0;
     font-family: var(--font-family-sans);
     color: var(--color-text-primary);
+    background-color: var(--color-background);
+    background-image: linear-gradient(180deg, #fff 0%, #f0f2f5 100%);
     padding: var(--spacing-lg);
-    margin: 0;
+    min-height: 100vh;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-
-    /* === CẢI TIẾN: Thêm gradient nền tinh tế === */
-    background-color: #e9eef2;
-    background-image: linear-gradient(180deg, #fdfdfd 0%, #f0f2f5 100%);
-    min-height: 100vh;
 }
 
-/* ==========================================================================
-   3. Layout & Components
-   ========================================================================== */
+/* Layout */
 .container {
-    max-width: 800px;
-    margin-inline: auto;
+    max-width: 860px;
+    margin: auto;
     background-color: var(--color-surface);
     padding: var(--spacing-xl);
     border-radius: var(--border-radius-lg);
     box-shadow: var(--shadow-md);
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--color-border);
 }
 
+/* Heading */
 h2 {
     text-align: center;
     color: var(--color-primary);
-    font-weight: 900;
+    font-weight: 800;
     font-size: clamp(1.8rem, 5vw, 2.25rem);
     margin-bottom: var(--spacing-lg);
 }
 
+/* Result Card */
 .result-card {
-    border: 1px solid var(--color-border);
+    background-color: var(--color-surface-alt);
     border-radius: var(--border-radius-md);
     padding: var(--spacing-lg);
     margin-bottom: var(--spacing-lg);
-    background-color: var(--color-surface-alt);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow var(--transition-normal);
 }
-
+.result-card:hover {
+    box-shadow: var(--shadow-md);
+}
 .result-card h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
     margin-top: 0;
+    font-size: 1.45rem;
+    font-weight: 700;
     color: var(--color-primary);
     border-bottom: 2px solid var(--color-primary-accent);
-    padding-bottom: 0.75rem;
-    font-weight: 700;
-    font-size: 1.5rem;
-
-    /* === CẢI TIẾN: Dùng flexbox để căn icon và chữ === */
-    display: flex;
-    align-items: center;
-    gap: 0.75rem; /* Khoảng cách giữa icon và chữ */
+    padding-bottom: 0.6rem;
 }
-
 .result-card p {
-    /* === CẢI TIẾN: Cỡ chữ và khoảng cách dòng tốt hơn === */
-    line-height: 1.7;
+    margin: var(--spacing-sm) 0 0;
     font-size: 1.125rem;
+    line-height: 1.7;
     color: var(--color-text-secondary);
-    margin-top: var(--spacing-sm);
 }
 
+/* Analysis Level */
 .analysis-level {
-    font-size: 1.75rem;
-    font-weight: 800;
     text-align: center;
-    padding: 1.2rem 0.5rem;
-    border-radius: 8px;
+    font-size: 1.6rem;
+    font-weight: 800;
+    padding: 1.1rem;
     margin-bottom: var(--spacing-md);
-    transition: all var(--transition-duration) var(--transition-timing);
+    border-radius: var(--border-radius-md);
+    transition: transform var(--transition-fast);
+}
+.analysis-level:hover {
+    transform: scale(1.015);
 }
 
-/* Sử dụng bảng màu rủi ro đã tinh chỉnh */
-.high-risk { background-color: var(--color-risk-high-bg); color: var(--color-risk-high-text); }
-.medium-risk { background-color: var(--color-risk-medium-bg); color: var(--color-risk-medium-text); }
-.low-risk { background-color: var(--color-risk-low-bg); color: var(--color-risk-low-text); }
+/* Risk Classes */
+.high-risk {
+    background-color: var(--color-risk-high-bg);
+    color: var(--color-risk-high-text);
+}
+.medium-risk {
+    background-color: var(--color-risk-medium-bg);
+    color: var(--color-risk-medium-text);
+}
+.low-risk {
+    background-color: var(--color-risk-low-bg);
+    color: var(--color-risk-low-text);
+}
 
-/* ... (Phần CSS cho .summary-title và .answer-item giữ nguyên) ... */
-
-/* ==========================================================================
-   4. Buttons
-   ========================================================================== */
+/* Buttons */
 .button-group {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1.2rem;
-    margin-top: var(--spacing-xl);
     flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: space-between;
+    margin-top: var(--spacing-xl);
 }
-
 .button {
-    display: inline-block;
-    padding: 0.85rem 2rem; /* Tăng padding cho nút to hơn */
-    border-radius: var(--border-radius-lg);
+    padding: 0.85rem 2rem;
+    font-size: 1.05rem;
     font-weight: 700;
-    font-size: 1.1rem;
-    text-decoration: none;
-    cursor: pointer;
     border: none;
+    border-radius: var(--border-radius-lg);
+    cursor: pointer;
     text-align: center;
+    text-decoration: none;
+    color: #fff;
     box-shadow: var(--shadow-button);
-    transition: all 0.2s ease;
+    transition: all var(--transition-fast);
 }
-
-.button:is(:hover, :focus-visible) {
-    transform: translateY(-3px);
+.button:hover {
+    transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
-    outline: none;
 }
-
-.button:active { transform: translateY(0px); }
+.button:active {
+    transform: translateY(0);
+}
 
 .button--success {
-    background-color: var(--color-success);
-    /* === CẢI TIẾN: Thêm gradient cho nút === */
     background-image: linear-gradient(to top, var(--color-success-dark), var(--color-success));
-    color: var(--color-surface);
-    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
 }
-.button--success:is(:hover, :focus-visible) {
-    background-image: linear-gradient(to top, var(--color-success), var(--color-success));
-    box-shadow: 0 6px 15px rgba(21, 128, 61, 0.4);
+.button--success:hover {
+    background-image: linear-gradient(to top, var(--color-success), var(--color-success-dark));
 }
 
 .button--secondary {
-    background-color: var(--color-secondary);
-    /* === CẢI TIẾN: Thêm gradient cho nút === */
     background-image: linear-gradient(to top, var(--color-secondary-dark), var(--color-secondary));
-    color: var(--color-surface);
 }
-.button--secondary:is(:hover, :focus-visible) {
-    background-image: linear-gradient(to top, var(--color-secondary-dark), var(--color-secondary-dark));
+.button--secondary:hover {
+    background-image: linear-gradient(to top, var(--color-secondary), var(--color-secondary-dark));
 }
 
-/* ==========================================================================
-   5. Responsive
-   ========================================================================== */
+/* Responsive */
 @media (max-width: 600px) {
-    body { padding: var(--spacing-sm); }
-    .container { padding: var(--spacing-lg) var(--spacing-md); }
-    h2 { font-size: 1.8rem; }
-    .result-card h3 { font-size: 1.3rem; }
-    .result-card p { font-size: 1rem; }
-    .button-group { flex-direction: column; align-items: stretch; gap: var(--spacing-sm); }
-    .button { width: 100%; }
+    body {
+        padding: var(--spacing-md);
+    }
+    .container {
+        padding: var(--spacing-lg) var(--spacing-md);
+    }
+    h2 {
+        font-size: 1.6rem;
+    }
+    .result-card h3 {
+        font-size: 1.25rem;
+    }
+    .result-card p {
+        font-size: 1rem;
+    }
+    .button-group {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+    .button {
+        width: 100%;
+    }
 }

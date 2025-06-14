@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bắt Đầu Hành Trình Cai Thuốc</title>
+  <title>Start Your Quit Journey</title>
   <style>
     :root {
       --primary-color: #007bff;
@@ -142,60 +142,60 @@
 </head>
 <body>
 <main class="container">
-  <h1>Bắt Đầu Hành Trình Mới</h1>
-  <p class="subtitle">Hãy cùng nhau xây dựng một kế hoạch cai thuốc hiệu quả dành riêng cho bạn.</p>
+  <h1>Start Your New Journey</h1>
+  <p class="subtitle">Let’s create an effective quit smoking plan tailored just for you.</p>
 
   <div th:if="${dateError}" class="error-message">
-    <p th:text="${dateError}">Lỗi về ngày tháng.</p>
+    <p th:text="${dateError}">Date error.</p>
   </div>
 
   <form th:action="@{/plan/generate}" th:object="${plan}" method="post">
     <section class="form-group">
-      <label class="main-label">1. Động lực của bạn là gì?</label>
+      <label class="main-label">1. What is your motivation?</label>
       <div class="checkbox-group">
-        <label><input type="checkbox" name="reasons" value="health" /> Cải thiện sức khỏe</label>
-        <label><input type="checkbox" name="reasons" value="family" /> Vì gia đình và người thân</label>
-        <label><input type="checkbox" name="reasons" value="financial" /> Tiết kiệm chi phí</label>
-        <label><input type="checkbox" name="reasons" value="smell" /> Loại bỏ mùi hôi khó chịu</label>
-        <label><input type="checkbox" name="reasons" value="other" id="reasonOtherCheckbox" /> Lý do khác</label>
+        <label><input type="checkbox" name="reasons" value="health" /> Improve health</label>
+        <label><input type="checkbox" name="reasons" value="family" /> For family and loved ones</label>
+        <label><input type="checkbox" name="reasons" value="financial" /> Save money</label>
+        <label><input type="checkbox" name="reasons" value="smell" /> Eliminate unpleasant odor</label>
+        <label><input type="checkbox" name="reasons" value="other" id="reasonOtherCheckbox" /> Other reasons</label>
       </div>
       <div id="otherReasonContainer">
-        <textarea name="reasonDetails" rows="3" placeholder="Vui lòng chia sẻ thêm lý do của bạn..."></textarea>
+        <textarea name="reasonDetails" rows="3" placeholder="Please share more about your reasons..."></textarea>
       </div>
     </section>
 
     <section class="form-group">
-      <label for="startDate" class="main-label">2. Chọn ngày bắt đầu</label>
+      <label for="startDate" class="main-label">2. Choose your start date</label>
       <input type="date" id="startDate" th:field="*{startDate}" required />
-      <p class="helper-text">Đây là ngày bạn cam kết bắt đầu hành trình cai thuốc.</p>
+      <p class="helper-text">This is the date you commit to start your quit journey.</p>
     </section>
 
     <section class="form-group">
-      <label for="targetDate" class="main-label">3. Đặt ngày mục tiêu</label>
+      <label for="targetDate" class="main-label">3. Set your target date</label>
       <input type="date" id="targetDate" th:field="*{targetDate}" required />
-      <p class="helper-text">Ngày bạn mong muốn sẽ cai thuốc hoàn toàn.</p>
+      <p class="helper-text">The date you aim to be completely smoke-free.</p>
     </section>
 
     <section class="form-group">
-      <label for="stages" class="main-label">4. Chọn phương pháp tiếp cận</label>
+      <label for="stages" class="main-label">4. Choose your approach</label>
       <select id="stages" th:field="*{stages}" required>
-        <option value="" disabled selected>-- Chọn một phương pháp --</option>
-        <option value="gradual">Giảm dần từng bước</option>
-        <option value="coldturkey">Dừng đột ngột (Cold Turkey)</option>
-        <option value="nicotine_replacement">Sử dụng liệu pháp thay thế Nicotine</option>
-        <option value="custom">Tự xây dựng kế hoạch chi tiết</option>
+        <option value="" disabled selected>-- Select an approach --</option>
+        <option value="Gradual reduction">Gradual reduction</option>
+        <option value="Cold turkey (quit abruptly)">Cold turkey (quit abruptly)</option>
+        <option value="Nicotine replacement therapy">Nicotine replacement therapy</option>
+        <option value="Custom">Create a custom detailed plan</option>
       </select>
     </section>
 
     <div id="customPlanContainer">
       <section class="form-group">
-        <label for="customPlan" class="main-label">Kế hoạch chi tiết của bạn</label>
-        <textarea id="customPlan" th:field="*{customPlan}" rows="4" placeholder="Ví dụ: Tuần 1: Chỉ hút sau bữa ăn. Tuần 2: Giảm 3 điếu/ngày..."></textarea>
+        <label for="customPlan" class="main-label">Your detailed plan</label>
+        <textarea id="customPlan" th:field="*{customPlan}" rows="4" placeholder="For example: Week 1: Only smoke after meals. Week 2: Reduce 3 cigarettes per day..."></textarea>
       </section>
     </div>
 
     <section class="button-group">
-      <button type="submit" class="primary-btn">Tạo Kế Hoạch Của Tôi</button>
+      <button type="submit" class="primary-btn">Create My Plan</button>
     </section>
   </form>
 </main>

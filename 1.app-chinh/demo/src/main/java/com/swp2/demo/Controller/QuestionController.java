@@ -42,6 +42,7 @@ public class QuestionController {
             );
         }
 
+        // Extract answers from submitted form data
         public static List<String> extractAnswers(Map<String, String> formData) {
             List<String> answers = new ArrayList<>();
             for (int i = 0; i < 8; i++) {
@@ -51,7 +52,7 @@ public class QuestionController {
         }
     }
 
-    // Inner class for result
+    // Inner class for analysis result
     public static class AnalysisResult {
         public final String analysis;
         public final String recommendation;
@@ -62,7 +63,7 @@ public class QuestionController {
         }
     }
 
-    // Logic phân tích
+    // Analysis logic
     public static AnalysisResult analyze(List<String> answers) {
         int score = 0;
 
@@ -120,14 +121,14 @@ public class QuestionController {
         }
     }
 
-    // GET: hiển thị survey
+    // GET: Show survey form
     @GetMapping("/questionnaire")
     public String showSurveyForm(Model model) {
         model.addAttribute("questions", Question.getDefaultQuestions());
         return "question";
     }
 
-    // POST: xử lý kết quả survey
+    // POST: Process survey results
     @PostMapping("/questionnaire")
     public String handleSurveySubmission(@RequestParam Map<String, String> formData, Model model) {
         List<String> answers = Question.extractAnswers(formData);
