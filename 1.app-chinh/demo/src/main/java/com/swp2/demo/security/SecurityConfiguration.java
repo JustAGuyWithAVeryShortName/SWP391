@@ -43,6 +43,7 @@ public class SecurityConfiguration {
                                 "/member",
                                 "/questionnaire",
                                 "/forgot-password",
+                                "/reset-password",
                              //   "/change-password",
                                 "/about_us").permitAll()
 
