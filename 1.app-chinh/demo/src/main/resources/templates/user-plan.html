@@ -10,9 +10,13 @@
 <body>
 <div class="container" th:if="${plan != null}">
     <header class="header">
-        <h2>Your Dashboard</h2>
+        <a th:href="@{/dashboard}"> <img th:src="@{/images/1.png}" alt="SmokeLite Logo" class="logo" />
+
+        </a>
+        <h2 class="main-title">One Step Closer</h2>
         <p class="motivation-quote">"A journey of a thousand miles begins with a single step."</p>
     </header>
+
 
     <div class="stat-cards" th:if="${stats != null}">
         <div class="card success">

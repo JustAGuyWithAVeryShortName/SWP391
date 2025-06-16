@@ -1,226 +1,152 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Start Your Quit Journey</title>
+  <!-- Load Tailwind CSS via CDN for styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts for a nicer typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --primary-color: #007bff;
-      --success-color: #28a745;
-      --light-gray: #f8f9fa;
-      --dark-gray: #6c757d;
-      --text-color: #343a40;
-      --border-color: #dee2e6;
-      --error-color: #dc3545;
-    }
-
+    /* Use the Inter font family defined in the link above */
     body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      background-color: var(--light-gray);
-      margin: 0;
-      padding: 2rem;
-      color: var(--text-color);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
+      font-family: 'Inter', sans-serif;
     }
-
-    .container {
-      max-width: 650px;
-      width: 100%;
-      margin: auto;
-      background: #fff;
-      padding: 2.5rem;
-      border-radius: 16px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    /* Simple transition for a smoother user experience */
+    .transition-all {
+      transition: all 0.2s ease-in-out;
     }
-
-    h1 {
-      color: var(--text-color);
-      text-align: center;
-      margin-bottom: 0.5rem;
-      font-size: 2rem;
-    }
-
-    .subtitle {
-      text-align: center;
-      color: var(--dark-gray);
-      margin-bottom: 2.5rem;
-    }
-
-    .form-group {
-      margin-bottom: 1.75rem;
-    }
-
-    label.main-label {
-      display: block;
-      margin-bottom: 0.75rem;
-      font-weight: 600;
-      font-size: 1.1rem;
-    }
-
-    .checkbox-group label, .radio-group label {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.75rem;
-      border-radius: 8px;
-      border: 1px solid var(--border-color);
-      margin-bottom: 0.5rem;
-      cursor: pointer;
-      transition: background-color 0.2s, border-color 0.2s;
-    }
-
-    .checkbox-group label:hover, .radio-group label:hover {
-      background-color: #f8f9fa;
-    }
-
-    input[type="checkbox"], input[type="radio"] {
-      width: 1.2em;
-      height: 1.2em;
-      accent-color: var(--primary-color);
-    }
-
-    input[type="date"], select, textarea {
-      width: 100%;
-      padding: 0.8rem 1rem;
-      font-size: 1rem;
-      border-radius: 8px;
-      border: 1px solid var(--border-color);
-      box-sizing: border-box;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
-    }
-
-    .helper-text {
-      font-size: 0.85rem;
-      color: var(--dark-gray);
-      margin-top: 0.5rem;
-    }
-
-    #otherReasonContainer, #customPlanContainer {
-      display: none; /* Hide by default */
-      margin-top: 1rem;
-    }
-
-    .button-group {
-      margin-top: 2.5rem;
-    }
-
-    button.primary-btn {
-      width: 100%;
-      padding: 1rem 1.5rem;
-      font-size: 1.1rem;
-      font-weight: bold;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      background-color: var(--success-color);
-      color: #fff;
-      transition: background-color 0.2s;
-    }
-    button.primary-btn:hover {
-      background-color: #218838;
-    }
-
-    .error-message {
-      color: var(--error-color);
-      background: #f8d7da;
-      border: 1px solid #f5c6cb;
-      padding: 1rem;
-      border-radius: 8px;
-      margin-bottom: 1.5rem;
+    /* Hide the textarea containers by default */
+    #otherReasonContainer,
+    #customPlanContainer {
+      display: none;
     }
   </style>
 </head>
-<body>
-<main class="container">
-  <h1>Start Your New Journey</h1>
-  <p class="subtitle">Let’s create an effective quit smoking plan tailored just for you.</p>
+<body class="bg-slate-100 flex items-center justify-center min-h-screen p-4 sm:p-6 lg:p-8">
 
-  <div th:if="${dateError}" class="error-message">
-    <p th:text="${dateError}">Date error.</p>
+<!-- Main container with modern styling: shadow, rounded corners, etc. -->
+<main class="container bg-white w-full max-w-2xl mx-auto rounded-xl shadow-lg p-6 sm:p-8 lg:p-10">
+  <div class="text-center mb-8">
+    <h1 class="text-3xl sm:text-4xl font-bold text-slate-800">Start Your New Journey</h1>
+    <p class="mt-2 text-slate-600">Let’s create an effective quit smoking plan tailored just for you.</p>
   </div>
 
-  <form th:action="@{/plan/generate}" th:object="${plan}" method="post">
-    <section class="form-group">
-      <label class="main-label">1. What is your motivation?</label>
-      <div class="checkbox-group">
-        <label><input type="checkbox" name="reasons" value="health" /> Improve health</label>
-        <label><input type="checkbox" name="reasons" value="family" /> For family and loved ones</label>
-        <label><input type="checkbox" name="reasons" value="financial" /> Save money</label>
-        <label><input type="checkbox" name="reasons" value="smell" /> Eliminate unpleasant odor</label>
-        <label><input type="checkbox" name="reasons" value="other" id="reasonOtherCheckbox" /> Other reasons</label>
+  <!-- Thymeleaf error message block, styled for better visibility -->
+  <!-- The th:if block will only be rendered by the server if 'dateError' is present -->
+  <div th:if="${dateError}" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-md" role="alert">
+    <p class="font-bold">Error</p>
+    <p th:text="${dateError}">The provided dates are invalid. Please check them and try again.</p>
+  </div>
+
+  <!-- The form itself, with Thymeleaf attributes preserved -->
+  <form th:action="@{/plan/generate}" th:object="${plan}" method="post" class="space-y-8">
+
+    <!-- Fieldset 1: Motivation -->
+    <fieldset>
+      <legend class="text-lg font-semibold text-slate-800 mb-4">1. What is your motivation?</legend>
+      <div class="space-y-3">
+        <!-- Custom styled checkboxes for better UX -->
+        <label class="flex items-center p-4 border border-slate-300 rounded-lg cursor-pointer hover:bg-slate-50 transition-all has-[:checked]:bg-blue-50 has-[:checked]:border-blue-500">
+          <input type="checkbox" name="reasons" value="health" class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"/>
+          <span class="ml-4 text-slate-700">Improve health</span>
+        </label>
+        <label class="flex items-center p-4 border border-slate-300 rounded-lg cursor-pointer hover:bg-slate-50 transition-all has-[:checked]:bg-blue-50 has-[:checked]:border-blue-500">
+          <input type="checkbox" name="reasons" value="family" class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"/>
+          <span class="ml-4 text-slate-700">For family and loved ones</span>
+        </label>
+        <label class="flex items-center p-4 border border-slate-300 rounded-lg cursor-pointer hover:bg-slate-50 transition-all has-[:checked]:bg-blue-50 has-[:checked]:border-blue-500">
+          <input type="checkbox" name="reasons" value="financial" class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"/>
+          <span class="ml-4 text-slate-700">Save money</span>
+        </label>
+        <label class="flex items-center p-4 border border-slate-300 rounded-lg cursor-pointer hover:bg-slate-50 transition-all has-[:checked]:bg-blue-50 has-[:checked]:border-blue-500">
+          <input type="checkbox" name="reasons" value="smell" class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"/>
+          <span class="ml-4 text-slate-700">Eliminate bad smell</span>
+        </label>
+        <label class="flex items-center p-4 border border-slate-300 rounded-lg cursor-pointer hover:bg-slate-50 transition-all has-[:checked]:bg-blue-50 has-[:checked]:border-blue-500">
+          <input type="checkbox" name="reasons" value="other" id="reasonOtherCheckbox" class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"/>
+          <span class="ml-4 text-slate-700">Other reasons</span>
+        </label>
       </div>
-      <div id="otherReasonContainer">
-        <textarea name="reasonDetails" rows="3" placeholder="Please share more about your reasons..."></textarea>
+      <div id="otherReasonContainer" class="mt-4">
+        <textarea name="reasonDetails" rows="3" placeholder="Please share more about your reasons..." class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"></textarea>
       </div>
-    </section>
+    </fieldset>
 
-    <section class="form-group">
-      <label for="startDate" class="main-label">2. Choose your start date</label>
-      <input type="date" id="startDate" th:field="*{startDate}" required />
-      <p class="helper-text">This is the date you commit to start your quit journey.</p>
-    </section>
+    <!-- Fieldset 2: Dates -->
+    <div class="grid sm:grid-cols-2 gap-6">
+      <fieldset>
+        <label for="startDate" class="block text-lg font-semibold text-slate-800 mb-2">2. Choose your start date</label>
+        <input type="date" id="startDate" th:field="*{startDate}" required class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"/>
+        <p class="mt-2 text-sm text-slate-500">The day you commit to start.</p>
+      </fieldset>
+      <fieldset>
+        <label for="targetDate" class="block text-lg font-semibold text-slate-800 mb-2">3. Set your target date</label>
+        <input type="date" id="targetDate" th:field="*{targetDate}" required class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"/>
+        <p class="mt-2 text-sm text-slate-500">Your goal to be smoke-free.</p>
+      </fieldset>
+    </div>
 
-    <section class="form-group">
-      <label for="targetDate" class="main-label">3. Set your target date</label>
-      <input type="date" id="targetDate" th:field="*{targetDate}" required />
-      <p class="helper-text">The date you aim to be completely smoke-free.</p>
-    </section>
-
-    <section class="form-group">
-      <label for="stages" class="main-label">4. Choose your approach</label>
-      <select id="stages" th:field="*{stages}" required>
+    <!-- Fieldset 3: Approach -->
+    <fieldset>
+      <label for="stages" class="block text-lg font-semibold text-slate-800 mb-2">4. Choose your approach</label>
+      <select id="stages" th:field="*{stages}" required class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all bg-white">
         <option value="" disabled selected>-- Select an approach --</option>
         <option value="Gradual reduction">Gradual reduction</option>
-        <option value="Cold turkey (quit abruptly)">Cold turkey (quit abruptly)</option>
+        <option value="Cold turkey">Cold turkey (quit abruptly)</option>
         <option value="Nicotine replacement therapy">Nicotine replacement therapy</option>
         <option value="Custom">Create a custom detailed plan</option>
       </select>
-    </section>
+    </fieldset>
 
+    <!-- Container for the custom plan textarea -->
     <div id="customPlanContainer">
-      <section class="form-group">
-        <label for="customPlan" class="main-label">Your detailed plan</label>
-        <textarea id="customPlan" th:field="*{customPlan}" rows="4" placeholder="For example: Week 1: Only smoke after meals. Week 2: Reduce 3 cigarettes per day..."></textarea>
-      </section>
+      <fieldset>
+        <label for="customPlan" class="block text-lg font-semibold text-slate-800 mb-2">Your detailed plan</label>
+        <textarea id="customPlan" th:field="*{customPlan}" rows="4" placeholder="e.g., Week 1: Only smoke after meals. Week 2: Reduce by 3 cigarettes per day..." class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"></textarea>
+      </fieldset>
     </div>
 
-    <section class="button-group">
-      <button type="submit" class="primary-btn">Create My Plan</button>
-    </section>
+    <!-- Submission Button -->
+    <div class="pt-4">
+      <button type="submit" class="w-full bg-green-600 text-white font-bold text-lg py-3 px-6 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-300 transition-all">
+        Create My Plan
+      </button>
+    </div>
   </form>
 </main>
 
 <script>
-  // UX Improvement: Show/hide textareas based on user selection
-  const reasonOtherCheckbox = document.getElementById('reasonOtherCheckbox');
-  const otherReasonContainer = document.getElementById('otherReasonContainer');
-  reasonOtherCheckbox.addEventListener('change', () => {
-    otherReasonContainer.style.display = reasonOtherCheckbox.checked ? 'block' : 'none';
-  });
+  // This script runs after the document content has been loaded
+  document.addEventListener('DOMContentLoaded', () => {
+    // Get references to the interactive elements
+    const reasonOtherCheckbox = document.getElementById('reasonOtherCheckbox');
+    const otherReasonContainer = document.getElementById('otherReasonContainer');
+    const stagesSelect = document.getElementById('stages');
+    const customPlanContainer = document.getElementById('customPlanContainer');
 
-  const stagesSelect = document.getElementById('stages');
-  const customPlanContainer = document.getElementById('customPlanContainer');
-  stagesSelect.addEventListener('change', () => {
-    customPlanContainer.style.display = stagesSelect.value === 'custom' ? 'block' : 'none';
-  });
+    // Function to toggle the "Other Reason" textarea
+    const toggleOtherReason = () => {
+      otherReasonContainer.style.display = reasonOtherCheckbox.checked ? 'block' : 'none';
+    };
 
-  // On page load, check initial values (in case of form redisplay with errors)
-  if (reasonOtherCheckbox.checked) {
-    otherReasonContainer.style.display = 'block';
-  }
-  if (stagesSelect.value === 'custom') {
-    customPlanContainer.style.display = 'block';
-  }
+    // Function to toggle the "Custom Plan" textarea
+    const toggleCustomPlan = () => {
+      customPlanContainer.style.display = stagesSelect.value === 'Custom' ? 'block' : 'none';
+    };
+
+    // Add event listeners to trigger the toggle functions on user input
+    reasonOtherCheckbox.addEventListener('change', toggleOtherReason);
+    stagesSelect.addEventListener('change', toggleCustomPlan);
+
+    // Run the toggle functions on page load to handle pre-filled forms
+    // (e.g., when the server sends back a form with validation errors)
+    toggleOtherReason();
+    toggleCustomPlan();
+  });
 </script>
 
 </body>

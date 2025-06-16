@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Track Your Progress</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" th:href="@{/css/track-progress.css}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+</head>
+<body>
+<section class="track-progress">
+    <div class="container">
+        <h1><i class="fas fa-chart-line"></i> Track Your Quit Journey</h1>
+        <p class="subtitle">Monitor how far you’ve come and stay motivated every step of the way.</p>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <i class="fas fa-calendar-check icon"></i>
+                <h3>Smoke-Free Days</h3>
+                <p th:text="${daysSinceQuit} + ' days'">0 days</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-dollar-sign icon"></i>
+                <h3>Money Saved</h3>
+                <p th:text="${moneySaved}">$0</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-smoking-ban icon"></i>
+                <h3>Cigarettes Avoided</h3>
+                <p th:text="${cigarettesAvoided}">0</p>
+            </div>
+        </div>
+
+        <div class="info-grid">
+            <div class="info-card">
+                <h2><i class="fas fa-heartbeat"></i> Health Progress</h2>
+                <p th:text="${healthProgress}">Your body is healing...</p>
+            </div>
+
+            <div class="info-card">
+                <h2><i class="fas fa-flag-checkered"></i> Milestones Achieved</h2>
+                <ul>
+                    <li th:each="milestone : ${milestones}" th:text="milestone">Sample milestone</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>
