@@ -1,5 +1,8 @@
 package com.swp2.demo.Controller;
 
+import com.swp2.demo.entity.Question;
+import com.swp2.demo.Repository.QuestionRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,48 +14,36 @@ import java.util.*;
 @Controller
 public class QuestionController {
 
-    // Inner class Question
-    public static class Question {
-        private final String questionText;
-        private final List<String> options;
+    @Autowired
+    private QuestionRepository questionRepository;
 
-        public Question(String questionText, List<String> options) {
-            this.questionText = questionText;
-            this.options = options;
-        }
-
-        public String getQuestionText() {
-            return questionText;
-        }
-
-        public List<String> getOptions() {
-            return options;
-        }
-
-        public static List<Question> getDefaultQuestions() {
-            return List.of(
-                    new Question("How old are you?", List.of("Under 18", "18-24", "25-34", "35-44", "45+")),
-                    new Question("How many cigarettes do you smoke per day?", List.of("None, I don't smoke daily", "1-5", "6-10", "11-20", "More than 20")),
-                    new Question("At what age did you start smoking?", List.of("Under 16", "16-18", "19-25", "Over 25")),
-                    new Question("How much money do you spend on cigarettes per week?", List.of("Less than 50,000 VND", "50,000 - 150,000 VND", "150,000 - 300,000 VND", "More than 300,000 VND")),
-                    new Question("Have you tried to quit smoking before?", List.of("Yes, multiple times", "Yes, once", "No, I have never tried")),
-                    new Question("Do you smoke more when you're stressed?", List.of("Yes, significantly more", "Yes, slightly more", "No, about the same", "I smoke less when stressed")),
-                    new Question("Do you smoke indoors or outdoors?", List.of("Primarily indoors", "Primarily outdoors", "Both equally")),
-                    new Question("Do you live with someone who also smokes?", List.of("Yes", "No"))
-            );
-        }
-
-        // Extract answers from submitted form data
-        public static List<String> extractAnswers(Map<String, String> formData) {
-            List<String> answers = new ArrayList<>();
-            for (int i = 0; i < 8; i++) {
-                answers.add(formData.get("answer" + i));
-            }
-            return answers;
-        }
+    // GET: Hiển thị form câu hỏi từ database
+    @GetMapping("/questionnaire")
+    public String showSurveyForm(Model model) {
+        List<Question> questions = questionRepository.findAll();
+        model.addAttribute("questions", questions);
+        return "question";  // Thymeleaf template question.html
     }
 
-    // Inner class for analysis result
+    // POST: Xử lý câu trả lời và hiển thị kết quả
+    @PostMapping("/questionnaire")
+    public String handleSurveySubmission(@RequestParam Map<String, String> formData, Model model) {
+        List<String> answers = new ArrayList<>();
+        for (int i = 0; i < formData.size(); i++) {
+            answers.add(formData.get("answer" + i));
+        }
+        AnalysisResult result = analyze(answers);
+
+        List<Question> questions = questionRepository.findAll();
+        model.addAttribute("questions", questions);
+        model.addAttribute("answers", answers);
+        model.addAttribute("analysisResult", result.analysis);
+        model.addAttribute("recommendation", result.recommendation);
+
+        return "result";  // Thymeleaf template result.html
+    }
+
+    // Class phân tích kết quả
     public static class AnalysisResult {
         public final String analysis;
         public final String recommendation;
@@ -63,9 +54,10 @@ public class QuestionController {
         }
     }
 
-    // Analysis logic
-    public static AnalysisResult analyze(List<String> answers) {
+    // Phân tích điểm từ câu trả lời
+    private static AnalysisResult analyze(List<String> answers) {
         int score = 0;
+        if (answers.size() < 8) return new AnalysisResult("Invalid", "Not enough data to analyze.");
 
         String dailyCigarettes = answers.get(1);
         switch (dailyCigarettes) {
@@ -106,39 +98,18 @@ public class QuestionController {
         if (score >= 10) {
             return new AnalysisResult(
                     "Very High Dependence Level",
-                    "Based on your answers, your level of tobacco dependence is very high. This poses a serious risk to your health. We strongly recommend seeking professional support from our coach as soon as possible."
+                    "Based on your answers, your level of tobacco dependence is very high. We strongly recommend seeking professional support as soon as possible."
             );
         } else if (score >= 6) {
             return new AnalysisResult(
                     "Moderate Dependence Level",
-                    "You show signs of tobacco dependence. Consider setting a clear quit plan and finding support early before your dependence deepens."
+                    "You show signs of tobacco dependence. Consider finding support early before your dependence deepens."
             );
         } else {
             return new AnalysisResult(
                     "Low Dependence Level",
-                    "Your level of dependence appears low. This is a great opportunity to quit completely and protect your health for the long term."
+                    "Your level of dependence appears low. This is a great opportunity to quit completely and protect your health long-term."
             );
         }
-    }
-
-    // GET: Show survey form
-    @GetMapping("/questionnaire")
-    public String showSurveyForm(Model model) {
-        model.addAttribute("questions", Question.getDefaultQuestions());
-        return "question";
-    }
-
-    // POST: Process survey results
-    @PostMapping("/questionnaire")
-    public String handleSurveySubmission(@RequestParam Map<String, String> formData, Model model) {
-        List<String> answers = Question.extractAnswers(formData);
-        AnalysisResult result = analyze(answers);
-
-        model.addAttribute("questions", Question.getDefaultQuestions());
-        model.addAttribute("answers", answers);
-        model.addAttribute("analysisResult", result.analysis);
-        model.addAttribute("recommendation", result.recommendation);
-
-        return "result";
     }
 }
