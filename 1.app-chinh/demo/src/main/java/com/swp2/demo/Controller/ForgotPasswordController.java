@@ -6,6 +6,7 @@ import com.swp2.demo.entity.PasswordResetToken;
 import com.swp2.demo.entity.User;
 import com.swp2.demo.service.EmailService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,17 +28,22 @@ public class ForgotPasswordController {
 
     @Autowired
     private EmailService emailService;
+
     @GetMapping("/forgot-password")
     public String showForgotPasswordForm() {
-        return "forgot-password"; // tên file Thymeleaf template = forgot-password.html
+        return "forgot-password"; // tên file Thymeleaf template
     }
 
-
+    @Transactional
     @PostMapping("/forgot-password")
     public String processForgotPassword(@RequestParam("email") String email, Model model, HttpServletRequest request) {
         User user = userRepository.findByEmail(email);
 
         if (user != null) {
+            // ✅ Xóa các token cũ của user này (nếu muốn mỗi lần chỉ có 1 token đang hoạt động)
+            tokenRepository.deleteByUserId(user.getId());
+
+            // ✅ Tạo token mới
             String token = UUID.randomUUID().toString();
 
             PasswordResetToken passwordResetToken = new PasswordResetToken();
@@ -46,15 +52,17 @@ public class ForgotPasswordController {
             passwordResetToken.setExpiryDate(LocalDateTime.now().plusHours(2));
             tokenRepository.save(passwordResetToken);
 
-            String resetUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + "/reset-password?token=" + token;
+            // ✅ Tạo URL reset
+            String resetUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
+                    + "/reset-password?token=" + token;
             String content = "Để đặt lại mật khẩu, vui lòng nhấn vào liên kết sau:\n" + resetUrl;
 
             emailService.sendEmail(user.getEmail(), "Đặt lại mật khẩu", content);
-
             model.addAttribute("message", "Đã gửi email đặt lại mật khẩu!");
         } else {
-            model.addAttribute("error", "Không tìm thấy email.");
+            model.addAttribute("error", "Không tìm thấy tài khoản với email này.");
         }
-        return "forgot-password"; // Thymeleaf template
+
+        return "forgot-password";
     }
 }
