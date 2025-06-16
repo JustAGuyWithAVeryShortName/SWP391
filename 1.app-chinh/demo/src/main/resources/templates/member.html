@@ -40,35 +40,40 @@
     <div class="plans">
         <div class="plan">
             <h3>Basic</h3>
-            <div class="price">₫100,000 / 1 month</div>
+            <div class="price">Free</div>
             <ul>
                 <li>Access basic features</li>
                 <li>Email support</li>
                 <li>Community Forum</li>
             </ul>
-            <button>Register</button>
         </div>
 
         <div class="plan">
             <h3>Premium</h3>
-            <div class="price">₫250,000 / 3 months</div>
+            <div class="price">₫5,000 / tháng</div>
             <ul>
                 <li>All Basic features</li>
                 <li>Progress Tracker</li>
                 <li>Exclusive Resources</li>
             </ul>
-            <button>Register</button>
+            <form action="/pay" method="get">
+                <input type="hidden" name="amount" value="5000" />
+                <button type="submit">Register</button>
+            </form>
         </div>
 
         <div class="plan">
             <h3>VIP</h3>
-            <div class="price">₫500,000 / 6 months</div>
+            <div class="price">₫10,000 / tháng</div>
             <ul>
                 <li>All Premium features</li>
                 <li>1:1 Live Coaching</li>
                 <li>Priority Support</li>
             </ul>
-            <button>Register</button>
+            <form action="/pay" method="get">
+                <input type="hidden" name="amount" value="10000" />
+                <button type="submit">Register</button>
+            </form>
         </div>
     </div>
 </section>
