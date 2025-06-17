@@ -28,6 +28,16 @@ CREATE TABLE question_option (
     question_id INT FOREIGN KEY REFERENCES question(id),
     option_text NVARCHAR(255) NOT NULL
 );
+CREATE TABLE user_answer (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    user_id INT NOT NULL FOREIGN KEY REFERENCES Users(user_id),
+    question_id INT NOT NULL FOREIGN KEY REFERENCES question(id),
+    option_id INT NOT NULL FOREIGN KEY REFERENCES question_option(id),
+    created_at DATETIME DEFAULT GETDATE()
+);
+
+
+
 
 -- Bảng kế hoạch bỏ thuốc
 CREATE TABLE quit_plan (
@@ -126,6 +136,16 @@ INSERT INTO Users (username, password, email, first_name, last_name, role)
 VALUES
 ('admin', '123', 'admin@example.com', 'Admin', 'User', 'Admin');
 
- drop table password_reset_token
+ drop table user_answer
  select * from password_reset_token
- select * from Users
+ select * from user_answer
+
+DELETE FROM user_answer WHERE question_id IN (SELECT id FROM question);
+DELETE FROM question_option WHERE question_id IN (SELECT id FROM question);
+DELETE FROM question;
+
+
+ SELECT q.id AS question_id, q.question_text, o.id AS option_id, o.option_text
+FROM question q
+JOIN question_option o ON q.id = o.question_id
+ORDER BY q.id, o.id;
