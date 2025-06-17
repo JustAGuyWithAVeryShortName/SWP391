@@ -1,6 +1,11 @@
 package com.swp2.demo.Controller;
 
+
+import com.swp2.demo.entity.QuitPlan;
+import com.swp2.demo.entity.User;
+import com.swp2.demo.service.QuitPlanService;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +28,9 @@ import java.util.stream.Collectors;
  */
 @Controller
 public class QuitPlanController {
+
+    @Autowired
+    private QuitPlanService quitPlanService;
 
     /**
      * Show the form for the user to enter quit smoking plan details.
@@ -59,30 +67,31 @@ public class QuitPlanController {
                                        HttpSession session,
                                        RedirectAttributes redirectAttributes) {
 
-        // Aggregate and process reasons from form
-        populatePlanFromRequest(plan, reasons, reasonDetails);
 
+        populatePlanFromRequest(plan, reasons, reasonDetails);
         // --- Validation ---
         if (plan.getStartDate() != null && plan.getTargetDate() != null &&
                 plan.getTargetDate().isBefore(plan.getStartDate())) {
-            // Target date must be same or after start date
             redirectAttributes.addFlashAttribute("dateError", "Target date must be the same as or after the start date.");
-            redirectAttributes.addFlashAttribute("plan", plan); // Send back entered data
+            redirectAttributes.addFlashAttribute("plan", plan);
             return "redirect:/quit-plan";
         }
 
-        // --- Automatically generate suggested plan content ---
-        // If user didn't enter custom plan and stage is not "custom"
         if ((plan.getCustomPlan() == null || plan.getCustomPlan().isBlank()) && !"custom".equals(plan.getStages())) {
             String suggestion = generatePlanSuggestion(plan);
             plan.setCustomPlan(suggestion);
         }
 
-        // --- Save plan to session ---
-        // Important to keep user-specific state
-        session.setAttribute("userQuitPlan", plan);
+        User user = (User) session.getAttribute("loggedInUser");
+        if (user == null) {
+            System.out.println("⚠️ User in session is NULL");
+        }
+        plan.setUser(user);
+        quitPlanService.save(plan);
 
-        // Redirect to dashboard to prevent form resubmission on refresh
+
+
+        session.setAttribute("userQuitPlan", plan);
         return "redirect:/user/plan";
     }
 
@@ -240,7 +249,7 @@ public class QuitPlanController {
 
     /**
      * Represents a user's quit smoking plan.
-     */
+
     public static class QuitPlan {
         private List<String> reasons = new ArrayList<>();
         private LocalDate startDate;
@@ -259,7 +268,7 @@ public class QuitPlanController {
         public void setStages(String stages) { this.stages = stages; }
         public String getCustomPlan() { return customPlan; }
         public void setCustomPlan(String customPlan) { this.customPlan = customPlan; }
-    }
+    }/
 
     /**
      * Dashboard statistics record.

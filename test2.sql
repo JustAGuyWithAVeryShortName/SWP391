@@ -36,27 +36,24 @@ CREATE TABLE user_answer (
     created_at DATETIME DEFAULT GETDATE()
 );
 
-
-
-
-/*-- Bảng kế hoạch bỏ thuốc
+-- Bảng chính lưu kế hoạch bỏ thuốc
 CREATE TABLE quit_plan (
     id BIGINT PRIMARY KEY IDENTITY(1,1),
-    user_id INT NOT NULL,
     start_date DATE,
     target_date DATE,
-    stages NVARCHAR(100),
-    custom_plan NVARCHAR(MAX),
-    CONSTRAINT FK_QuitPlan_User FOREIGN KEY (user_id) REFERENCES Users(user_id)
+    stages NVARCHAR(255),
+    custom_plan NVARCHAR(2000),
+    user_id INT,
+    CONSTRAINT FK_quit_plan_user FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
 
--- Bảng lý do bỏ thuốc, liên kết với quit_plan
-CREATE TABLE quit_reason (
-    id BIGINT PRIMARY KEY IDENTITY(1,1),
+-- Bảng phụ lưu danh sách lý do (1 kế hoạch có nhiều lý do)
+CREATE TABLE quit_plan_reasons (
     plan_id BIGINT NOT NULL,
-    reason_text NVARCHAR(255) NOT NULL,
-    CONSTRAINT FK_QuitReason_QuitPlan FOREIGN KEY (plan_id) REFERENCES quit_plan(id)
-);*/
+    reason NVARCHAR(255) NOT NULL,
+    CONSTRAINT FK_quit_plan_reasons_plan FOREIGN KEY (plan_id) REFERENCES quit_plan(id) ON DELETE CASCADE
+);
+
 
 
 
@@ -144,7 +141,28 @@ DELETE FROM question_option WHERE question_id IN (SELECT id FROM question);
 DELETE FROM question;
 
 
+
+-- xem question
  SELECT q.id AS question_id, q.question_text, o.id AS option_id, o.option_text
 FROM question q
 JOIN question_option o ON q.id = o.question_id
 ORDER BY q.id, o.id;
+
+
+-- Xem quit plan
+DELETE FROM quit_plan WHERE user_id IS NULL;
+
+SELECT 
+    qp.id AS plan_id,
+    qp.start_date,
+    qp.target_date,
+    qp.stages,
+    qp.custom_plan,
+    qp.user_id,
+    qpr.reason
+FROM 
+    quit_plan qp
+LEFT JOIN 
+    quit_plan_reasons qpr ON qp.id = qpr.plan_id
+ORDER BY 
+    qp.id;

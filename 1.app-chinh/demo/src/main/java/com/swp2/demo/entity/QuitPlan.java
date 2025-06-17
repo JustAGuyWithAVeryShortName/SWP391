@@ -15,20 +15,20 @@ public class QuitPlan {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;  // Nếu bạn có entity User
-
+    @ElementCollection
+    @CollectionTable(name = "quit_plan_reasons", joinColumns = @JoinColumn(name = "plan_id"))
+    @Column(name = "reason")
+    private List<String> reasons;
     private LocalDate startDate;
     private LocalDate targetDate;
     private String stages;
 
-    @Lob
-    @Column(columnDefinition = "TEXT")
+    @Column(length = 2000)
     private String customPlan;
 
-    @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL)
-    private List<QuitReason> reasons = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public Long getId() {
         return id;
@@ -38,12 +38,12 @@ public class QuitPlan {
         this.id = id;
     }
 
-    public User getUser() {
-        return user;
+    public List<String> getReasons() {
+        return reasons;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setReasons(List<String> reasons) {
+        this.reasons = reasons;
     }
 
     public LocalDate getStartDate() {
@@ -78,11 +78,11 @@ public class QuitPlan {
         this.customPlan = customPlan;
     }
 
-    public List<QuitReason> getReasons() {
-        return reasons;
+    public User getUser() {
+        return user;
     }
 
-    public void setReasons(List<QuitReason> reasons) {
-        this.reasons = reasons;
+    public void setUser(User user) {
+        this.user = user;
     }
 }
