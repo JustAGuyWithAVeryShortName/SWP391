@@ -1,8 +1,13 @@
 package com.swp2.demo.Controller;
 
-import com.swp2.demo.entity.Question;
+import com.swp2.demo.Repository.OptionRepository;
 import com.swp2.demo.Repository.QuestionRepository;
+import com.swp2.demo.Repository.UserAnswerRepository;
+import com.swp2.demo.entity.*;
+import com.swp2.demo.security.CustomUserDetails;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +21,10 @@ public class QuestionController {
 
     @Autowired
     private QuestionRepository questionRepository;
+    @Autowired
+    private OptionRepository questionOptionRepository;
+    @Autowired
+    private UserAnswerRepository userAnswerRepository;
 
     // GET: Hiển thị form câu hỏi từ database
     @GetMapping("/questionnaire")
@@ -25,25 +34,57 @@ public class QuestionController {
         return "question";  // Thymeleaf template question.html
     }
 
-    // POST: Xử lý câu trả lời và hiển thị kết quả
+    // POST: Xử lý câu trả lời và lưu xuống database
     @PostMapping("/questionnaire")
-    public String handleSurveySubmission(@RequestParam Map<String, String> formData, Model model) {
-        List<String> answers = new ArrayList<>();
-        for (int i = 0; i < formData.size(); i++) {
-            answers.add(formData.get("answer" + i));
+    @Transactional
+    public String handleSurveySubmission(@RequestParam Map<String, String> formData,
+                                         @AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                         Model model) {
+
+        if(customUserDetails == null){
+            return "redirect:/login";
         }
-        AnalysisResult result = analyze(answers);
+
+
+        User user = customUserDetails.getUser(); // Lấy user đang đăng nhập
+
+        userAnswerRepository.deleteByUser(user);
+        List<Question> questions1 = questionRepository.findAll();
+
+        questions1.sort(Comparator.comparing(Question::getId)); // hoặc theo thứ tự bạn mong muốn
+
 
         List<Question> questions = questionRepository.findAll();
+        List<UserAnswer> userAnswers = new ArrayList<>();
+
+        List<String> selectedOptionTexts = new ArrayList<>();
+
+        for (Question question : questions) {
+            String optionIdStr = formData.get("answer" + question.getId());
+            if (optionIdStr != null) {
+                Long optionId = Long.parseLong(optionIdStr);
+                Option option = questionOptionRepository.findById(optionId).orElse(null);
+                if (option != null) {
+                    UserAnswer answer = new UserAnswer(user, question, option);
+                    userAnswers.add(answer);
+                    selectedOptionTexts.add(option.getOptionText());
+                }
+            }
+        }
+
+        userAnswerRepository.saveAll(userAnswers);
+
+        // Phân tích kết quả
+        AnalysisResult result = analyze(selectedOptionTexts);
+
         model.addAttribute("questions", questions);
-        model.addAttribute("answers", answers);
+        model.addAttribute("answers", selectedOptionTexts);
         model.addAttribute("analysisResult", result.analysis);
         model.addAttribute("recommendation", result.recommendation);
 
         return "result";  // Thymeleaf template result.html
     }
 
-    // Class phân tích kết quả
     public static class AnalysisResult {
         public final String analysis;
         public final String recommendation;
@@ -54,7 +95,6 @@ public class QuestionController {
         }
     }
 
-    // Phân tích điểm từ câu trả lời
     private static AnalysisResult analyze(List<String> answers) {
         int score = 0;
         if (answers.size() < 8) return new AnalysisResult("Invalid", "Not enough data to analyze.");
@@ -96,20 +136,33 @@ public class QuestionController {
         if ("Yes".equals(answers.get(7))) score += 1;
 
         if (score >= 10) {
-            return new AnalysisResult(
-                    "Very High Dependence Level",
-                    "Based on your answers, your level of tobacco dependence is very high. We strongly recommend seeking professional support as soon as possible."
-            );
+            return new AnalysisResult("Very High Dependence Level", "We strongly recommend seeking professional support as soon as possible.");
         } else if (score >= 6) {
-            return new AnalysisResult(
-                    "Moderate Dependence Level",
-                    "You show signs of tobacco dependence. Consider finding support early before your dependence deepens."
-            );
+            return new AnalysisResult("Moderate Dependence Level", "You show signs of tobacco dependence. Consider finding support early.");
         } else {
-            return new AnalysisResult(
-                    "Low Dependence Level",
-                    "Your level of dependence appears low. This is a great opportunity to quit completely and protect your health long-term."
-            );
+            return new AnalysisResult("Low Dependence Level", "Your dependence appears low. This is a great opportunity to quit completely.");
         }
     }
+
+    @PostMapping("/addQuestion")
+    public String addQuestion(@RequestParam String questionText,
+                              @RequestParam List<String> optionTexts) {
+
+        Question question = new Question();
+        question.setQuestionText(questionText);
+
+        for (String text : optionTexts) {
+            if (text != null && !text.trim().isEmpty()) {
+                Option option = new Option();
+                option.setOptionText(text);
+                option.setQuestion(question);     // Thiết lập liên kết với Question
+                question.getOptions().add(option);
+            }
+        }
+
+        questionRepository.save(question); // Hibernate tự xử lý insert cả Question và Option
+
+        return "redirect:/questionnaire";  // Quay về form câu hỏi sau khi thêm xong
+    }
+
 }

@@ -13,8 +13,8 @@ public class Option {
     @Column(name = "option_text")
     private String optionText;
 
-    @ManyToOne
-    @JoinColumn(name = "question_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "question_id", nullable = false)
     private Question question;
 
     public Option() {

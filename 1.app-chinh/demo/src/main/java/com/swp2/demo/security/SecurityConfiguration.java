@@ -48,6 +48,7 @@ public class SecurityConfiguration {
                                 "/about_us").permitAll()
 
                         .requestMatchers("/admin/**").hasAuthority("Admin")
+                        .requestMatchers("/questionnaire").authenticated()
 
 
                         .anyRequest().authenticated()

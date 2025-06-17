@@ -36,7 +36,7 @@
 
             <div th:each="option : ${q.options}">
                 <label>
-                    <input type="radio" th:name="${'answer' + iterStat.index}" th:value="${option}" required />
+                    <input type="radio" th:name="${'answer' + q.id}" th:value="${option.id}" required />
                     <span th:text="${option.getOptionText()}"></span>
                 </label>
             </div>

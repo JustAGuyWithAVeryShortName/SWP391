@@ -4,6 +4,7 @@ package com.swp2.demo.service;
 import com.swp2.demo.Repository.UserRepository;
 import com.swp2.demo.entity.Role;
 import com.swp2.demo.entity.User;
+import com.swp2.demo.security.CustomUserDetails;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -43,16 +44,17 @@ public class UserServiceImpl implements UserService {
         if(user == null){
             throw new UsernameNotFoundException("Invalid username or password.");
         }
-        return new org.springframework.security.core.userdetails.User(
+       /* return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
-                rolesToAuthorities(user.getRole())
-        );
+                rolesToAuthorities(user.getRole())*/
+        return new CustomUserDetails(user);
+
     }
 
-    private Collection<? extends GrantedAuthority> rolesToAuthorities(Role role){
+    /*private Collection<? extends GrantedAuthority> rolesToAuthorities(Role role){
         return List.of(new SimpleGrantedAuthority(role.name()));
-    }
+    }*/
 
     @Override
     public void save(User user) {
