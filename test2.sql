@@ -39,7 +39,7 @@ CREATE TABLE user_answer (
 
 
 
--- Bảng kế hoạch bỏ thuốc
+/*-- Bảng kế hoạch bỏ thuốc
 CREATE TABLE quit_plan (
     id BIGINT PRIMARY KEY IDENTITY(1,1),
     user_id INT NOT NULL,
@@ -56,7 +56,7 @@ CREATE TABLE quit_reason (
     plan_id BIGINT NOT NULL,
     reason_text NVARCHAR(255) NOT NULL,
     CONSTRAINT FK_QuitReason_QuitPlan FOREIGN KEY (plan_id) REFERENCES quit_plan(id)
-);
+);*/
 
 
 
@@ -128,8 +128,6 @@ INSERT INTO question_option (question_id, option_text) VALUES
 
 
 
-INSERT INTO password_reset_token (token, user_id, expiry_date)
-VALUES ('9f3c75c2-91a4-4d13-aea4-78d021cd3f90', 1, DATEADD(HOUR, 2, GETDATE()));
 
 
 INSERT INTO Users (username, password, email, first_name, last_name, role)
@@ -139,6 +137,7 @@ VALUES
  drop table user_answer
  select * from password_reset_token
  select * from user_answer
+  select * from Users
 
 DELETE FROM user_answer WHERE question_id IN (SELECT id FROM question);
 DELETE FROM question_option WHERE question_id IN (SELECT id FROM question);
