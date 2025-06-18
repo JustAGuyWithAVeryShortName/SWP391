@@ -48,7 +48,7 @@ public class PaymentController {
     private String storeId;
 
 
-    @GetMapping("/")
+    @GetMapping("/payment")
     public String home() {
         return "payment";
     }
