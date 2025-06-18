@@ -1,10 +1,10 @@
 package com.swp2.demo.web;
 
+import com.swp2.demo.entity.Gender;
 import jakarta.persistence.Column;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
+
+import java.time.LocalDate;
 
 public class RegisterUser {
 // NoyBlank ko dc bỏ trống
@@ -27,15 +27,24 @@ public class RegisterUser {
     @NotBlank(message = "thông tin bắt buộc")
     private String lastName;
 
+    @NotNull(message = "Gender is required")
+    private Gender gender;
+
+    @NotNull(message = "Date of birth is required")
+    @PastOrPresent(message = "Date of birth cannot be in the future")
+    private LocalDate dateOfBirth;
+
     public RegisterUser() {
     }
 
-    public RegisterUser(String username, String password, String email, String firstName, String lastName) {
+    public RegisterUser(String username, String password, String email, String firstName, String lastName, Gender gender, LocalDate dateOfBirth) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.gender = gender;
+        this.dateOfBirth = dateOfBirth;
     }
 
     public String getUsername() {
@@ -76,5 +85,21 @@ public class RegisterUser {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
+
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
     }
 }

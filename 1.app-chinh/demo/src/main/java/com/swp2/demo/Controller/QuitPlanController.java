@@ -247,28 +247,6 @@ public class QuitPlanController {
     // DATA CLASSES (DTOs)
     // ===================================================================================
 
-    /**
-     * Represents a user's quit smoking plan.
-
-    public static class QuitPlan {
-        private List<String> reasons = new ArrayList<>();
-        private LocalDate startDate;
-        private LocalDate targetDate;
-        private String stages;
-        private String customPlan;
-
-        // Getters and setters
-        public List<String> getReasons() { return reasons; }
-        public void setReasons(List<String> reasons) { this.reasons = reasons; }
-        public LocalDate getStartDate() { return startDate; }
-        public void setStartDate(LocalDate startDate) { this.startDate = startDate; }
-        public LocalDate getTargetDate() { return targetDate; }
-        public void setTargetDate(LocalDate targetDate) { this.targetDate = targetDate; }
-        public String getStages() { return stages; }
-        public void setStages(String stages) { this.stages = stages; }
-        public String getCustomPlan() { return customPlan; }
-        public void setCustomPlan(String customPlan) { this.customPlan = customPlan; }
-    }/
 
     /**
      * Dashboard statistics record.

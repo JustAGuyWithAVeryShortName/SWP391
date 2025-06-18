@@ -1,6 +1,7 @@
 package com.swp2.demo.Controller;
 
 import com.swp2.demo.entity.Role;
+
 import com.swp2.demo.entity.User;
 import com.swp2.demo.service.UserService;
 import com.swp2.demo.web.RegisterUser;
@@ -74,6 +75,8 @@ public class RegisterController {
         user.setEmail(registerUser.getEmail());
         user.setFirstName(registerUser.getFirstName());
         user.setLastName(registerUser.getLastName());
+        user.setGender(registerUser.getGender());
+        user.setDateOfBirth(registerUser.getDateOfBirth());
 
 
         user.setRole(Role.Guest);  // hoặc Role.Guest nếu bạn dùng enum dạng đó

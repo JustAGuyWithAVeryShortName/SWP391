@@ -25,11 +25,11 @@ body {
 
 .login-container {
     background: white;
-    padding: 2.5rem;
+    padding: 2rem;
     border-radius: 15px;
     box-shadow: var(--shadow-light);
     width: 100%;
-    max-width: 400px;
+    max-width: 450px;
     animation: fadeIn 0.5s ease-in-out;
 }
 

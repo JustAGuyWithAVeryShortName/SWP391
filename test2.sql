@@ -8,9 +8,11 @@ CREATE TABLE Users (
     email VARCHAR(100) UNIQUE NOT NULL,
     first_name VARCHAR(50),
     last_name VARCHAR(50),
+	gender VARCHAR(10) CHECK (gender IN ('Male', 'Female')),
+    date_of_birth DATE,
     role VARCHAR(10) NOT NULL DEFAULT 'Guest' CHECK (role IN ('Guest', 'Member', 'Coach', 'Admin'))
-    
 );
+
 CREATE TABLE password_reset_token (
     id BIGINT PRIMARY KEY IDENTITY(1,1),
     token NVARCHAR(255) NOT NULL,
@@ -131,7 +133,7 @@ INSERT INTO Users (username, password, email, first_name, last_name, role)
 VALUES
 ('admin', '123', 'admin@example.com', 'Admin', 'User', 'Admin');
 
- drop table user_answer
+ drop table Users
  select * from password_reset_token
  select * from user_answer
   select * from Users

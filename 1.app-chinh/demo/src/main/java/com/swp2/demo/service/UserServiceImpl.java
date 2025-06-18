@@ -44,17 +44,11 @@ public class UserServiceImpl implements UserService {
         if(user == null){
             throw new UsernameNotFoundException("Invalid username or password.");
         }
-       /* return new org.springframework.security.core.userdetails.User(
-                user.getUsername(),
-                user.getPassword(),
-                rolesToAuthorities(user.getRole())*/
+
         return new CustomUserDetails(user);
 
     }
 
-    /*private Collection<? extends GrantedAuthority> rolesToAuthorities(Role role){
-        return List.of(new SimpleGrantedAuthority(role.name()));
-    }*/
 
     @Override
     public void save(User user) {

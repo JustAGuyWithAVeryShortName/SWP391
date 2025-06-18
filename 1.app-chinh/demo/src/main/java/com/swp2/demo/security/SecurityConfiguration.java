@@ -54,7 +54,9 @@ public class SecurityConfiguration {
                                 "/about_us").permitAll()
 
                         .requestMatchers("/admin/**").hasAuthority("Admin")
-                        .requestMatchers("/questionnaire").authenticated()
+                        .requestMatchers("/questionnaire",
+                                           "/profile"
+                        ).authenticated()
 
 
                         .anyRequest().authenticated()
@@ -68,13 +70,14 @@ public class SecurityConfiguration {
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/login")
-                        .defaultSuccessUrl("/dashboard" , true)
+                        .successHandler(customAuthenticationSuccessHandler)
                 ) .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/home?home")
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
                         .permitAll());
+
 
 
         return http.build();
