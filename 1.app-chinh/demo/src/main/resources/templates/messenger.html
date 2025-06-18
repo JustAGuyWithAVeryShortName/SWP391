@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messenger | Cải tiến bởi Gemini</title>
+    <link rel="stylesheet" th:href="@{/css/messenger.css}">
+</head>
+<body>
+<div class="chat-app">
+
+    <aside class="sidebar">
+        <header class="sidebar-header">
+            <button class="icon-button" aria-label="Menu">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+            <form class="search-form" role="search">
+                <input type="search" class="search-bar" placeholder="Tìm kiếm tin nhắn...">
+            </form>
+        </header>
+
+        <div class="sidebar-toolbar">
+            <div class="dropdown">
+                <span>Tất cả tin nhắn</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+        </div>
+
+        <div class="conversation-list" role="list">
+            <div th:each="conv : ${conversations}"
+                 class="conversation-item"
+                 th:classappend="${conv.isActive} ? 'active' : ''"
+                 th:attr="data-conversation-id=${conv.id}"
+                 role="listitem">
+                <div class="avatar-container">
+                    <img th:src="${conv.partner.avatarUrl}" alt="Avatar" class="avatar">
+                    <span class="status-dot" th:classappend="${conv.partner.isOnline} ? 'online' : ''"></span>
+                </div>
+                <div class="conversation-details">
+                    <div class="conversation-header">
+                        <h3 th:text="${conv.partner.name}">Tên người dùng</h3>
+                        <span th:text="${conv.time}" class="time">9:30pm</span>
+                    </div>
+                    <div class="conversation-footer">
+                        <p th:text="${conv.lastMessage}" class="last-message">Đây là tin nhắn cuối...</p>
+                        <svg th:if="${conv.isStarred}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" class="star-icon"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="chat-area">
+        <header class="chat-header" th:if="${activeConversationPartner}" th:object="${activeConversationPartner}">
+            <button class="icon-button back-button" aria-label="Quay lại danh sách">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            </button>
+            <div class="avatar-container">
+                <img th:src="*{avatarUrl}" alt="Avatar" class="avatar">
+                <span class="status-dot" th:classappend="*{isOnline} ? 'online' : ''"></span>
+            </div>
+            <div class="chat-header-info">
+                <h2 th:text="*{name}">Marzia Mithila</h2>
+                <span class="user-status" th:text="*{isOnline} ? 'Đang hoạt động' : 'Ngoại tuyến'">Đang hoạt động</span>
+            </div>
+            <div class="chat-header-actions">
+                <button class="icon-button" aria-label="Gọi video">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+                </button>
+                <button class="icon-button" aria-label="Gọi thoại">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                </button>
+                <button class="icon-button" aria-label="Tùy chọn khác">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+                </button>
+            </div>
+        </header>
+
+        <div class="messages-container" role="log">
+            <th:block th:each="msg, iterStat : ${messages}">
+                <div th:if="${iterStat.first or !messages[iterStat.index-1].timestamp.toLocalDate().isEqual(msg.timestamp.toLocalDate())}"
+                     class="date-separator">
+                    <span th:text="${#temporals.format(msg.timestamp, 'eeee, dd MMMM yyyy')}"></span>
+                </div>
+
+                <div class="message-group" th:classappend="${msg.senderId == currentUser.id ? 'sent' : 'received'}" th:attr="data-sender-id=${msg.senderId}">
+                    <img th:if="${msg.senderId != currentUser.id}" th:src="${msg.sender.avatarUrl}" alt="Avatar" class="avatar message-avatar">
+                    <div class="message-bubble">
+                        <p th:text="${msg.content}">Nội dung tin nhắn</p>
+                    </div>
+                </div>
+            </th:block>
+        </div>
+
+        <form class="chat-input-form" th:if="${activeConversationPartner}">
+            <button type="button" class="icon-button" aria-label="Đính kèm file">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+            </button>
+            <textarea placeholder="Nhập tin nhắn..." rows="1" aria-label="Soạn tin nhắn"></textarea>
+            <div class="input-actions">
+                <button type="button" class="icon-button" aria-label="Cảm xúc">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
+                </button>
+                <button type="submit" class="icon-button send-button" aria-label="Gửi">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </button>
+            </div>
+        </form>
+    </main>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const textarea = document.querySelector('.chat-input-form textarea');
+        if (textarea) {
+            const initialHeight = textarea.scrollHeight;
+            textarea.addEventListener('input', function() {
+                this.style.height = 'auto';
+                // CẢI TIẾN: Thêm +2px để tránh thanh cuộn xuất hiện khi chỉ có 1 dòng
+                this.style.height = (this.scrollHeight + 2) + 'px';
+            });
+        }
+
+        // CẢI TIẾN: Logic hiển thị cho mobile mượt mà và tin cậy hơn
+        const chatApp = document.querySelector('.chat-app');
+        const backButton = document.querySelector('.back-button');
+        const conversationItems = document.querySelectorAll('.conversation-item');
+
+        // Hàm chuyển sang màn hình chat
+        const openChat = () => {
+            chatApp.classList.add('show-chat-area');
+        };
+
+        // Hàm quay về danh sách hội thoại
+        const closeChat = () => {
+            chatApp.classList.remove('show-chat-area');
+        };
+
+        if (backButton) {
+            backButton.addEventListener('click', closeChat);
+        }
+
+        conversationItems.forEach(item => {
+            item.addEventListener('click', () => {
+                // Logic để tải nội dung chat mới có thể được thêm ở đây
+                // Ví dụ: fetch('/api/conversation/' + item.dataset.conversationId)
+
+                // Xóa trạng thái active cũ
+                const currentActive = document.querySelector('.conversation-item.active');
+                if (currentActive) {
+                    currentActive.classList.remove('active');
+                }
+                // Thêm trạng thái active mới
+                item.classList.add('active');
+
+                // Chuyển view trên mobile
+                openChat();
+            });
+        });
+
+        // CẢI TIẾN: Tự động cuộn xuống tin nhắn cuối cùng khi tải trang
+        const messagesContainer = document.querySelector('.messages-container');
+        if (messagesContainer) {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+    });
+</script>
+</body>
+</html>
