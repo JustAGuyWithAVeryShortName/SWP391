@@ -5,6 +5,7 @@ import com.swp2.demo.Repository.QuestionRepository;
 import com.swp2.demo.Repository.UserAnswerRepository;
 import com.swp2.demo.entity.*;
 import com.swp2.demo.security.CustomUserDetails;
+import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -38,25 +39,22 @@ public class QuestionController {
     @PostMapping("/questionnaire")
     @Transactional
     public String handleSurveySubmission(@RequestParam Map<String, String> formData,
-                                         @AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                         HttpSession session,
                                          Model model) {
 
-        if(customUserDetails == null){
+        User user = (User) session.getAttribute("loggedInUser");
+
+        if (user == null) {
             return "redirect:/login";
         }
 
-
-        User user = customUserDetails.getUser(); // Lấy user đang đăng nhập
-
+        // Xóa câu trả lời cũ của user (nếu có)
         userAnswerRepository.deleteByUser(user);
-        List<Question> questions1 = questionRepository.findAll();
-
-        questions1.sort(Comparator.comparing(Question::getId)); // hoặc theo thứ tự bạn mong muốn
-
 
         List<Question> questions = questionRepository.findAll();
-        List<UserAnswer> userAnswers = new ArrayList<>();
+        questions.sort(Comparator.comparing(Question::getId));
 
+        List<UserAnswer> userAnswers = new ArrayList<>();
         List<String> selectedOptionTexts = new ArrayList<>();
 
         for (Question question : questions) {
@@ -84,6 +82,7 @@ public class QuestionController {
 
         return "result";  // Thymeleaf template result.html
     }
+
 
     public static class AnalysisResult {
         public final String analysis;

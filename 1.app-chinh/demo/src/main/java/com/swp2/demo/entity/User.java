@@ -3,6 +3,7 @@ package com.swp2.demo.entity;
 
 
 import jakarta.persistence.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
@@ -32,6 +33,8 @@ public class User {
     @Column(name = "gender")
     private Gender gender;
 
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
