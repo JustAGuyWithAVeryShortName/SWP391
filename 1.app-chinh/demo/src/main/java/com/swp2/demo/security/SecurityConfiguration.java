@@ -1,4 +1,4 @@
-package com.swp2.demo.security;
+        package com.swp2.demo.security;
 
 
 import com.swp2.demo.service.UserService;
@@ -24,7 +24,7 @@ public class SecurityConfiguration {
     public DaoAuthenticationProvider authenticationProvider(UserService userService){
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setUserDetailsService(userService);
-   //     daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+        //     daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
         daoAuthenticationProvider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
 
         return daoAuthenticationProvider;
@@ -50,12 +50,12 @@ public class SecurityConfiguration {
                                 "/questionnaire",
                                 "/forgot-password",
                                 "/reset-password",
-                             //   "/change-password",
+                                //   "/change-password",
                                 "/about_us").permitAll()
 
                         .requestMatchers("/admin/**").hasAuthority("Admin")
                         .requestMatchers("/questionnaire",
-                                           "/profile"
+                                "/profile"
                         ).authenticated()
 
 
@@ -65,7 +65,7 @@ public class SecurityConfiguration {
                         .loginPage("/login")
                         .loginProcessingUrl("/authenticateTheUser")
                         .successHandler(customAuthenticationSuccessHandler)
-                      //  .defaultSuccessUrl("/dashboard", true)
+                        //  .defaultSuccessUrl("/dashboard", true)
                         .permitAll()
                 )
                 .oauth2Login(oauth2 -> oauth2
