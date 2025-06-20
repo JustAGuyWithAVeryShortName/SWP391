@@ -1,5 +1,6 @@
 package com.swp2.demo.Controller;
 
+import com.swp2.demo.Repository.AnalysisResultRepository;
 import com.swp2.demo.Repository.OptionRepository;
 import com.swp2.demo.Repository.QuestionRepository;
 import com.swp2.demo.Repository.UserAnswerRepository;
@@ -19,6 +20,9 @@ import java.util.*;
 
 @Controller
 public class QuestionController {
+    @Autowired
+    private AnalysisResultRepository analysisResultRepository;
+
 
     @Autowired
     private QuestionRepository questionRepository;
@@ -74,6 +78,10 @@ public class QuestionController {
 
         // Phân tích kết quả
         AnalysisResult result = analyze(selectedOptionTexts);
+
+        analysisResultRepository.deleteByUser(user);
+        AnalysisResultEntity resultEntity = new AnalysisResultEntity(user, result.analysis, result.recommendation);
+        analysisResultRepository.save(resultEntity);
 
         model.addAttribute("questions", questions);
         model.addAttribute("answers", selectedOptionTexts);

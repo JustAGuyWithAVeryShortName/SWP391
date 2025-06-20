@@ -30,11 +30,20 @@ CREATE TABLE question_option (
     question_id INT FOREIGN KEY REFERENCES question(id),
     option_text NVARCHAR(255) NOT NULL
 );
+
 CREATE TABLE user_answer (
     id INT IDENTITY(1,1) PRIMARY KEY,
     user_id INT NOT NULL FOREIGN KEY REFERENCES Users(user_id),
     question_id INT NOT NULL FOREIGN KEY REFERENCES question(id),
     option_id INT NOT NULL FOREIGN KEY REFERENCES question_option(id),
+    created_at DATETIME DEFAULT GETDATE()
+);
+
+CREATE TABLE analysis_result (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    user_id INT NOT NULL FOREIGN KEY REFERENCES users(user_id),
+    analysis NVARCHAR(255) NOT NULL,
+    recommendation NVARCHAR(MAX) NOT NULL,
     created_at DATETIME DEFAULT GETDATE()
 );
 
