@@ -66,7 +66,7 @@ public class ProgressController {
         model.addAttribute("achievedMilestones", getAchievedMilestones(daysSinceQuit, allMilestones));
         model.addAttribute("upcomingMilestones", getUpcomingMilestones(daysSinceQuit, allMilestones));
 
-        return "track-progress"; 
+        return "track-progress";
     }
 
     private HealthProgress getHealthProgress(long days) {

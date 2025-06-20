@@ -13,7 +13,6 @@ CREATE TABLE Users (
     role VARCHAR(10) NOT NULL DEFAULT 'Guest' CHECK (role IN ('Guest', 'Member', 'Coach', 'Admin'))
 );
 
-
 CREATE TABLE password_reset_token (
     id BIGINT PRIMARY KEY IDENTITY(1,1),
     token NVARCHAR(255) NOT NULL,
@@ -169,3 +168,4 @@ LEFT JOIN
     quit_plan_reasons qpr ON qp.id = qpr.plan_id
 ORDER BY 
     qp.id;
+	
