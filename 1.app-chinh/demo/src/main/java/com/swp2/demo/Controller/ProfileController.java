@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.util.UUID;
+
 @Controller
 public class ProfileController {
     @Autowired
@@ -37,7 +39,7 @@ public class ProfileController {
                 user.setUsername(email);  // dùng email làm username cho ổn định
                 user.setEmail(email);
                 user.setFirstName(name);
-                user.setPassword("OAUTH2_USER"); // hoặc UUID.randomUUID().toString()
+                user.setPassword(UUID.randomUUID().toString()); // hoặc UUID.randomUUID().toString()
                 user.setRole(Role.Guest);
                 userService.save(user);
             }

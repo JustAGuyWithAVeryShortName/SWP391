@@ -71,12 +71,7 @@ public class SecurityConfiguration {
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/login")
                         .successHandler(customAuthenticationSuccessHandler)
-                ) .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/home?home")
-                        .invalidateHttpSession(true)
-                        .clearAuthentication(true)
-                        .permitAll());
+                ) ;
 
 
 

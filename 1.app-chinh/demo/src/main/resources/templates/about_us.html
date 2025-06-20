@@ -39,13 +39,9 @@
 
         <a th:href="@{/admin}" class="nav-item" sec:authorize="hasAuthority('Admin')">Admin</a>
 
-        <form th:action="@{/logout}" method="post" style="display: inline;">
-            <input
-                    type="submit"
-                    value="Logout"
-                    class="nav-item btn btn-link"
-                    style="text-decoration: none; padding: 0; border: none; background: none; color: inherit; cursor: pointer;"
-            />
+        <form th:action="@{/logout}" method="post" style="display: inline;" sec:authorize="isAuthenticated()">
+            <input type="submit" value="Logout" class="nav-item"
+                   style="text-decoration: none; padding: 0; border: none; background: none; color: inherit;" />
         </form>
     </nav>
 </header>

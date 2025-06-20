@@ -15,6 +15,8 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.UUID;
+
 @Component
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
@@ -48,19 +50,20 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 user.setGender(null);
                 user.setDateOfBirth(null);
                 user.setRole(com.swp2.demo.entity.Role.Guest);
+                user.setPassword(UUID.randomUUID().toString());
                 userService.save(user);
-             //   session.setAttribute("needsProfileUpdate", true);
+                session.setAttribute("needsProfileUpdate", true);
             }
             session.setAttribute("loggedInUser", user);
         }
 
         // Nếu user mới ➔ chuyển tới trang cập nhật thông tin
-      //  if (Boolean.TRUE.equals(session.getAttribute("needsProfileUpdate"))) {
-      //      response.sendRedirect("/profile/update");
-     //   } else {
-      //      response.sendRedirect("/dashboard");
-      //  }
-        response.sendRedirect("/dashboard");
+        if (Boolean.TRUE.equals(session.getAttribute("needsProfileUpdate"))) {
+            response.sendRedirect("/profile/edit");
+        } else {
+            response.sendRedirect("/dashboard");
+        }
+      //  response.sendRedirect("/dashboard");
     }
 }
 
