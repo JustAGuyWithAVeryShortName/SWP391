@@ -8,9 +8,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -35,7 +33,7 @@ public class AuthController {
         }
     }
     // ✅ Logout duy nhất cho cả thường + OAuth2
-    @GetMapping("/logout")
+    @RequestMapping(value = "/logout", method = {RequestMethod.GET, RequestMethod.POST})
     public String customLogout(HttpServletRequest request, HttpSession session, Authentication authentication) throws ServletException {
         if (authentication != null) {
             boolean isOAuth2User = authentication.getPrincipal() instanceof org.springframework.security.oauth2.core.user.OAuth2User;
