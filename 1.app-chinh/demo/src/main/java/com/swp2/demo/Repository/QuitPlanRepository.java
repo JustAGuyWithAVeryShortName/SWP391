@@ -9,4 +9,7 @@ import java.util.List;
 @Repository
 public interface QuitPlanRepository extends JpaRepository<QuitPlan, Long> {
     List<QuitPlan> findByUserId(Long userId);
+    boolean existsByUserId(Long userId);
+    void deleteByUserId(Long userId);
+
 }

@@ -4,8 +4,13 @@ package com.swp2.demo.Controller;
 import com.swp2.demo.entity.QuitPlan;
 import com.swp2.demo.entity.User;
 import com.swp2.demo.service.QuitPlanService;
+import com.swp2.demo.service.UserService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +37,20 @@ public class QuitPlanController {
     @Autowired
     private QuitPlanService quitPlanService;
 
+
+
+    @Autowired
+    private UserService userService;
+    private User extractUser(Object principal) {
+        if (principal instanceof UserDetails userDetails) {
+            return userService.findByUsername(userDetails.getUsername());
+        }
+        if (principal instanceof OAuth2User oauth2User) {
+            String email = oauth2User.getAttribute("email");
+            return userService.findByEmail(email);
+        }
+        return null;
+    }
     /**
      * Show the form for the user to enter quit smoking plan details.
      *
@@ -39,11 +58,20 @@ public class QuitPlanController {
      * @return View name "quit-plan".
      */
     @GetMapping("/quit-plan")
-    public String showQuitPlanForm(Model model) {
-        // If the model does not contain the "plan" object (e.g., first visit),
-        // create a new one for form binding.
+    public String showQuitPlanForm(@AuthenticationPrincipal Object principal, Model model) {
+        User user = extractUser(principal);
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        // Nếu model chưa có → nạp từ DB
         if (!model.containsAttribute("plan")) {
-            model.addAttribute("plan", new QuitPlan());
+            List<QuitPlan> plans = quitPlanService.getPlansByUserId(user.getId());
+            if (!plans.isEmpty()) {
+                model.addAttribute("plan", plans.get(0)); // Lấy plan hiện tại để edit
+            } else {
+                model.addAttribute("plan", new QuitPlan()); // Nếu chưa có → khởi tạo mới
+            }
         }
         return "quit-plan";
     }
@@ -61,7 +89,8 @@ public class QuitPlanController {
      * @return Redirect string to dashboard or back to form if errors.
      */
     @PostMapping("/plan/generate")
-    public String handlePlanSubmission(@ModelAttribute("plan") QuitPlan plan,
+    public String handlePlanSubmission(@AuthenticationPrincipal Object principal,
+                                       @ModelAttribute("plan") QuitPlan plan,
                                        @RequestParam(required = false) List<String> reasons,
                                        @RequestParam(required = false) String reasonDetails,
                                        HttpSession session,
@@ -82,12 +111,16 @@ public class QuitPlanController {
             plan.setCustomPlan(suggestion);
         }
 
-        User user = (User) session.getAttribute("loggedInUser");
+        User user = extractUser(principal);
         if (user == null) {
-            System.out.println("⚠️ User in session is NULL");
+            return "redirect:/login";
         }
         plan.setUser(user);
         quitPlanService.save(plan);
+
+      //  User user = (User) session.getAttribute("loggedInUser");
+      //  if (user == null) {
+        //    System.out.println("⚠️ User in session is NULL");}
 
 
 
@@ -105,7 +138,22 @@ public class QuitPlanController {
     @GetMapping("/user/plan")
     public String viewUserPlan(HttpSession session, Model model) {
         // Get plan from session
+        User user = (User) session.getAttribute("loggedInUser");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
         QuitPlan currentPlan = (QuitPlan) session.getAttribute("userQuitPlan");
+
+        if (currentPlan == null) {
+            // Nếu session chưa có → lấy từ DB
+            List<QuitPlan> plans = quitPlanService.getPlansByUserId(user.getId());
+            if (!plans.isEmpty()) {
+                currentPlan = plans.get(0); // Giả sử chỉ 1 plan cho mỗi user
+                session.setAttribute("userQuitPlan", currentPlan); // Cache lại vào session
+            }
+        }
+
 
         if (currentPlan != null) {
             // If plan exists, calculate stats and pass to view
@@ -119,6 +167,29 @@ public class QuitPlanController {
         }
         return "user-plan";
     }
+
+    @Transactional
+    @GetMapping("/plan/new")
+    public String createNewPlan(@AuthenticationPrincipal Object principal, HttpSession session) {
+        User user = extractUser(principal);
+        if (user != null) {
+            quitPlanService.deleteByUserId(user.getId());
+            session.removeAttribute("userQuitPlan");
+        }
+        return "redirect:/questionnaire";
+    }
+
+    @GetMapping("/plan/edit")
+    public String editPlan(@AuthenticationPrincipal Object principal, HttpSession session) {
+        session.removeAttribute("userQuitPlan");
+        return "redirect:/quit-plan";
+    }
+
+
+
+
+
+
 
     // ===================================================================================
     // PRIVATE HELPER METHODS

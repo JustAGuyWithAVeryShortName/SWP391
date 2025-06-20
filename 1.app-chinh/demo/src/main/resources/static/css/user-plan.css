@@ -357,8 +357,11 @@ h2 {
 
 .footer {
     font-size: 1rem;
-    margin-top: 4rem;
+    margin-top: 3rem;
     opacity: 0.85;
+}
+.edit-link{
+    margin: 0 18px;
 }
 
 @media (min-width: 1024px) {

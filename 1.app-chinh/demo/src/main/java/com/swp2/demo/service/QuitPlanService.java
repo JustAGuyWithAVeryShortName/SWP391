@@ -21,4 +21,11 @@ public class QuitPlanService {
         return repository.findByUserId(userId);
     }
 
+    public boolean hasPlan(Long userId) {
+        return repository.existsByUserId(userId);
+    }
+    public void deleteByUserId(Long userId) {
+        repository.deleteByUserId(userId);
+    }
+
 }
