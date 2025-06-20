@@ -86,6 +86,12 @@
 			<version>11.2.1.jre17</version> <!-- hoặc phiên bản mới nhất -->
 		</dependency>
 
+		<!-- websocket -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-websocket</artifactId>
+		</dependency>
+
 
 		<!-- email -->
 		<dependency>
