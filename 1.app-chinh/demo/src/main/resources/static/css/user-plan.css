@@ -236,43 +236,71 @@ h2 {
     cursor: default;
 }
 
-.calendar-day.future {
-    background: var(--gray);
-}
+/* ===== PHẦN CSS CHO LỊCH ĐÃ ĐƯỢC CẬP NHẬT ===== */
 
-.calendar-day.past {
-    background: #d1f3df;
-    color: #137b4b;
-    font-weight: 600;
-    box-shadow: inset 0 0 5px #137b4b44;
-}
-
-.calendar-day.post-plan {
-    background: var(--success-color);
-    color: #fff;
-    font-weight: 700;
-    box-shadow: 0 0 8px var(--success-color);
-}
-
-.calendar-day.today {
-    background: var(--primary-color);
-    color: #fff;
-    font-weight: 800;
-    transform: scale(1.1);
-    box-shadow: 0 0 12px rgba(13, 110, 253, 0.5);
-}
-
+/* Ngày nằm ngoài kế hoạch (trước khi bắt đầu) */
 .calendar-day.pre-plan,
 .calendar-day.disabled {
     color: #ccc;
     font-style: italic;
 }
 
-.calendar-day:hover:not(.today):not(.disabled):not(.pre-plan) {
+/* Ngày sắp tới trong kế hoạch */
+.calendar-day.future {
+    background: var(--gray);
+    border: 1px solid #e9ecef;
+}
+
+/* Ngày đã hoàn thành trong kế hoạch */
+.calendar-day.past {
+    background: #d1f3df;
+    color: #137b4b;
+    font-weight: 600;
+}
+
+/* Ngày bắt đầu kế hoạch */
+.calendar-day.start-date {
+    background: var(--success-color);
+    color: white;
+    font-weight: 700;
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0 0 12px rgba(32, 201, 151, 0.5);
+    transform: scale(1.05);
+}
+
+/* Ngày mục tiêu */
+.calendar-day.target-date {
+    background: var(--warning-color);
+    color: var(--text);
+    font-weight: 700;
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0 0 12px rgba(255, 193, 7, 0.5);
+    transform: scale(1.05);
+}
+
+/* Ngày hiện tại (nếu không phải ngày bắt đầu/mục tiêu) */
+.calendar-day.today {
+    background: var(--primary-color);
+    color: white;
+    font-weight: 700;
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0 0 12px rgba(13, 110, 253, 0.5);
+    transform: scale(1.05);
+}
+
+/* Ngày sau khi đã đạt mục tiêu */
+.calendar-day.post-plan {
+    background-color: #e9ecef;
+    color: var(--text-muted);
+}
+
+.calendar-day:hover:not(.disabled):not(.pre-plan) {
     box-shadow: 0 3px 6px var(--shadow-hover);
     transform: scale(1.04);
     cursor: pointer;
 }
+
+/* ================================================ */
 
 .footer {
     margin-top: 3rem;
@@ -312,64 +340,7 @@ h2 {
 }
 
 .logo {
-    height: 50px;
+    height: 135px;
     width: auto;
     object-fit: contain;
-}
-/* UX/UI Enhancements */
-.main-title {
-    font-size: 2.75rem;
-    color: var(--primary-color);
-    letter-spacing: 0.02em;
-    text-shadow: 1px 1px 2px rgba(13, 110, 253, 0.1);
-    margin-bottom: 0.5rem;
-}
-
-.bounce-hover {
-    transition: transform 0.2s ease;
-}
-.bounce-hover:hover {
-    transform: translateY(-2px) scale(1.03);
-}
-
-.card .value {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--text);
-}
-
-.card .label {
-    font-size: 0.95rem;
-    color: var(--text-muted);
-    letter-spacing: 0.015em;
-}
-
-.edit-link {
-    background-color: transparent;
-    font-size: 1rem;
-    letter-spacing: 0.02em;
-    box-shadow: 0 0 0 transparent;
-}
-.edit-link:hover {
-    box-shadow: 0 8px 18px rgba(13, 110, 253, 0.25);
-    transform: translateY(-3px);
-}
-
-.footer {
-    font-size: 1rem;
-    margin-top: 3rem;
-    opacity: 0.85;
-}
-.edit-link{
-    margin: 0 18px;
-}
-
-@media (min-width: 1024px) {
-    .main-content {
-        padding: 0 1rem;
-    }
-    .plan-details,
-    .calendar-section {
-        padding: 2.5rem;
-    }
 }

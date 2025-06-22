@@ -5,11 +5,9 @@ import com.swp2.demo.Repository.OptionRepository;
 import com.swp2.demo.Repository.QuestionRepository;
 import com.swp2.demo.Repository.UserAnswerRepository;
 import com.swp2.demo.entity.*;
-import com.swp2.demo.security.CustomUserDetails;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,26 +18,28 @@ import java.util.*;
 
 @Controller
 public class QuestionController {
+
     @Autowired
     private AnalysisResultRepository analysisResultRepository;
 
-
     @Autowired
     private QuestionRepository questionRepository;
+
     @Autowired
     private OptionRepository questionOptionRepository;
+
     @Autowired
     private UserAnswerRepository userAnswerRepository;
 
-    // GET: Hiển thị form câu hỏi từ database
+    // GET: Hiển thị form câu hỏi
     @GetMapping("/questionnaire")
     public String showSurveyForm(Model model) {
         List<Question> questions = questionRepository.findAll();
         model.addAttribute("questions", questions);
-        return "question";  // Thymeleaf template question.html
+        return "question";  // Thymeleaf template
     }
 
-    // POST: Xử lý câu trả lời và lưu xuống database
+    // POST: Xử lý câu trả lời
     @PostMapping("/questionnaire")
     @Transactional
     public String handleSurveySubmission(@RequestParam Map<String, String> formData,
@@ -49,10 +49,12 @@ public class QuestionController {
         User user = (User) session.getAttribute("loggedInUser");
 
         if (user == null) {
+            System.out.println("❌ Không có user trong session. Chuyển hướng login.");
             return "redirect:/login";
         }
 
-        // Xóa câu trả lời cũ của user (nếu có)
+        System.out.println("✅ Đã login với user: " + user.getUsername());
+
         userAnswerRepository.deleteByUser(user);
 
         List<Question> questions = questionRepository.findAll();
@@ -88,9 +90,10 @@ public class QuestionController {
         model.addAttribute("analysisResult", result.analysis);
         model.addAttribute("recommendation", result.recommendation);
 
-        return "result";  // Thymeleaf template result.html
-    }
+        System.out.println("🎯 Trả lời thành công. Chuyển đến trang result.");
 
+        return "result"; // Trả về result.html
+    }
 
     public static class AnalysisResult {
         public final String analysis;
@@ -162,14 +165,12 @@ public class QuestionController {
             if (text != null && !text.trim().isEmpty()) {
                 Option option = new Option();
                 option.setOptionText(text);
-                option.setQuestion(question);     // Thiết lập liên kết với Question
+                option.setQuestion(question);
                 question.getOptions().add(option);
             }
         }
 
-        questionRepository.save(question); // Hibernate tự xử lý insert cả Question và Option
-
-        return "redirect:/questionnaire";  // Quay về form câu hỏi sau khi thêm xong
+        questionRepository.save(question);
+        return "redirect:/admin/questions";
     }
-
 }
