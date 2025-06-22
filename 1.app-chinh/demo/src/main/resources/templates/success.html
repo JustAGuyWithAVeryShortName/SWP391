@@ -5,13 +5,11 @@
     <title>Kết quả thanh toán</title>
 </head>
 <body>
-<h2>Kết quả thanh toán</h2>
-<table>
-    <tr th:each="item : ${paymentParam.entrySet()}">
-        <td th:text="${item.key}"></td>
-        <td th:text="${item.value}"></td>
-    </tr>
-</table>
+
+<h2>🎉 Thanh toán thành công!</h2>
+<p>Gói thành viên của bạn đã được kích hoạt.</p>
+
+
 <a href="home" class="btn-primary">Return Home</a>
 
 </body>

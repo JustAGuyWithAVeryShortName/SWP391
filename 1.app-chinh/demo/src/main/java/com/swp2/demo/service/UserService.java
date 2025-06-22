@@ -9,6 +9,7 @@ public interface UserService extends UserDetailsService {
 
     User findByEmail(String email);
 
+    User findById(Long id);
     public void save(User user);
 
 }

@@ -47,6 +47,10 @@
     </div>
 </nav>
 
+<!-- Nút Quản lý đơn hàng -->
+<div class="container mt-4 text-center">
+    <a th:href="@{/admin/orders}" class="btn btn-primary">Quản lý đơn hàng</a>
+</div>
 <!-- Stats Row -->
 <div class="container mt-4">
     <div class="row text-center g-3">
@@ -56,16 +60,16 @@
                     <img th:src="@{/images/4.png}" width="50">
                     <p class="m-0">Today Member</p>
                 </div>
-                <h4>10</h4>
+                <h4 th:text="${todayMembers}">0</h4>
             </div>
         </div>
         <div class="col-md-3">
             <div class="card card-stat">
                 <div>
                     <img th:src="@{/images/5.png}" width="50">
-                    <p class="m-0">Total Member</p>
+                    <p class="m-0">Total Account</p>
                 </div>
-                <h4>100</h4>
+                <h4 th:text="${totalMembers}">0</h4>
             </div>
         </div>
         <div class="col-md-3">

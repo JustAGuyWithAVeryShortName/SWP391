@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Payment</title>
+</head>
+<body>
+<h1>Thanh toán gói thành viên</h1>
+
+<p>Vui lòng quét mã QR bên dưới để thanh toán:</p>
+
+<img th:src="'https://img.vietqr.io/image/970423-22201052005-compact2.jpg?amount=' + ${amount} + '&addInfo=' + ${plan}"
+     alt="QR TPBank" width="250" />
+
+<p><strong>Sau khi chuyển khoản, vui lòng chờ admin xác nhận.</strong></p>
+<p>Gói thành viên của bạn sẽ được kích hoạt ngay sau khi admin xác nhận.</p>
+
+<!-- Nút kiểm tra thủ công -->
+<button onclick="checkStatus()">Kiểm tra trạng thái đơn hàng</button>
+
+<br><br>
+<a href="/" style="color:blue;">⬅️ Quay về trang chủ</a>
+
+<!-- ✅ Thêm th:inline="javascript" để Thymeleaf xử lý biến trong script -->
+<script th:inline="javascript">
+    const transactionId = /*[[${transactionId}]]*/ 0;
+    console.log("Transaction ID:", transactionId);
+    // ✅ Tự động kiểm tra trạng thái mỗi 3 giây
+    setInterval(() => {
+        fetch('/payment/status?transactionId=' + transactionId + '&_=' + new Date().getTime()) // thêm _= để tránh cache
+            .then(response => response.text())
+            .then(status => {
+                if (status === 'PAID') {
+                    window.location.href = '/success';
+                }
+            });
+    }, 3000);
+
+    // ✅ Kiểm tra thủ công khi bấm nút
+    function checkStatus() {
+        fetch('/payment/status?transactionId=' + transactionId + '&_=' + new Date().getTime())
+            .then(response => response.text())
+            .then(status => {
+                if (status === 'PAID') {
+                    window.location.href = '/success';
+                } else {
+                    alert("Đơn hàng vẫn đang chờ admin xác nhận.");
+                }
+            });
+    }
+</script>
+</body>
+</html>

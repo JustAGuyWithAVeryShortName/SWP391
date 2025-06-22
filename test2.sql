@@ -10,7 +10,18 @@ CREATE TABLE Users (
     last_name VARCHAR(50),
 	gender VARCHAR(10) CHECK (gender IN ('Male', 'Female')),
     date_of_birth DATE,
-    role VARCHAR(10) NOT NULL DEFAULT 'Guest' CHECK (role IN ('Guest', 'Member', 'Coach', 'Admin'))
+    role VARCHAR(10) NOT NULL DEFAULT 'Guest' CHECK (role IN ('Guest', 'Member', 'Coach', 'Admin')),
+    member_plan VARCHAR(10) NULL CHECK (member_plan IN ('FREE', 'VIP', 'PREMIUM')),
+	created_at DATE DEFAULT GETDATE()
+);
+CREATE TABLE Orders (
+    order_id INT PRIMARY KEY IDENTITY(1,1),
+    user_id INT NOT NULL FOREIGN KEY REFERENCES Users(user_id),
+    member_plan VARCHAR(10) NULL CHECK (member_plan IN ('FREE', 'VIP', 'PREMIUM')),
+    amount DECIMAL(12,2),
+    status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
+    created_at DATETIME DEFAULT GETDATE(),
+    confirmed_at DATETIME NULL
 );
 
 CREATE TABLE password_reset_token (

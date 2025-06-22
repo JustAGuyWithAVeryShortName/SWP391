@@ -42,11 +42,19 @@ public class User {
     @Column(name = "role", nullable = false)
     private Role role = Role.Guest;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "member_plan")
+    private Member member ;
+
+
+    @Column(name = "created_at")
+    private LocalDate createdAt = LocalDate.now();
+
 
     public User() {
     }
 
-    public User(Long id, String username, String password, String firstName, String lastName, String email, Gender gender, LocalDate dateOfBirth, Role role) {
+    public User(Long id, String username, String password, String firstName, String lastName, String email, Gender gender, LocalDate dateOfBirth, Role role, Member member, LocalDate createdAt) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -56,7 +64,24 @@ public class User {
         this.gender = gender;
         this.dateOfBirth = dateOfBirth;
         this.role = role;
+        this.member = member;
+        this.createdAt = createdAt;
+    }
 
+    public Member getMember() {
+        return member;
+    }
+
+    public void setMember(Member member) {
+        this.member = member;
+    }
+
+    public LocalDate getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDate createdAt) {
+        this.createdAt = createdAt;
     }
 
     public Long getId() {
@@ -129,6 +154,17 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", role=" + role +
+                ", member=" + member +
+                '}';
     }
 
 }

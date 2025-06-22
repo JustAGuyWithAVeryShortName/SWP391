@@ -22,7 +22,6 @@
         <a th:href="@{/member}" class="nav-item">Member</a>
         <a th:href="@{/about_us}" class="nav-item">About Us</a>
         <a th:href="@{/login}" class="nav-item">Account</a>
-        <a th:href="@{/admin}" class="nav-item" sec:authorize="hasAuthority('Admin')">Admin</a>
         <form th:action="@{/logout}" method="post" style="display: inline;" sec:authorize="isAuthenticated()">
             <button type="submit" class="nav-item logout-button">Logout</button>
         </form>

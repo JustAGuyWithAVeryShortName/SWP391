@@ -2,6 +2,7 @@ package com.swp2.demo.security;
 
 import com.swp2.demo.Repository.UserRepository;
 
+import com.swp2.demo.entity.Role;
 import com.swp2.demo.entity.User;
 import com.swp2.demo.service.UserService;
 
@@ -28,10 +29,10 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                                         Authentication authentication) throws IOException {
 
         HttpSession session = request.getSession();
-
+        User user = null;
         if (authentication.getPrincipal() instanceof CustomUserDetails userDetails) {
             // Login thường
-            User user = userService.findByUsername(userDetails.getUsername());
+             user = userService.findByUsername(userDetails.getUsername());
             session.setAttribute("loggedInUser", user);
 
         } else if (authentication.getPrincipal() instanceof OAuth2User oauth2User) {
@@ -40,7 +41,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             String name = oauth2User.getAttribute("name");
 
 
-            User user = userService.findByEmail(email);
+             user = userService.findByEmail(email);
             if (user == null) {
                 user = new User();
                 user.setEmail(email);
@@ -60,10 +61,13 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         // Nếu user mới ➔ chuyển tới trang cập nhật thông tin
         if (Boolean.TRUE.equals(session.getAttribute("needsProfileUpdate"))) {
             response.sendRedirect("/profile/edit");
+            return;
+        }
+        if (user != null && user.getRole() == Role.Admin) {
+            response.sendRedirect("/admin");
         } else {
             response.sendRedirect("/dashboard");
         }
-      //  response.sendRedirect("/dashboard");
     }
 }
 

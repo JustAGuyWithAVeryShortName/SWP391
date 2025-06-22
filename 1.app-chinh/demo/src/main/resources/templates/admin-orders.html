@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Quản lý đơn hàng</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px 12px;
+      text-align: center;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
+    .action-buttons form {
+      display: inline;
+    }
+    .action-buttons button {
+      padding: 5px 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .confirm-btn {
+      background-color: #4CAF50;
+      color: white;
+    }
+    .confirm-btn:disabled {
+      background-color: #aaa;
+      cursor: not-allowed;
+    }
+    .delete-btn {
+      background-color: #f44336;
+      color: white;
+    }
+    .btn-primary {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 8px 16px;
+      background-color: #007BFF;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+<h1>Danh sách đơn hàng</h1>
+
+<table>
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Người dùng</th>
+    <th>Gói</th>
+    <th>Số tiền</th>
+    <th>Trạng thái</th>
+    <th>Xác nhận</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="order : ${orders}">
+    <td th:text="${order.id}"></td>
+    <td th:text="${order.user.username}"></td>
+    <td th:text="${order.memberPlan}"></td>
+    <td th:text="${order.amount}"></td>
+    <td th:text="${order.status}"></td>
+    <td>
+      <div class="action-buttons">
+        <form th:action="@{'/admin/orders/' + ${order.id} + '/confirm'}" method="post">
+          <button type="submit" class="confirm-btn" th:disabled="${order.status == 'PAID'}">Xác nhận</button>
+        </form>
+        <form th:action="@{'/admin/orders/' + ${order.id} + '/delete'}" method="post"
+              onsubmit="return confirm('Bạn có chắc muốn xóa đơn hàng này?');">
+          <button type="submit" class="delete-btn">Xóa</button>
+        </form>
+      </div>
+    </td>
+  </tr>
+  </tbody>
+
+  <a th:href="@{/admin}" class="btn btn-primary">Back</a>
+</table>
+</body>
+</html>

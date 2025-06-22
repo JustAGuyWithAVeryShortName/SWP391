@@ -1,144 +1,112 @@
 package com.swp2.demo.Controller;
 
 
-import com.swp2.demo.Repository.PaymentRepository;
-import com.swp2.demo.entity.MomoRequest;
-import com.swp2.demo.entity.Payment;
-import com.swp2.demo.service.MomoUtil;
+import com.swp2.demo.Repository.OrderRepository;
+import com.swp2.demo.entity.Member;
+import com.swp2.demo.entity.Order;
+import com.swp2.demo.entity.User;
+import com.swp2.demo.security.CustomUserDetails;
+import com.swp2.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.Map;
+import java.time.LocalDateTime;
 
 @Controller
 public class PaymentController {
 
     @Autowired
-    private PaymentRepository paymentRepository;
+    private OrderRepository orderRepository;
 
-    @Value("${momo.partnerCode}")
-    private String partnerCode;
+    @Autowired
+    private UserService userService;
 
-    @Value("${momo.accessKey}")
-    private String accessKey;
-
-    @Value("${momo.secretKey}")
-    private String secretKey;
-
-    @Value("${momo.endpoint}")
-    private String endpoint;
-
-    @Value("${momo.returnUrl}")
-    private String returnUrl;
-
-    @Value("${momo.notifyUrl}")
-    private String notifyUrl;
-
-    @Value("${momo.partnerName}")
-    private String partnerName;
-
-    @Value("${momo.storeId}")
-    private String storeId;
+    @GetMapping("/payment/status")
+    @ResponseBody
+    public ResponseEntity<String> checkPaymentStatus(@RequestParam("transactionId") Long orderId) {
+        return orderRepository.findById(orderId)
+                .map(order -> ResponseEntity.ok(order.getStatus())) // Có đơn ➔ trả về 200 + status
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order not found")); // Không có đơn ➔ 404 + message
+    }
 
 
     @GetMapping("/payment")
-    public String home() {
+    public String payment(@RequestParam("plan") String plan,
+                          @AuthenticationPrincipal Object principal,
+                          Model model) {
+        User user = null;
+
+        if (principal instanceof CustomUserDetails userDetails) {
+            user = userService.findById(userDetails.getId());
+        } else if (principal instanceof OAuth2User oauth2User) {
+            String email = oauth2User.getAttribute("email");
+            user = userService.findByEmail(email);
+        }
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+
+        double amount = switch (plan) {
+            case "VIP" -> 5000.0;
+            case "PREMIUM" -> 10000.0;
+            case "FREE" -> 0.0;
+            default -> throw new IllegalArgumentException("Invalid plan: " + plan);
+        };
+
+        Member memberPlan = Member.valueOf(plan.toUpperCase());
+        Order order = orderRepository.findFirstByUserAndMemberPlanAndStatus(user, Member.valueOf(plan), "PENDING")
+                .orElse(null);
+
+        if (order == null) {
+            order = new Order();
+            order.setUser(user);
+            order.setMemberPlan(memberPlan);
+            order.setAmount(amount);
+            order.setStatus(amount == 0.0 ? "PAID" : "PENDING");
+            order.setCreatedAt(LocalDateTime.now());
+            if (amount == 0.0) {
+                order.setConfirmedAt(LocalDateTime.now());
+                user.setMember(Member.FREE);
+                userService.save(user);
+            }
+            orderRepository.save(order);
+        }
+
+        model.addAttribute("plan", plan);
+        model.addAttribute("amount", (int) amount);
+        model.addAttribute("transactionId", order.getId());
+        model.addAttribute("status", order.getStatus());
         return "payment";
     }
-
-    @RequestMapping("/pay")
-    public String payWithMomo(@RequestParam("amount") Long amount, Model model) {
-        try {
-            MomoRequest request = MomoUtil.createRequest(
-                    partnerCode, accessKey, secretKey, endpoint,
-                    returnUrl, notifyUrl, amount, "Thanh toán MoMo",
-                    partnerName, storeId
-            );
-
-            // Save pending payment info to DB
-            Payment payment = new Payment();
-            payment.setOrderId(request.getOrderId());
-            payment.setRequestId(request.getRequestId());
-            payment.setAmount(amount);
-            payment.setStatus("pending");
-            payment.setMessage("Chờ thanh toán");
-            paymentRepository.save(payment);
-
-            // Send request to MoMo
-            RestTemplate restTemplate = new RestTemplate();
-            Map<String, Object> response = restTemplate.postForObject(endpoint, request, Map.class);
-
-            String payUrl = (String) response.get("payUrl");
-            return "redirect:" + payUrl;
-        } catch (Exception e) {
-            e.printStackTrace();
-            model.addAttribute("error", e.getMessage());
-            return "error";
-        }
-    }
-
-
-    @GetMapping("/paymentBill")
-    public String momoResult(@RequestParam Map<String, String> params, Model model) {
-        String resultCode = params.get("resultCode");
-        String message = params.get("message");
-        String orderId = params.get("orderId");
-
-        Payment payment = paymentRepository.findByOrderId(orderId);
-        if (payment != null) {
-            if ("0".equals(resultCode)) {
-                payment.setStatus("success");
-                payment.setMessage("Thanh toán thành công");
-                model.addAttribute("status", "success");
-                model.addAttribute("message", "Thanh toán thành công!");
-            } else {
-                payment.setStatus("fail");
-                payment.setMessage(message);
-                model.addAttribute("status", "fail");
-                model.addAttribute("message", "Giao dịch thất bại: " + message);
-            }
-            paymentRepository.save(payment);
-        }
-        if (orderId == null || resultCode == null) {
-            model.addAttribute("status", "fail");
-            model.addAttribute("message", "Thiếu thông tin xác nhận giao dịch!");
-            return "result";
-        }
-
-
-        model.addAttribute("paymentParam", params);
-        return "paymentBill";
-    }
-    @RequestMapping("/notify")
-    @ResponseBody
-    public String notify(@RequestParam Map<String, String> allParams) {
-        boolean isValid = new MomoUtil().verifySignature(allParams, secretKey);
-        if (!isValid) {
-            return "invalid signature";
-        }
-
-        String orderId = allParams.get("orderId");
-        String resultCode = allParams.get("resultCode");
-
-        Payment payment = paymentRepository.findByOrderId(orderId);
-        if (payment != null) {
-            if ("0".equals(resultCode)) {
-                payment.setStatus("success");
-                payment.setMessage("Thanh toán thành công (IPN)");
-            } else {
-                payment.setStatus("fail");
-                payment.setMessage("Thất bại (IPN): " + allParams.get("message"));
-            }
-            paymentRepository.save(payment);
-        }
+    @GetMapping("/success")
+    public String success() {
         return "success";
     }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
