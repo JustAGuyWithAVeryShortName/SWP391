@@ -26,9 +26,10 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
         HttpSession session = request.getSession();
+        User user = null;
 
         if (authentication.getPrincipal() instanceof com.swp2.demo.security.CustomUserDetails userDetails) {
-            User user = userService.findByUsername(userDetails.getUsername());
+             user = userService.findByUsername(userDetails.getUsername());
 
             session.setAttribute("loggedInUser", user);
 
@@ -38,7 +39,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
 
 
-            User user = userService.findByEmail(email);
+             user = userService.findByEmail(email);
 
             if (user == null) {
                 user = new User();
@@ -54,6 +55,10 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 session.setAttribute("needsProfileUpdate", true);
             }
             session.setAttribute("loggedInUser", user);
+        }
+        if (user != null && user.getRole() == com.swp2.demo.entity.Role.Admin) {
+            response.sendRedirect("/admin");  // Nếu là Admin thì vào trang admin
+            return;
         }
 
         // Redirect nếu cần cập nhật profile
@@ -73,5 +78,6 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         } else {
             response.sendRedirect("/dashboard");
         }
+
     }
 }
