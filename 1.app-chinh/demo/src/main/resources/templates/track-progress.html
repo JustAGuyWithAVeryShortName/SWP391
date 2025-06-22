@@ -4,11 +4,9 @@
     <meta charset="UTF-8" />
     <title>Hành Trình Bỏ Thuốc Của Bạn</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/track-progress.css}" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
 </head>
 <body>
 <section class="track-progress">
@@ -29,58 +27,88 @@
             </div>
             <div class="stat-card">
                 <i class="fas fa-smoking-ban icon"></i>
-                <h3>Số Điếu Thuốc Đã Tránh</h3>
+                <h3>Số Điếu Đã Tránh</h3>
                 <p class="stat-number" th:data-target="${cigarettesAvoided}" th:text="${cigarettesAvoided}">0</p>
             </div>
         </div>
 
         <div class="progress-card">
             <h2><i class="fas fa-heartbeat"></i> Phục Hồi Sức Khỏe</h2>
-            <p class="progress-summary" th:text="${healthProgress.currentStatus}">Cơ thể bạn đang tự chữa lành...</p>
+            <p class="progress-summary" th:text="${healthProgress.currentStatus}">Đang cập nhật...</p>
             <div class="progress-bar-container">
                 <div class="progress-bar" th:style="'width:' + ${healthProgress.percentage} + '%;'">
-                    <span th:text="${healthProgress.percentage} + '%'"></span>
+                    <span th:text="${healthProgress.percentage} + '%'">0%</span>
                 </div>
             </div>
-            <p class="next-goal"><strong>Mục tiêu tiếp theo:</strong> <span th:text="${healthProgress.nextMilestone}"></span></p>
+            <p class="next-goal"><strong>Mục tiêu tiếp theo:</strong> <span th:text="${healthProgress.nextMilestone}">---</span></p>
         </div>
 
         <div class="milestones-card">
-            <h2><i class="fas fa-award"></i> Cột Mốc Đã Đạt Được</h2>
+            <h2><i class="fas fa-award"></i> Cột Mốc Đã Đạt</h2>
             <div class="milestones-grid">
-                <div class="milestone-badge achieved" th:each="milestone : ${achievedMilestones}">
+                <div class="milestone-badge achieved" th:each="m : ${achievedMilestones}">
                     <i class="fas fa-check-circle"></i>
-                    <span th:text="${milestone.name}">Cột mốc 1</span>
+                    <span th:text="${m.name}">Cột mốc 1</span>
                 </div>
-                <div class="milestone-badge upcoming" th:each="milestone : ${upcomingMilestones}">
+                <div class="milestone-badge upcoming" th:each="m : ${upcomingMilestones}">
                     <i class="fas fa-flag-checkered"></i>
-                    <span th:text="${milestone.name}">Cột mốc sắp tới</span>
+                    <span th:text="${m.name}">Sắp tới</span>
                 </div>
             </div>
         </div>
 
+        <div class="daily-steps-card">
+            <h2><i class="fas fa-list-check"></i> Tiến Độ Từng Ngày</h2>
+            <table class="daily-step-table">
+                <thead>
+                <tr>
+                    <th>Ngày</th>
+                    <th>Ngày thứ</th>
+                    <th>Mục tiêu (điếu)</th>
+                    <th>Thực tế</th>
+                    <th>Trạng thái</th>
+                    <th>Nhập số điếu hút</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="step : ${steps}">
+                    <td th:text="${step.date}">2025-06-20</td>
+                    <td th:text="${step.dayIndex}">1</td>
+                    <td th:text="${step.targetCigarettes}">10</td>
+                    <td th:text="${step.actualCigarettes} ?: 'Chưa có'">-</td>
+                    <td>
+                        <span th:text="${step.completed} ? '✅' : (step.actualCigarettes != null ? '❌' : '-')"></span>
+                    </td>
+                    <td>
+                        <form th:action="@{/track-progress/update/{id}(id=${step.id})}" method="post">
+                            <input type="number" name="actualCigarettes" min="0" placeholder="VD: 3" required style="width: 60px;" />
+                            <input type="hidden" name="planId" th:value="${planId}" />
+                            <button type="submit" class="btn-update">Lưu</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </section>
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const counters = document.querySelectorAll('.stat-number[data-target]');
-        const speed = 200; // The lower the slower
-
+        const speed = 200;
         counters.forEach(counter => {
             const animate = () => {
                 const target = +counter.getAttribute('data-target');
                 const count = +counter.innerText.replace(/[^\d.-]/g, '');
-
                 const inc = target / speed;
-
                 if (count < target) {
                     counter.innerText = Math.ceil(count + inc);
                     setTimeout(animate, 10);
                 } else {
                     counter.innerText = target;
                 }
-            }
+            };
             animate();
         });
     });

@@ -68,6 +68,19 @@ CREATE TABLE quit_plan (
     user_id INT,
     CONSTRAINT FK_quit_plan_user FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
+GO
+
+CREATE TABLE user_plan_step (
+    id BIGINT PRIMARY KEY IDENTITY(1,1),
+    date DATE NOT NULL,
+    day_index INT NOT NULL,
+    target_cigarettes INT NOT NULL,
+    actual_cigarettes INT,
+    completed BIT,
+    quit_plan_id BIGINT NOT NULL,
+    CONSTRAINT fk_user_plan_step_quit_plan FOREIGN KEY (quit_plan_id) REFERENCES quit_plan(id) ON DELETE CASCADE
+);
+GO
 
 -- Bảng phụ lưu danh sách lý do (1 kế hoạch có nhiều lý do)
 CREATE TABLE quit_plan_reasons (

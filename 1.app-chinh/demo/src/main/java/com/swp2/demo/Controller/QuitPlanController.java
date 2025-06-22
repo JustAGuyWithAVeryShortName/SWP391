@@ -1,5 +1,6 @@
 package com.swp2.demo.Controller;
 
+import java.time.ZoneId;
 
 import com.swp2.demo.entity.QuitPlan;
 import com.swp2.demo.entity.User;
@@ -38,9 +39,9 @@ public class QuitPlanController {
     private QuitPlanService quitPlanService;
 
 
-
     @Autowired
     private UserService userService;
+
     private User extractUser(Object principal) {
         if (principal instanceof UserDetails userDetails) {
             return userService.findByUsername(userDetails.getUsername());
@@ -51,6 +52,7 @@ public class QuitPlanController {
         }
         return null;
     }
+
     /**
      * Show the form for the user to enter quit smoking plan details.
      *
@@ -116,12 +118,30 @@ public class QuitPlanController {
             return "redirect:/login";
         }
         plan.setUser(user);
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+        plan.setUser(user);
+
+// 👉 Kiểm tra và sửa nếu ngày startDate bị lệch do múi giờ
+        ZoneId serverZone = ZoneId.systemDefault();
+        ZoneId vietnamZone = ZoneId.of("Asia/Ho_Chi_Minh");
+
+        System.out.println("🔍 Start Date from DB: " + plan.getStartDate());
+        System.out.println("🕒 Server Timezone: " + serverZone);
+
+        LocalDate nowVN = LocalDate.now(vietnamZone);
+        if (plan.getStartDate() != null && plan.getStartDate().isAfter(nowVN.plusDays(1))) {
+            System.out.println("⚠️ Start date is suspiciously ahead of current date in VN. Resetting to today.");
+            plan.setStartDate(nowVN);
+        }
+
         quitPlanService.save(plan);
 
-      //  User user = (User) session.getAttribute("loggedInUser");
-      //  if (user == null) {
+        //  User user = (User) session.getAttribute("loggedInUser");
+        //  if (user == null) {
         //    System.out.println("⚠️ User in session is NULL");}
-
 
 
         session.setAttribute("userQuitPlan", plan);
@@ -140,6 +160,8 @@ public class QuitPlanController {
         // Get plan from session
         User user = (User) session.getAttribute("loggedInUser");
         if (user == null) {
+            // This is a fallback, ideally you'd get the user from the @AuthenticationPrincipal
+            // For now, we'll assume the session has the user. If not, login.
             return "redirect:/login";
         }
 
@@ -186,11 +208,6 @@ public class QuitPlanController {
     }
 
 
-
-
-
-
-
     // ===================================================================================
     // PRIVATE HELPER METHODS
     // ===================================================================================
@@ -225,15 +242,19 @@ public class QuitPlanController {
     private String generatePlanSuggestion(QuitPlan plan) {
         if (plan.getStages() == null) return "Please select a method to get detailed suggestions.";
         return switch (plan.getStages()) {
-            case "Gradual reduction" -> "Week 1: Reduce 2 cigarettes per day.\nWeek 2: Reduce another 3 cigarettes per day.\nWeek 3: Try to go 24 hours without smoking.\nAlways have sugar-free gum or healthy snacks ready.";
-            case "Cold turkey (quit abruptly)" -> "Throw away all cigarettes, lighters, and ashtrays.\nInform family and friends about your decision for support.\nWhen cravings hit, drink a glass of cold water or take a walk.";
-            case "Nicotine replacement therapy" -> "Start using nicotine patches from " + plan.getStartDate() + ".\nConsult a pharmacist for appropriate dosage.\nCombine with habit changes (e.g., drink tea instead of coffee).";
+            case "Gradual reduction" ->
+                    "Week 1: Reduce 2 cigarettes per day.\nWeek 2: Reduce another 3 cigarettes per day.\nWeek 3: Try to go 24 hours without smoking.\nAlways have sugar-free gum or healthy snacks ready.";
+            case "Cold turkey (quit abruptly)" ->
+                    "Throw away all cigarettes, lighters, and ashtrays.\nInform family and friends about your decision for support.\nWhen cravings hit, drink a glass of cold water or take a walk.";
+            case "Nicotine replacement therapy" ->
+                    "Start using nicotine patches from " + plan.getStartDate() + ".\nConsult a pharmacist for appropriate dosage.\nCombine with habit changes (e.g., drink tea instead of coffee).";
             default -> "";
         };
     }
 
     private int calculateProgress(QuitPlan plan) {
-        if (plan.getStartDate() == null || plan.getTargetDate() == null || plan.getStartDate().isAfter(plan.getTargetDate())) return 0;
+        if (plan.getStartDate() == null || plan.getTargetDate() == null || plan.getStartDate().isAfter(plan.getTargetDate()))
+            return 0;
 
         LocalDate today = LocalDate.now();
         if (today.isBefore(plan.getStartDate())) return 0;
@@ -293,25 +314,43 @@ public class QuitPlanController {
         return new CalendarData(currentMonth.toString(), List.of("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"), days);
     }
 
+    // ===== PHƯƠNG THỨC ĐÃ ĐƯỢC CẬP NHẬT =====
     private String getDayStatus(LocalDate date, LocalDate today, LocalDate startDate, LocalDate targetDate) {
         if (startDate == null || targetDate == null) {
-            return "disabled"; // Không đủ thông tin để xác định trạng thái
+            return "disabled";
         }
 
-        if (date.isEqual(today)) return "today";
-        if (date.isBefore(startDate)) return "pre-plan";
-        if (date.isEqual(targetDate)) return "post-plan"; // Ngày target
+        // --- Ưu tiên 1: Đánh dấu ngày bắt đầu và ngày mục tiêu TRƯỚC TIÊN ---
+        if (date.isEqual(startDate)) {
+            return "start-date"; // Trạng thái mới cho ngày bắt đầu
+        }
+        if (date.isEqual(targetDate)) {
+            return "target-date"; // Trạng thái mới cho ngày mục tiêu
+        }
 
-        if (date.isAfter(targetDate)) return "upcoming"; // Các ngày sau target
+        // --- Ưu tiên 2: Đánh dấu ngày hôm nay (chỉ khi nó không phải ngày bắt đầu/mục tiêu) ---
+        if (date.isEqual(today)) {
+            return "today";
+        }
 
-        // Trong khoảng thời gian của kế hoạch
-        if (date.isBefore(today)) return "past";   // Đã qua
-        if (date.isAfter(today)) return "future";  // Sắp tới
+        // --- Ưu tiên 3: Đánh dấu các giai đoạn của kế hoạch ---
+        if (date.isBefore(startDate)) {
+            return "pre-plan"; // Những ngày trước khi kế hoạch bắt đầu
+        }
+        if (date.isAfter(targetDate)) {
+            return "post-plan"; // Những ngày sau khi kế hoạch hoàn thành
+        }
 
-        return "today"; // fallback
+        // Đối với những ngày nằm trong khoảng thời gian của kế hoạch
+        if (date.isBefore(today)) {
+            return "past";   // Một ngày trong kế hoạch đã trôi qua
+        }
+        if (date.isAfter(today)) {
+            return "future";  // Một ngày trong kế hoạch sắp tới
+        }
+
+        return "disabled"; // Trạng thái mặc định an toàn
     }
-
-
 
 
     // ===================================================================================
@@ -321,18 +360,22 @@ public class QuitPlanController {
 
     /**
      * Dashboard statistics record.
+     *
      * @param daysSmokeFree number of days without smoking.
      * @param daysRemaining days left to the target.
      */
-    public record QuitStats(long daysSmokeFree, long daysRemaining) {}
+    public record QuitStats(long daysSmokeFree, long daysRemaining) {
+    }
 
     /**
      * Calendar data container for the month view.
      */
-    public record CalendarData(String monthName, List<String> weekDays, List<CalendarDay> days) {}
+    public record CalendarData(String monthName, List<String> weekDays, List<CalendarDay> days) {
+    }
 
     /**
      * Information about a calendar day.
      */
-    public record CalendarDay(int dayNumber, String status) {}
+    public record CalendarDay(int dayNumber, String status) {
+    }
 }
