@@ -35,12 +35,22 @@
         <a th:href="@{/home}" class="nav-item">Home</a>
         <a th:href="@{/member}" class="nav-item">Member</a>
         <a th:href="@{/about_us}" class="nav-item active">About Us</a>
-        <a th:href="@{/login}" class="nav-item">Account</a>
 
-        <form th:action="@{/logout}" method="post" style="display: inline;" sec:authorize="isAuthenticated()">
-            <input type="submit" value="Logout" class="nav-item"
-                   style="text-decoration: none; padding: 0; border: none; background: none; color: inherit;" />
-        </form>
+        <a th:href="@{/login}" class="nav-item" sec:authorize="!isAuthenticated()">Login</a>
+
+        <!-- Nếu đã đăng nhập -->
+        <div class="nav-item dropdown" sec:authorize="isAuthenticated()">
+            <button class="dropdown-toggle">
+                Hi, <span th:text="${fullName}">User</span> <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="dropdown-menu">
+                <a th:href="@{/profile}" class="dropdown-item">Profile</a>
+                <a th:href="@{/dashboard}" class="dropdown-item">View Plan</a>
+                <form th:action="@{/logout}" method="post" class="dropdown-item logout-form">
+                    <button type="submit" class="logout-button">Logout</button>
+                </form>
+            </div>
+        </div>
     </nav>
 </header>
 

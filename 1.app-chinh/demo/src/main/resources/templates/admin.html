@@ -5,9 +5,27 @@
     <title>SmokeLite Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
     <style>
         body {
             background-color: #f2f6fc;
+            font-family: 'Poppins', sans-serif;
+        }
+        .main-header {
+            display: flex;
+            justify-content: center; /* Căn giữa logo */
+            align-items: center;
+            height: 90px;
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .logo-container img.logo {
+            height: 70px;
+            transform: scale(1.8);
+            transform-origin: center center;
+            margin-left: 90px;
         }
         .card-stat {
             display: flex;
@@ -22,6 +40,7 @@
             border-radius: 5px;
             text-align: center;
             font-weight: bold;
+            margin-bottom: 10px;
         }
         .edit-btn {
             margin-top: 10px;
@@ -32,20 +51,30 @@
         .edit-btn:hover {
             background-color: #007acc;
         }
+        #pieChart {
+            width: 450px !important;
+            height: 450px !important;
+            display: block;
+            margin: 0 auto;
+        }
     </style>
 </head>
 <body>
-
-<!-- Top Navbar -->
-<nav class="navbar navbar-light bg-light position-relative px-4 py-2">
-    <a class="position-absolute start-50 translate-middle-x text-center" href="#">
-        <img  th:src="@{/images/1.png}" alt="SmokeLite" height="175" width="175">
-    </a>
-    <div  class="ms-auto">
-        <img th:src="@{/images/3.png}" alt="Admin Icon" width="80">
-
+<header class="main-header d-flex justify-content-between align-items-center px-4">
+    <div></div> <!-- Phần này để đẩy logo vào giữa bằng flex -->
+    <div class="logo-container text-center">
+        <a th:href="@{/admin}">
+            <img th:src="@{/images/1.png}" alt="SmokeLite Logo" class="logo" />
+        </a>
     </div>
-</nav>
+    <div>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="btn btn-outline-danger">Logout</button>
+        </form>
+    </div>
+</header>
+
+
 
 <!-- Nút Quản lý đơn hàng -->
 <div class="container mt-4 text-center">
@@ -97,14 +126,12 @@
         <div class="col-md-6">
             <div class="card p-3">
                 <div class="section-title">Membership</div>
-                <input type="date"  name="selectedDate">
                 <canvas id="pieChart"></canvas>
             </div>
         </div>
         <div class="col-md-6">
             <div class="card p-3">
                 <div class="section-title">Dashboard</div>
-                <input type="date"  name="selectedDate">
                 <canvas id="lineChart"></canvas>
             </div>
         </div>
@@ -149,29 +176,61 @@
 </div>
 
 <!-- Chart Scripts -->
-<script>
-    const pieCtx = document.getElementById('pieChart');
-    new Chart(pieCtx, {
+<script th:inline="javascript">
+
+    const pieLabels = /*[[${labels}]]*/ [];
+    const pieData = /*[[${values}]]*/ [];
+    const monthlyUserData = /*[[${monthlyUserData}]]*/ [];
+
+    new Chart(document.getElementById('pieChart'), {
         type: 'pie',
         data: {
-            labels: ['6 Months', '1 Year', '2 Years'],
+            labels: pieLabels,
             datasets: [{
-                data: [30, 45, 25],
-                backgroundColor: ['#36A2EB', '#4BC0C0', '#FFCE56']
+                data: pieData,
+                backgroundColor: ['#36A2EB', '#FF6384', '#4BC0C0']
             }]
-        }
+        },
+        options: {
+            plugins: {
+                datalabels: {
+                    color: '#fff',
+                    formatter: (value, ctx) => {
+                        let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                        let percentage = (value * 100 / sum).toFixed(1) + "%";
+                        return percentage;
+                    },
+                    font: {
+                        weight: 'bold',
+                        size: 14
+                    }
+                },
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        },
+        plugins: [ChartDataLabels]
     });
-
-    const lineCtx = document.getElementById('lineChart');
-    new Chart(lineCtx, {
+    new Chart(document.getElementById('lineChart'), {
         type: 'line',
         data: {
-            labels: ['Month 1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
-            datasets: [
-                { label: 'New Member', data: [5, 6, 7, 10, 15, 20, 25, 30, 35, 45, 55, 60], borderColor: '#36A2EB' },
-                { label: 'Revenue', data: [2, 3, 4, 5, 6, 8, 9, 12, 14, 16, 18, 20], borderColor: '#FF6384' },
-                { label: 'Rating', data: [4, 4.2, 4.1, 4.3, 4.4, 4.5, 4.6, 4.7, 4.7, 4.8, 4.9, 5], borderColor: '#4BC0C0' }
-            ]
+            labels: ['Tháng 1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+            datasets: [{
+                label: 'New Members in ' + new Date().getFullYear(),
+                data: monthlyUserData,
+                borderColor: '#36A2EB',
+                backgroundColor: '#36A2EB22',
+                tension: 0.3,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top' },
+                title: { display: true, text: 'Thống kê thành viên theo tháng' }
+            }
         }
     });
 

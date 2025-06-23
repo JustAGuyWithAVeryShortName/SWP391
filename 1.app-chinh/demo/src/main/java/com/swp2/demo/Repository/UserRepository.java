@@ -1,9 +1,13 @@
 package com.swp2.demo.Repository;
 
+import com.swp2.demo.entity.Member;
 import com.swp2.demo.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -15,5 +19,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT COUNT(u) FROM User u WHERE u.createdAt = CURRENT_DATE")
     long countTodayMembers();
+
+    long countByMember(Member member);
+
+    @Query("SELECT MONTH(u.createdAt), COUNT(u) " +
+            "FROM User u " +
+            "WHERE YEAR(u.createdAt) = :year " +
+            "GROUP BY MONTH(u.createdAt) " +
+            "ORDER BY MONTH(u.createdAt)")
+    List<Object[]> countUsersByMonth(@Param("year") int year);
 
 }

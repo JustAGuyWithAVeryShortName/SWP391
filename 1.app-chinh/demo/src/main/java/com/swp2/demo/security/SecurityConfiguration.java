@@ -40,15 +40,11 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/", "/home", "/register/**", "/login", "/css/**", "/images/**", "/js/**",
-                                "/member", "/forgot-password", "/reset-password", "/about_us"
+                                "/member", "/forgot-password", "/reset-password", "/about_us", "/.well-known/**"
                         ).permitAll()
 
-                        // ✅ Cho phép submit POST /questionnaire không cần login
                         .requestMatchers(HttpMethod.POST, "/questionnaire").permitAll()
-
-                        // ✅ Nhưng GET /questionnaire thì cần đăng nhập
                         .requestMatchers(HttpMethod.GET, "/questionnaire").authenticated()
-
                         .requestMatchers("/admin/**").hasAuthority("Admin")
                         .requestMatchers("/profile").authenticated()
                         .anyRequest().authenticated()

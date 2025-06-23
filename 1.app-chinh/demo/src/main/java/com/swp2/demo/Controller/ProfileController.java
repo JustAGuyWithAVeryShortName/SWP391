@@ -3,6 +3,7 @@ package com.swp2.demo.Controller;
 import com.swp2.demo.entity.Role;
 import com.swp2.demo.entity.User;
 import com.swp2.demo.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -75,6 +76,7 @@ public class ProfileController {
     public String updateProfile(@Valid @ModelAttribute("user") User updatedUser,
                                 BindingResult result,
                                 @AuthenticationPrincipal Object principal,
+                                HttpSession session,
                                 Model model) {
         if (result.hasErrors()) {
             return "edit-profile";
@@ -97,6 +99,8 @@ public class ProfileController {
             user.setDateOfBirth(updatedUser.getDateOfBirth());
 
             userService.save(user);
+
+            session.setAttribute("loggedInUser", user);
         }
 
         return "redirect:/profile";

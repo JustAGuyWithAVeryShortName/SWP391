@@ -34,6 +34,7 @@ public class MemberController {
             model.addAttribute("currentMember", null);
         }
 
+
         return "member"; // Trả về file member.html
     }
     @PostMapping("/member/checkout")

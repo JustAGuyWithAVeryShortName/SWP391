@@ -49,7 +49,6 @@ CREATE TABLE user_answer (
     option_id INT NOT NULL FOREIGN KEY REFERENCES question_option(id),
     created_at DATETIME DEFAULT GETDATE()
 );
-
 CREATE TABLE analysis_result (
     id INT IDENTITY(1,1) PRIMARY KEY,
     user_id INT NOT NULL FOREIGN KEY REFERENCES users(user_id),
@@ -59,17 +58,6 @@ CREATE TABLE analysis_result (
 );
 
 -- Bảng chính lưu kế hoạch bỏ thuốc
-CREATE TABLE quit_plan (
-    id BIGINT PRIMARY KEY IDENTITY(1,1),
-    start_date DATE,
-    target_date DATE,
-    stages NVARCHAR(255),
-    custom_plan NVARCHAR(2000),
-    user_id INT,
-    CONSTRAINT FK_quit_plan_user FOREIGN KEY (user_id) REFERENCES Users(user_id)
-);
-GO
-
 CREATE TABLE user_plan_step (
     id BIGINT PRIMARY KEY IDENTITY(1,1),
     date DATE NOT NULL,
@@ -80,15 +68,12 @@ CREATE TABLE user_plan_step (
     quit_plan_id BIGINT NOT NULL,
     CONSTRAINT fk_user_plan_step_quit_plan FOREIGN KEY (quit_plan_id) REFERENCES quit_plan(id) ON DELETE CASCADE
 );
-GO
-
 -- Bảng phụ lưu danh sách lý do (1 kế hoạch có nhiều lý do)
 CREATE TABLE quit_plan_reasons (
     plan_id BIGINT NOT NULL,
     reason NVARCHAR(255) NOT NULL,
     CONSTRAINT FK_quit_plan_reasons_plan FOREIGN KEY (plan_id) REFERENCES quit_plan(id) ON DELETE CASCADE
 );
-
 
 
 
@@ -158,13 +143,52 @@ INSERT INTO question_option (question_id, option_text) VALUES
 
 
 
-
-
-
-
+INSERT INTO Users (username, password, email, first_name, last_name, gender, date_of_birth, role, member_plan, created_at)
+VALUES
+('johnsmith', 'password123', 'john.smith@example.com', 'John', 'Smith', 'Male', '1990-05-15', 'Member', 'FREE', '2024-02-11'),
+('janedoe', 'securepass', 'jane.doe@example.com', 'Jane', 'Doe', 'Female', '1992-08-23', 'Member', 'VIP', '2024-03-29'),
+('michaelbrown', 'pass123', 'michael.brown@example.com', 'Michael', 'Brown', 'Male', '1985-12-11', 'Coach', 'PREMIUM', '2024-07-17'),
+('emilywhite', 'mypassword', 'emily.white@example.com', 'Emily', 'White', 'Female', '1995-04-30', 'Guest', NULL, '2024-09-03'),
+('robertjohnson', 'password456', 'robert.johnson@example.com', 'Robert', 'Johnson', 'Male', '1988-09-19', 'Member', 'FREE', '2024-11-21'),
+('oliviamartin', 'olivia123', 'olivia.martin@example.com', 'Olivia', 'Martin', 'Female', '1993-06-07', 'Guest', NULL, '2024-12-08'),
+('williamlee', 'wlee2025', 'william.lee@example.com', 'William', 'Lee', 'Male', '1980-03-22', 'Admin', NULL, '2025-01-13'),
+('sophiagarcia', 'sophiaG!', 'sophia.garcia@example.com', 'Sophia', 'Garcia', 'Female', '1997-11-14', 'Member', 'PREMIUM', '2025-02-26'),
+('davidclark', 'clark987', 'david.clark@example.com', 'David', 'Clark', 'Male', '1991-02-28', 'Coach', 'VIP', '2025-03-15'),
+('isabellawilson', 'bellaPass', 'isabella.wilson@example.com', 'Isabella', 'Wilson', 'Female', '1999-10-01', 'Guest', NULL, '2025-04-05'),
+('aliceblue', 'alice123', 'alice.blue@example.com', 'Alice', 'Blue', 'Female', '1990-04-10', 'Member', 'FREE', '2024-02-03'),
+('bobbrown', 'bobpass', 'bob.brown@example.com', 'Bob', 'Brown', 'Male', '1987-07-22', 'Member', 'VIP', '2024-06-12'),
+('carolgreen', 'carolG2025', 'carol.green@example.com', 'Carol', 'Green', 'Female', '1992-03-19', 'Coach', 'PREMIUM', '2024-08-05'),
+('danielblack', 'danielB', 'daniel.black@example.com', 'Daniel', 'Black', 'Male', '1985-09-05', 'Guest', NULL, '2024-10-19'),
+('ellaorange', 'ellaPass', 'ella.orange@example.com', 'Ella', 'Orange', 'Female', '1994-11-29', 'Member', 'VIP', '2024-12-27'),
+('frankgray', 'frank123', 'frank.gray@example.com', 'Frank', 'Gray', 'Male', '1989-06-14', 'Admin', NULL, '2025-01-22'),
+('gracewhite', 'gracePW', 'grace.white@example.com', 'Grace', 'White', 'Female', '1998-12-03', 'Member', 'PREMIUM', '2025-03-03'),
+('henryred', 'henryR45', 'henry.red@example.com', 'Henry', 'Red', 'Male', '1983-01-27', 'Coach', 'VIP', '2025-05-09'),
+('irislime', 'iris789', 'iris.lime@example.com', 'Iris', 'Lime', 'Female', '1996-08-16', 'Guest', NULL, '2025-05-27'),
+('jackcyan', 'jack2025', 'jack.cyan@example.com', 'Jack', 'Cyan', 'Male', '1991-10-02', 'Member', 'FREE', '2025-06-20');
 INSERT INTO Users (username, password, email, first_name, last_name, role)
 VALUES
 ('admin', '123', 'admin@example.com', 'Admin', 'User', 'Admin');
+
+
+
+
+
+
+--drop all table 
+
+-- Drop các bảng phụ thuộc trước (bảng con)
+DROP TABLE IF EXISTS user_plan_step;
+DROP TABLE IF EXISTS quit_plan_reasons;
+DROP TABLE IF EXISTS quit_plan;
+DROP TABLE IF EXISTS analysis_result;
+DROP TABLE IF EXISTS user_answer;
+DROP TABLE IF EXISTS question_option;
+DROP TABLE IF EXISTS question;
+DROP TABLE IF EXISTS password_reset_token;
+DROP TABLE IF EXISTS Orders;
+DROP TABLE IF EXISTS Users;
+
+
 
  drop table Users
  select * from password_reset_token

@@ -132,7 +132,7 @@ public class HomeController {
 
     // ========== Trang chủ ==========
     @GetMapping({"/", "/home"})
-    public String home(Model model, Authentication authentication) {
+    public String home(Model model) {
         List<LeaderboardUser> leaderboard = Arrays.asList(
                 new LeaderboardUser(1, "Thanh Nguyen", 152),
                 new LeaderboardUser(2, "Minh Tran", 140),
@@ -144,16 +144,6 @@ public class HomeController {
         model.addAttribute("blogPosts", blogPosts);
 
 
-        if (authentication != null) {
-            Object principal = authentication.getPrincipal();
-
-            if (principal instanceof CustomUserDetails userDetails) {
-                model.addAttribute("fullName", userDetails.getUser().getFirstName());
-            } else if (principal instanceof OAuth2User oAuth2User) {
-                String name = oAuth2User.getAttribute("name");
-                model.addAttribute("fullName", name != null ? name : "User");
-            }
-        }
         return "home";
     }
 
