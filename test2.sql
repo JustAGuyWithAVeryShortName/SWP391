@@ -58,7 +58,16 @@ CREATE TABLE analysis_result (
     recommendation NVARCHAR(MAX) NOT NULL,
     created_at DATETIME DEFAULT GETDATE()
 );
-
+-- Bảng chính lưu kế hoạch bỏ thuốc
+CREATE TABLE quit_plan (
+    id BIGINT PRIMARY KEY IDENTITY(1,1),
+    start_date DATE,
+    target_date DATE,
+    stages NVARCHAR(255),
+    custom_plan NVARCHAR(2000),
+    user_id INT,
+    CONSTRAINT FK_quit_plan_user FOREIGN KEY (user_id) REFERENCES Users(user_id)
+);
 -- Bảng chính lưu kế hoạch bỏ thuốc
 CREATE TABLE user_plan_step (
     id BIGINT PRIMARY KEY IDENTITY(1,1),
