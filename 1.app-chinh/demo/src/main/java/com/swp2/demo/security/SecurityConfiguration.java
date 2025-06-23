@@ -1,5 +1,6 @@
 package com.swp2.demo.security;
 
+import com.swp2.demo.Repository.UserRepository;
 import com.swp2.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -7,6 +8,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod; // <-- cần import để phân biệt GET/POST
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -40,7 +43,9 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/", "/home", "/register/**", "/login", "/css/**", "/images/**", "/js/**",
-                                "/member", "/forgot-password", "/reset-password", "/about_us", "/.well-known/**"
+                                "/member", "/forgot-password", "/reset-password",
+                                "/ws/**","/about_us","/.well-known/**"
+
                         ).permitAll()
 
                         .requestMatchers(HttpMethod.POST, "/questionnaire").permitAll()
@@ -68,5 +73,21 @@ public class SecurityConfiguration {
                 );
 
         return http.build();
+    }
+    @Bean
+    public UserDetailsService userDetailsService(UserRepository userRepository) {
+        return username -> {
+            com.swp2.demo.entity.User user = userRepository.findByUsername(username); // Get the User object directly
+
+            if (user == null) { // Check if the user was found
+                throw new UsernameNotFoundException("User not found: " + username);
+            }
+
+            return org.springframework.security.core.userdetails.User
+                    .withUsername(user.getUsername())
+                    .password(user.getPassword())
+                    .roles(user.getRole().name())
+                    .build();
+        };
     }
 }

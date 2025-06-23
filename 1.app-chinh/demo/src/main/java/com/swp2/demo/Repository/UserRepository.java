@@ -1,7 +1,11 @@
 package com.swp2.demo.Repository;
 
+
 import com.swp2.demo.entity.Member;
+import com.swp2.demo.entity.Role;
+import com.swp2.demo.entity.Status;
 import com.swp2.demo.entity.User;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -28,5 +32,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "GROUP BY MONTH(u.createdAt) " +
             "ORDER BY MONTH(u.createdAt)")
     List<Object[]> countUsersByMonth(@Param("year") int year);
+
+
+    List<User> findAllByStatus(Status status);
+    List<User> findAllByRoleAndStatus(Role role, Status status);
 
 }

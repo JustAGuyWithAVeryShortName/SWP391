@@ -50,11 +50,15 @@ public class User {
     @Column(name = "created_at")
     private LocalDate createdAt = LocalDate.now();
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private Status status = Status.OFFLINE;
+
 
     public User() {
     }
 
-    public User(Long id, String username, String password, String firstName, String lastName, String email, Gender gender, LocalDate dateOfBirth, Role role, Member member, LocalDate createdAt) {
+    public User(Long id, String username, String password, String firstName, String lastName, String email, Gender gender, LocalDate dateOfBirth, Role role, Member member, LocalDate createdAt, Status status) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -66,6 +70,7 @@ public class User {
         this.role = role;
         this.member = member;
         this.createdAt = createdAt;
+        this.status = status;
     }
 
     public Member getMember() {
@@ -154,6 +159,13 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     @Override

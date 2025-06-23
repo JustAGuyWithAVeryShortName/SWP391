@@ -61,7 +61,7 @@ body {
     box-shadow: var(--shadow-main);
     display: flex;
     overflow: hidden;
-    position: relative; /* Cần cho việc định vị absolute của sidebar/chat-area trên mobile */
+    position: relative;
 }
 
 /* =================================
@@ -177,8 +177,38 @@ body {
 .icon-button svg { width: 24px; height: 24px; }
 
 .messages-container {
-    flex: 1; padding: 24px; overflow-y: auto; display: flex;
-    flex-direction: column; gap: 4px;
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px; /* Gap between message groups */
+}
+
+/* Remove direct margin-bottom from .message-group if using gap on .messages-container */
+.messages-container .message-group {
+    margin-bottom: 0;
+}
+
+/* Ensure the date separator also has some space around it */
+.date-separator {
+    text-align: center;
+    margin: 20px 0; /* Adds vertical space before and after the date separator */
+    color: #666;
+    font-size: 0.85em;
+    position: sticky;
+    top: 0;
+    background-color: rgba(255, 255, 255, 0.9); /* Corrected variable name */
+    padding: 5px 0;
+    z-index: 1;
+
+}
+
+.date-separator span {
+    background-color: #e0e0e0;
+    padding: 4px 8px;
+    border-radius: 10px;
+    display: inline-block;
 }
 @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(10px); }
@@ -206,15 +236,9 @@ body {
 .message-group.sent .message-bubble { background-color: var(--sent-bubble-bg); color: var(--text-on-primary); }
 .message-group.received .message-bubble { background-color: var(--received-bubble-bg); }
 
-.date-separator {
-    text-align: center; margin: 24px 0; color: var(--text-secondary);
-    font-size: 12px; font-weight: 600; text-transform: uppercase;
-    animation: fadeInUp 0.5s ease-out;
-}
-
 /* CẢI TIẾN: Logic gộp tin nhắn đơn giản và hiệu quả hơn với :has() và biến CSS */
 /* Ẩn avatar và giảm khoảng cách khi tin nhắn sau cùng người gửi */
-.message-group[data-sender-id] + .message-group[data-sender-id] { margin-top: -12px; }
+.message-group[data-sender-id] + .message-group[data-sender-id] { margin-top: -12px; } /* Keep this for close-group effect */
 .message-group[data-sender-id] + .message-group[data-sender-id] .message-avatar {
     visibility: hidden; opacity: 0;
 }
@@ -267,16 +291,24 @@ body {
    ================================= */
 @media (max-width: 800px) {
     .chat-app {
-        width: 100vw; height: 100vh; border-radius: 0;
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
     }
+
     .sidebar {
-        position: absolute; width: 100%; height: 100%;
+        position: absolute;
+        width: 100%;
+        height: 100%;
         z-index: 10;
         transform: translateX(0); /* Hiển thị mặc định */
         transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     }
+
     .chat-area {
-        position: absolute; width: 100%; height: 100%;
+        position: absolute;
+        width: 100%;
+        height: 100%;
         transform: translateX(100%); /* Ẩn đi */
         transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     }
@@ -285,10 +317,10 @@ body {
     .chat-app.show-chat-area .sidebar {
         transform: translateX(-100%);
     }
-    .chat-app.show-chat-area .chat-area {
-        transform: translateX(0);
-        z-index: 20;
+
+    .back-button {
+        display: block;
     }
 
-    .back-button { display: block; } /* Hiện nút quay lại */
+    /* Hiện nút quay lại */
 }

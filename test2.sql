@@ -12,7 +12,9 @@ CREATE TABLE Users (
     date_of_birth DATE,
     role VARCHAR(10) NOT NULL DEFAULT 'Guest' CHECK (role IN ('Guest', 'Member', 'Coach', 'Admin')),
     member_plan VARCHAR(10) NULL CHECK (member_plan IN ('FREE', 'VIP', 'PREMIUM')),
-	created_at DATE DEFAULT GETDATE()
+	created_at DATE DEFAULT GETDATE(),
+	status VARCHAR(10) NOT NULL DEFAULT 'OFFLINE' CHECK (status IN ('ONLINE', 'OFFLINE'))
+
 );
 CREATE TABLE Orders (
     order_id INT PRIMARY KEY IDENTITY(1,1),
@@ -75,8 +77,21 @@ CREATE TABLE quit_plan_reasons (
     CONSTRAINT FK_quit_plan_reasons_plan FOREIGN KEY (plan_id) REFERENCES quit_plan(id) ON DELETE CASCADE
 );
 
+CREATE TABLE chat_message (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    sender_id NVARCHAR(20) NOT NULL,
+    receiverid NVARCHAR(20) NOT NULL,
+    content NVARCHAR(MAX) NOT NULL,
+    timestamp DATETIME2 NOT NULL,
+    
+);
 
+select * from chat_message
 
+EXEC sp_rename 'chat_message.senderId', 'sender_id', 'COLUMN';
+
+-- Rename receiverId to receiver_id
+EXEC sp_rename 'chat_message.receiverId', 'receiver_id', 'COLUMN';
 
 -- Question 1
 INSERT INTO question (question_text) VALUES ('How old are you?');
@@ -167,6 +182,11 @@ VALUES
 ('jackcyan', 'jack2025', 'jack.cyan@example.com', 'Jack', 'Cyan', 'Male', '1991-10-02', 'Member', 'FREE', '2025-06-20');
 INSERT INTO Users (username, password, email, first_name, last_name, role)
 VALUES
+
+('member', '123', 'member@example.com', 'Member', 'User', 'Member'),
+('member2', '123', 'member2@example.com', 'Member', 'User', 'Member'),
+('coach', '123', 'coach@example.com', 'Coach', 'User', 'Coach'),
+('coach2', '123', 'coach2@example.com', 'Coach', 'User', 'Coach'),
 ('admin', '123', 'admin@example.com', 'Admin', 'User', 'Admin');
 
 
@@ -194,6 +214,7 @@ DROP TABLE IF EXISTS Users;
  select * from password_reset_token
  select * from user_answer
   select * from Users
+  select * from chatmessage
 
 DELETE FROM user_answer WHERE question_id IN (SELECT id FROM question);
 DELETE FROM question_option WHERE question_id IN (SELECT id FROM question);

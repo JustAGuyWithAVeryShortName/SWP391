@@ -12,10 +12,11 @@
     <aside class="sidebar">
         <header class="sidebar-header">
             <button class="icon-button" aria-label="Menu">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                <svg xmlns="http://www.w3.org/2004/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
             </button>
+            <button id="logout">Exit</button>
             <form class="search-form" role="search">
-                <input type="search" class="search-bar" placeholder="Tìm kiếm tin nhắn...">
+                <input type="search" class="search-bar" placeholder="Search for messages...">
             </form>
         </header>
 
@@ -26,24 +27,23 @@
             </div>
         </div>
 
-        <div class="conversation-list" role="list">
+        <div class="conversation-list" id="connectedUsers" role="list">
             <div th:each="conv : ${conversations}"
                  class="conversation-item"
                  th:classappend="${conv.isActive} ? 'active' : ''"
                  th:attr="data-conversation-id=${conv.id}"
-                 role="listitem">
+                 th:id="${conv.partner.username}" role="listitem">
                 <div class="avatar-container">
-                    <img th:src="${conv.partner.avatarUrl}" alt="Avatar" class="avatar">
-                    <span class="status-dot" th:classappend="${conv.partner.isOnline} ? 'online' : ''"></span>
+                    <img src="https://png.pngtree.com/png-clipart/20240603/original/pngtree-cat-logo-design-png-image_15240244.png" alt="User Avatar" class="avatar">
+                    <span class="status-dot" th:classappend="${conv.partner.status.name() == 'ONLINE'} ? 'online' : ''"></span>
                 </div>
                 <div class="conversation-details">
                     <div class="conversation-header">
-                        <h3 th:text="${conv.partner.name}">Tên người dùng</h3>
+                        <h3 th:text="${conv.partner.username}" class="user-username">Username</h3>
                         <span th:text="${conv.time}" class="time">9:30pm</span>
                     </div>
                     <div class="conversation-footer">
-                        <p th:text="${conv.lastMessage}" class="last-message">Đây là tin nhắn cuối...</p>
-                        <svg th:if="${conv.isStarred}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" class="star-icon"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                        <p th:text="${conv.lastMessage}" class="last-message">Last message...</p>
                     </div>
                 </div>
             </div>
@@ -56,35 +56,27 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
             </button>
             <div class="avatar-container">
-                <img th:src="*{avatarUrl}" alt="Avatar" class="avatar">
-                <span class="status-dot" th:classappend="*{isOnline} ? 'online' : ''"></span>
+                <span class="status-dot" th:classappend="*{status.name() == 'ONLINE'} ? 'online' : ''"></span>
             </div>
             <div class="chat-header-info">
-                <h2 th:text="*{name}">Marzia Mithila</h2>
-                <span class="user-status" th:text="*{isOnline} ? 'Đang hoạt động' : 'Ngoại tuyến'">Đang hoạt động</span>
+                <h2 id="connected-user-fullname">[[${username}]]</h2>
+                <span class="user-status" th:text="*{status.name() == 'ONLINE'} ? 'Online' : 'Offline'">Online</span>
             </div>
             <div class="chat-header-actions">
-                <button class="icon-button" aria-label="Gọi video">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
-                </button>
-                <button class="icon-button" aria-label="Gọi thoại">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                </button>
+
                 <button class="icon-button" aria-label="Tùy chọn khác">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
                 </button>
             </div>
         </header>
 
-        <div class="messages-container" role="log">
+        <div class="messages-container" id="chat-messages" role="log">
             <th:block th:each="msg, iterStat : ${messages}">
                 <div th:if="${iterStat.first or !messages[iterStat.index-1].timestamp.toLocalDate().isEqual(msg.timestamp.toLocalDate())}"
                      class="date-separator">
-                    <span th:text="${#temporals.format(msg.timestamp, 'eeee, dd MMMM yyyy')}"></span>
-                </div>
+                    <span th:text="${#temporals.format(msg.timestamp, 'EEEE, dd MMMM yyyy HH:mm')}"></span> </div>
 
-                <div class="message-group" th:classappend="${msg.senderId == currentUser.id ? 'sent' : 'received'}" th:attr="data-sender-id=${msg.senderId}">
-                    <img th:if="${msg.senderId != currentUser.id}" th:src="${msg.sender.avatarUrl}" alt="Avatar" class="avatar message-avatar">
+                <div class="message-group" th:classappend="${msg.senderId == currentUser.username ? 'sent' : 'received'}" th:attr="data-sender-id=${msg.senderId}">
                     <div class="message-bubble">
                         <p th:text="${msg.content}">Nội dung tin nhắn</p>
                     </div>
@@ -92,15 +84,9 @@
             </th:block>
         </div>
 
-        <form class="chat-input-form" th:if="${activeConversationPartner}">
-            <button type="button" class="icon-button" aria-label="Đính kèm file">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
-            </button>
-            <textarea placeholder="Nhập tin nhắn..." rows="1" aria-label="Soạn tin nhắn"></textarea>
+        <form class="chat-input-form"  id="messageForm" th:if="${activeConversationPartner}">
+            <textarea id="message" placeholder="Nhập tin nhắn..." rows="1" aria-label="Soạn tin nhắn"></textarea>
             <div class="input-actions">
-                <button type="button" class="icon-button" aria-label="Cảm xúc">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
-                </button>
                 <button type="submit" class="icon-button send-button" aria-label="Gửi">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                 </button>
@@ -109,61 +95,330 @@
     </main>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        const messageForm = document.querySelector('#messageForm');
+        const messageInput = document.querySelector('#message');
+        const chatArea = document.querySelector('#chat-messages');
+        const logout = document.querySelector('#logout');
+        let selectedUserId = null;
+        let stompClient = null;
+        const username = '[[${username}]]';
+
+        const notificationState = {}; // Keep track of unread notifications
+
+        function connect(event) {
+            if (event) {
+                event.preventDefault();
+            }
+            const socket = new SockJS('/ws');
+            stompClient = Stomp.over(socket);
+            stompClient.connect({}, onConnected);
+        }
+
+        function onConnected() {
+            stompClient.subscribe(`/user/${username}/queue/messages`, onMessageReceived);
+            stompClient.subscribe(`/user/public`, onMessageReceived); // For public status updates or broadcasts
+            stompClient.send("/app/user.addUser", {}, JSON.stringify({ senderId: username, status: 'ONLINE' }));
+
+            // Initial setup of connected users.
+            // This will now gracefully update or add elements, not just clear and rebuild.
+            findAndDisplayConnectedUsers();
+        }
+
+        async function findAndDisplayConnectedUsers() {
+            const connectedUsersResponse = await fetch('/users');
+            const connectedUsers = await connectedUsersResponse.json();
+            const connectedUsersList = document.getElementById('connectedUsers');
+            if (!connectedUsersList) return;
+
+            // Map current elements by their ID for quick lookup
+            const existingUserElements = new Map();
+            Array.from(connectedUsersList.children).forEach(element => {
+                existingUserElements.set(element.id, element);
+            });
+
+            // Filter out the current user and process
+            const usersToProcess = connectedUsers.filter(user => user.username !== username);
+            const activeUsernames = new Set(); // To keep track of users that are still active
+
+            usersToProcess.forEach(user => {
+                const userId = user.username;
+                activeUsernames.add(userId);
+                let userElement = existingUserElements.get(userId);
+
+                if (userElement) {
+                    // User already exists, update their status and potentially last message/time
+                    userElement.querySelector('.status-dot').classList.toggle('online', user.status.toUpperCase() === 'ONLINE');
+                    // You might need to update the last message and time if your /users endpoint provides it
+                    // userElement.querySelector('.last-message').textContent = user.lastMessage || 'No recent messages';
+                    // userElement.querySelector('.time').textContent = user.time || '';
+                } else {
+                    // New user, create and append
+                    userElement = appendUserElement(user, connectedUsersList);
+                }
+                // Remove from map to track users that are no longer connected
+                existingUserElements.delete(userId);
+            });
+
+            // Any remaining elements in existingUserElements map are users who have disconnected
+            existingUserElements.forEach(element => {
+                connectedUsersList.removeChild(element);
+            });
+
+            // Re-attach click listeners to ALL current conversation items
+            // This is crucial because new elements won't have them, and if elements were removed,
+            // their listeners are gone.
+            document.querySelectorAll('.conversation-item').forEach(item => {
+                item.removeEventListener('click', userItemClick); // Prevent duplicate listeners
+                item.addEventListener('click', userItemClick);
+            });
+        }
+
+
+        function appendUserElement(user, connectedUsersList) {
+            const divItem = document.createElement('div');
+            // Ensure classes match Thymeleaf structure
+            divItem.classList.add('conversation-item');
+            divItem.setAttribute('data-conversation-id', user.username);
+            divItem.id = user.username; // Assign ID for easy lookup
+
+            const isUserOnline = user.status && user.status.toUpperCase() === 'ONLINE';
+            const badgeVisible = notificationState[user.username] ? 'inline-block' : 'none';
+
+            divItem.innerHTML = `
+                <div class="avatar-container">
+                    <img src="https://png.pngtree.com/png-clipart/20240603/original/pngtree-cat-logo-design-png-image_15240244.png" alt="User Avatar" class="avatar">
+                    <span class="status-dot ${isUserOnline ? 'online' : ''}"></span>
+                </div>
+                <div class="conversation-details">
+                    <div class="conversation-header">
+                        <h3 class="user-username">${user.username}</h3>
+                        <span class="time">N/A</span> </div>
+                    <div class="conversation-footer">
+                        <p class="last-message">No recent messages</p> <span class="badge bg-danger ms-auto" id="notify-${user.username}" style="display: ${badgeVisible};">New</span>
+                    </div>
+                </div>
+            `;
+            // Do NOT add event listener here. It's done in findAndDisplayConnectedUsers for all.
+            connectedUsersList.appendChild(divItem);
+            return divItem;
+        }
+
+        function userItemClick(event) {
+            document.querySelectorAll('.conversation-item').forEach(item => item.classList.remove('active'));
+            const clickedUserElement = event.currentTarget;
+            clickedUserElement.classList.add('active');
+
+            const messageFormElement = document.getElementById('messageForm');
+            if (messageFormElement) {
+                messageFormElement.style.display = 'flex';
+            }
+
+            selectedUserId = clickedUserElement.getAttribute('data-conversation-id');
+
+            // Update the chat header with the selected user's name
+            const connectedUserFullnameElement = document.querySelector('#connected-user-fullname');
+            if (connectedUserFullnameElement) {
+                const usernameEl = clickedUserElement.querySelector('.user-username');
+                if (usernameEl) {
+                    connectedUserFullnameElement.textContent = usernameEl.textContent;
+                }
+            }
+
+            // Hide notification badge for the selected user
+            const notificationBadge = document.getElementById(`notify-${selectedUserId}`);
+            if (notificationBadge) {
+                notificationBadge.style.display = 'none';
+            }
+            delete notificationState[selectedUserId]; // Clear notification state
+
+            fetchAndDisplayUserChat(); // Load chat history for the selected user
+            openChat(); // Show chat area on mobile
+        }
+
+        let lastMessageDate = null; // Track date for message separators
+
+        async function fetchAndDisplayUserChat() {
+            const userChatResponse = await fetch(`/messages/${username}/${selectedUserId}`);
+            const userChat = await userChatResponse.json();
+            if (chatArea) {
+                chatArea.innerHTML = ''; // Clear existing messages
+                lastMessageDate = null; // Reset date tracker for a new chat
+
+                userChat.forEach(chat => displayMessage(chat.senderId, chat.content, chat.timestamp));
+                chatArea.scrollTop = chatArea.scrollHeight; // Scroll to bottom
+            }
+        }
+
+        function displayMessage(senderId, content, timestampString) {
+            const messageDate = new Date(timestampString);
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(today.getDate() - 1);
+
+            let dateSeparatorText = '';
+            // Check if date has changed or if it's the first message
+            if (!lastMessageDate || messageDate.toDateString() !== lastMessageDate.toDateString()) {
+                if (messageDate.toDateString() === today.toDateString()) {
+                    dateSeparatorText = 'Today';
+                } else if (messageDate.toDateString() === yesterday.toDateString()) {
+                    dateSeparatorText = 'Yesterday';
+                } else {
+                    // Custom formatting for other dates to match Thymeleaf output: EEEE, dd MMMM yyyy
+                    const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+                    // Example: "Thứ Hai, 24 tháng Sáu 2024"
+                    dateSeparatorText = messageDate.toLocaleDateString('vi-VN', options);
+                    // Capitalize first letter of day and month if needed (locale dependent)
+                    dateSeparatorText = dateSeparatorText.charAt(0).toUpperCase() + dateSeparatorText.slice(1);
+                    // Replace 'tháng sáu' with 'Tháng Sáu' and similar for other months.
+                    // This is a simple capitalization, for full proper case you might need more complex logic.
+                }
+
+                const dateSeparatorDiv = document.createElement('div');
+                dateSeparatorDiv.classList.add('date-separator');
+                // You had HH:mm in your Thymeleaf template for date separators, so I'll include it here.
+                dateSeparatorDiv.innerHTML = `<span>${dateSeparatorText} ${messageDate.getHours().toString().padStart(2, '0')}:${messageDate.getMinutes().toString().padStart(2, '0')}</span>`;
+                chatArea.appendChild(dateSeparatorDiv);
+                lastMessageDate = messageDate; // Update lastMessageDate after adding separator
+            }
+
+            const messageGroup = document.createElement('div');
+            messageGroup.classList.add('message-group');
+            if (senderId === username) {
+                messageGroup.classList.add('sent');
+            } else {
+                messageGroup.classList.add('received');
+            }
+            messageGroup.setAttribute('data-sender-id', senderId);
+
+            const messageBubble = document.createElement('div');
+            messageBubble.classList.add('message-bubble');
+            messageBubble.innerHTML = `<p>${content}</p>`; // Use innerHTML to allow HTML content inside <p> if needed
+
+            messageGroup.appendChild(messageBubble);
+            chatArea.appendChild(messageGroup);
+
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+
+        function sendMessage(event) {
+            event.preventDefault();
+            const messageContent = messageInput.value.trim();
+            if (messageContent && stompClient && selectedUserId) {
+                const chatMessage = {
+                    senderId: username,
+                    receiverId: selectedUserId,
+                    content: messageContent,
+                    timestamp: new Date() // Sending a JS Date object, Spring will convert to LocalDateTime
+                };
+                stompClient.send("/app/chat", {}, JSON.stringify(chatMessage));
+                // Immediately display the sent message in the chat
+                displayMessage(username, messageContent, new Date().toISOString()); // Use ISOString for consistent parsing
+                messageInput.value = ''; // Clear input field
+                chatArea.scrollTop = chatArea.scrollHeight; // Scroll to bottom
+            }
+        }
+
+        function onMessageReceived(payload) {
+            const message = JSON.parse(payload.body);
+
+            // Assuming a 'type' field for status updates from backend if you send them on /user/public
+            if (message.type === 'STATUS_UPDATE') {
+                findAndDisplayConnectedUsers(); // Refresh user list if status changes
+                return; // Don't treat as a chat message
+            }
+
+            // Handle incoming chat messages
+            if (selectedUserId && selectedUserId === message.senderId) {
+                displayMessage(message.senderId, message.content, message.timestamp);
+                // If the chat is active, hide the notification badge
+                const notificationBadge = document.getElementById(`notify-${message.senderId}`);
+                if (notificationBadge) {
+                    notificationBadge.style.display = 'none';
+                }
+            } else {
+                // If message is from a non-active chat, show notification
+                notificationState[message.senderId] = true;
+                const notificationBadge = document.getElementById(`notify-${message.senderId}`);
+                if (notificationBadge) {
+                    notificationBadge.style.display = 'inline-block';
+                }
+                // Optional: Update last message preview in sidebar for non-active chats
+                const userElement = document.getElementById(message.senderId);
+                if (userElement) {
+                    const lastMessageP = userElement.querySelector('.last-message');
+                    if (lastMessageP) {
+                        lastMessageP.textContent = message.content;
+                    }
+                    const timeSpan = userElement.querySelector('.time');
+                    if (timeSpan && message.timestamp) {
+                        const msgDate = new Date(message.timestamp);
+                        timeSpan.textContent = `${msgDate.getHours().toString().padStart(2, '0')}:${msgDate.getMinutes().toString().padStart(2, '0')}`;
+                    }
+                }
+            }
+        }
+
+        function onLogout() {
+            if (stompClient) { // Check if stompClient is initialized
+                stompClient.send("/app/user.disconnectUser", {}, JSON.stringify({ senderId: username, status: 'OFFLINE' }));
+            }
+            // CẢI TIẾN: Chuyển hướng đến trang người dùng sau khi đăng xuất
+            window.location.href = '/dashboard'; // Thay '/userpage' bằng URL trang người dùng thực tế của bạn
+        }
+
+        // Attach event listeners after DOM is loaded
+        if (messageForm) {
+            messageForm.addEventListener('submit', sendMessage);
+        } else {
+            console.error("Error: messageForm element not found. It might be conditionally rendered by Thymeleaf.");
+        }
+
+        if (logout) {
+            logout.addEventListener('click', onLogout);
+        } else {
+            console.warn("Warning: logout element with ID 'logout' not found.");
+        }
+
         const textarea = document.querySelector('.chat-input-form textarea');
         if (textarea) {
-            const initialHeight = textarea.scrollHeight;
             textarea.addEventListener('input', function() {
                 this.style.height = 'auto';
-                // CẢI TIẾN: Thêm +2px để tránh thanh cuộn xuất hiện khi chỉ có 1 dòng
                 this.style.height = (this.scrollHeight + 2) + 'px';
             });
         }
 
-        // CẢI TIẾN: Logic hiển thị cho mobile mượt mà và tin cậy hơn
         const chatApp = document.querySelector('.chat-app');
         const backButton = document.querySelector('.back-button');
-        const conversationItems = document.querySelectorAll('.conversation-item');
 
-        // Hàm chuyển sang màn hình chat
         const openChat = () => {
-            chatApp.classList.add('show-chat-area');
+            if (chatApp) {
+                chatApp.classList.add('show-chat-area');
+            }
         };
 
-        // Hàm quay về danh sách hội thoại
         const closeChat = () => {
-            chatApp.classList.remove('show-chat-area');
+            if (chatApp) {
+                chatApp.classList.remove('show-chat-area');
+            }
         };
 
         if (backButton) {
             backButton.addEventListener('click', closeChat);
         }
 
-        conversationItems.forEach(item => {
-            item.addEventListener('click', () => {
-                // Logic để tải nội dung chat mới có thể được thêm ở đây
-                // Ví dụ: fetch('/api/conversation/' + item.dataset.conversationId)
-
-                // Xóa trạng thái active cũ
-                const currentActive = document.querySelector('.conversation-item.active');
-                if (currentActive) {
-                    currentActive.classList.remove('active');
-                }
-                // Thêm trạng thái active mới
-                item.classList.add('active');
-
-                // Chuyển view trên mobile
-                openChat();
-            });
-        });
-
-        // CẢI TIẾN: Tự động cuộn xuống tin nhắn cuối cùng khi tải trang
-        const messagesContainer = document.querySelector('.messages-container');
+        // Initial setup for the chat messages container to scroll to the bottom
+        const messagesContainer = document.querySelector('#chat-messages');
         if (messagesContainer) {
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
+
+        // Establish WebSocket connection when DOM is ready
+        connect();
     });
 </script>
-</body>
-</html>
