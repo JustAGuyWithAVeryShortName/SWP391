@@ -1,5 +1,9 @@
 package com.swp2.demo.Controller;
 
+import com.swp2.demo.security.CustomUserDetails;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -128,7 +132,7 @@ public class HomeController {
 
     // ========== Trang chủ ==========
     @GetMapping({"/", "/home"})
-    public String home(Model model) {
+    public String home(Model model, Authentication authentication) {
         List<LeaderboardUser> leaderboard = Arrays.asList(
                 new LeaderboardUser(1, "Thanh Nguyen", 152),
                 new LeaderboardUser(2, "Minh Tran", 140),
@@ -138,7 +142,19 @@ public class HomeController {
 
         model.addAttribute("leaderboardUsers", leaderboard);
         model.addAttribute("blogPosts", blogPosts);
-        return "home"; // home.html
+
+
+        if (authentication != null) {
+            Object principal = authentication.getPrincipal();
+
+            if (principal instanceof CustomUserDetails userDetails) {
+                model.addAttribute("fullName", userDetails.getUser().getFirstName());
+            } else if (principal instanceof OAuth2User oAuth2User) {
+                String name = oAuth2User.getAttribute("name");
+                model.addAttribute("fullName", name != null ? name : "User");
+            }
+        }
+        return "home";
     }
 
     // ========== Trang chi tiết bài viết ==========
