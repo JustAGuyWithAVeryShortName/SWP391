@@ -91,12 +91,17 @@ CREATE TABLE quit_plan_reasons (
 
 CREATE TABLE chat_message (
     id INT IDENTITY(1,1) PRIMARY KEY,
-    sender_id NVARCHAR(20) NOT NULL,
-    receiverid NVARCHAR(20) NOT NULL,
+    sender_id NVARCHAR(255) NOT NULL,
+    receiverid NVARCHAR(255) NOT NULL,
     content NVARCHAR(MAX) NOT NULL,
     timestamp DATETIME2 NOT NULL,
     
 );
+ALTER TABLE chat_message
+ALTER COLUMN sender_id NVARCHAR(255) NOT NULL;
+
+ALTER TABLE chat_message
+ALTER COLUMN receiver_id NVARCHAR(255) NOT NULL;
 
 select * from chat_message
 

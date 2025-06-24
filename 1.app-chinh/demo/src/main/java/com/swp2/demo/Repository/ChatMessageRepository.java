@@ -12,5 +12,8 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     List<ChatMessage> findChatHistory(String senderId, String receiverId);
 
     // Find all messages where a specific user is either the sender or receiver
-    List<ChatMessage> findBySenderIdOrReceiverId(String senderId, String receiverId);
+    List<ChatMessage> findBySenderIdAndReceiverIdOrReceiverIdAndSenderId(
+            String senderId1, String receiverId1,
+            String senderId2, String receiverId2
+    );
 }
