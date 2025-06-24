@@ -32,7 +32,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
              user = userService.findByUsername(userDetails.getUsername());
 
             session.setAttribute("loggedInUser", user);
-
+            session.setAttribute("userId", user.getId());
         } else if (authentication.getPrincipal() instanceof OAuth2User oauth2User) {
             String email = oauth2User.getAttribute("email");
             String name = oauth2User.getAttribute("name");
@@ -55,6 +55,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 session.setAttribute("needsProfileUpdate", true);
             }
             session.setAttribute("loggedInUser", user);
+            session.setAttribute("userId", user.getId());
         }
         if (user != null && user.getRole() == com.swp2.demo.entity.Role.Admin) {
             response.sendRedirect("/admin");  // Nếu là Admin thì vào trang admin

@@ -90,6 +90,25 @@
       </fieldset>
     </div>
 
+    <!-- Fieldset 4: Smoking & Spending Info -->
+    <div class="grid sm:grid-cols-2 gap-6">
+      <fieldset>
+        <label for="dailySmokingCigarettes" class="block text-lg font-semibold text-slate-800 mb-2">5. Số điếu hút mỗi ngày</label>
+        <input type="number" id="dailySmokingCigarettes" th:field="*{dailySmokingCigarettes}" min="0" required
+               class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+               placeholder="Ví dụ: 10"/>
+        <p class="mt-2 text-sm text-slate-500">Trung bình bạn hút bao nhiêu điếu mỗi ngày?</p>
+      </fieldset>
+
+      <fieldset>
+        <label for="dailySpending" class="block text-lg font-semibold text-slate-800 mb-2">6. Chi tiêu mỗi ngày (VNĐ)</label>
+        <input type="number" id="dailySpending" th:field="*{dailySpending}" min="0" step="1000" required
+               class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+               placeholder="Ví dụ: 20000"/>
+        <p class="mt-2 text-sm text-slate-500">Số tiền bạn dùng để mua thuốc mỗi ngày.</p>
+      </fieldset>
+    </div>
+
     <!-- Fieldset 3: Approach -->
     <fieldset>
       <label for="stages" class="block text-lg font-semibold text-slate-800 mb-2">4. Choose your approach</label>

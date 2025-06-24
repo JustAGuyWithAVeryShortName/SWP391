@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
+import jakarta.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import java.time.*;
 import java.time.temporal.ChronoUnit;
@@ -68,9 +68,15 @@ public class ProgressController {
     }
 
     @GetMapping("/track-progress")
-    public String trackProgress(Model model) {
-        Long userId = 1L; // 👉 thay bằng user thật sau này
+    public String trackProgress(HttpSession session, Model model) {
+        Long userId = (Long) session.getAttribute("userId");
+
+        if (userId == null) {
+            return "redirect:/login"; // hoặc hiển thị lỗi
+        }
+
         QuitPlan plan = quitPlanRepository.findByUserId(userId).stream().findFirst().orElse(null);
+
         if (plan == null) {
             model.addAttribute("error", "Chưa có kế hoạch bỏ thuốc.");
             return "error";
@@ -85,15 +91,19 @@ public class ProgressController {
         long daysSinceQuit = Duration.between(startDateTime, now).toDays();
         if (daysSinceQuit < 0) daysSinceQuit = 0;
 
-        int cigarettesPerDay = 20; // bạn có thể lấy từ plan nếu có
-        BigDecimal pricePerCigarette = new BigDecimal("1.20");
+        long cigarettesAvoided = 0;
+        BigDecimal moneySaved = BigDecimal.ZERO;
 
-        long cigarettesAvoided = daysSinceQuit * cigarettesPerDay;
-        BigDecimal moneySaved = pricePerCigarette.multiply(BigDecimal.valueOf(cigarettesAvoided));
+        if (plan.getDailySmokingCigarettes() != null) {
+            cigarettesAvoided = plan.getDailySmokingCigarettes() * daysSinceQuit;
+        }
 
-        model.addAttribute("daysSinceQuit", daysSinceQuit);
-        model.addAttribute("moneySaved", String.format("$%.2f", moneySaved));
+        if (plan.getDailySpending() != null) {
+            moneySaved = plan.getDailySpending().multiply(BigDecimal.valueOf(daysSinceQuit));
+        }
         model.addAttribute("cigarettesAvoided", cigarettesAvoided);
+        model.addAttribute("daysSinceQuit", daysSinceQuit);
+        model.addAttribute("moneySaved", String.format("%,.0f", moneySaved));
         model.addAttribute("healthProgress", getHealthProgress(daysSinceQuit));
 
         List<Milestone> allMilestones = defineMilestones();
