@@ -26,12 +26,29 @@
 }
 
 /* ==== BASE STYLES ==== */
-
 /* ==== làm Hi, name ==== */
-.logout-button{
+.dropdown-item {
+    display: block;
+    width: 100%;
+    padding: 10px 16px;
+    color: #333;
+    font-size: 0.95rem;
+    font-family: var(--font-primary);
+    text-align: left;
     background: none;
     border: none;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    appearance: none;         /* reset style nút cho Firefox/Safari */
+    -webkit-appearance: none; /* reset cho Safari */
+    font-weight: 510;
 }
+
+.dropdown-item:hover {
+    background-color: #f5f5f5;
+}
+
 .dropdown-toggle {
     background: none;
     border: none;
@@ -44,6 +61,9 @@
     align-items: center;
     gap: 6px;
     position: relative;
+    font-family: 'Poppins', sans-serif;
+
+
 }
 .dropdown-toggle i {
     transition: transform 0.3s ease;
@@ -51,6 +71,7 @@
 
 .nav-item.dropdown {
     position: relative;
+
 }
 .dropdown-menu {
     position: absolute;
@@ -66,17 +87,6 @@
     transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
     z-index: 999;
 }
-.dropdown-item {
-    display: block;
-    padding: 10px 16px;
-    color: #333;
-    text-decoration: none;
-    font-size: 0.95rem;
-    transition: background 0.2s ease;
-}
-.dropdown-item:hover {
-    background-color: #f5f5f5;
-}
 .nav-item.dropdown:hover .dropdown-menu {
     opacity: 1;
     visibility: visible;
@@ -85,6 +95,8 @@
 .nav-item.dropdown:hover .dropdown-toggle i {
     transform: rotate(180deg);
 }
+
+
 
 /*===================================================*/
 * {
