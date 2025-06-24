@@ -8,34 +8,30 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 @RequiredArgsConstructor
 public class UserMessageService {
+    private static final Logger logger = LoggerFactory.getLogger(UserMessageService.class); // Add logger
     private final UserRepository userRepository;
     private final ChatMessageRepository chatMessageRepository;
 
     public User findUserByUsername(String username) {
-        User user = userRepository.findByUsername(username); // Call directly
+        User user = userRepository.findByUsername(username);
         if (user == null) {
-            // If it returns null, throw your exception
             throw new RuntimeException("User not found with username: " + username);
         }
-        return user; // Return the user if found
+        return user;
     }
 
     public void setStatus(String username, Status status) {
         User user = userRepository.findByUsername(username);
-        if (user != null) { // Check if user was found
+        if (user != null) {
             user.setStatus(status);
             userRepository.save(user);
         }
-        // Optionally, you might want to log a warning or throw an exception if the user is not found
-        // else {
-        //     System.out.println("Warning: User with username " + username + " not found.");
-        // }
     }
 
     public List<User> findConnectedUsers() {
@@ -43,29 +39,44 @@ public class UserMessageService {
         User currentUser = userRepository.findByUsername(currentUsername);
 
         if (currentUser == null) {
+            logger.error("Current user not found for username: {}", currentUsername);
             throw new RuntimeException("Current user not found for username: " + currentUsername);
         }
 
-        if (currentUser.getRole() == Role.Member) {
-            // Members can see all coaches (regardless of online status)
-            return userRepository.findAllByRole(Role.Coach); // Changed from findAllByRoleAndStatus
-        } else if (currentUser.getRole() == Role.Coach) {
-            // Coaches can only see members who have texted them (regardless of member's online status)
-            // 1. Get all messages involving this coach
-            List<ChatMessage> messagesWithCoach = chatMessageRepository.findBySenderIdOrReceiverId(currentUsername, currentUsername);
+        logger.info("User {} with role {} is requesting connected users.", currentUser.getUsername(), currentUser.getRole());
 
-            // 2. Extract the usernames of the members from these messages
+        if (currentUser.getRole() == Role.Member) {
+            List<User> coaches = userRepository.findAllByRole(Role.Coach);
+            logger.info("Member {} found {} coaches.", currentUser.getUsername(), coaches.size());
+            coaches.forEach(coach -> logger.info("  Coach: {} (Status: {})", coach.getUsername(), coach.getStatus()));
+            return coaches;
+        } else if (currentUser.getRole() == Role.Coach) {
+            // Assuming you want coaches to see ALL members as per our latest discussion:
+            List<User> members = userRepository.findAllByRole(Role.Member);
+            logger.info("Coach {} found {} members (all).", currentUser.getUsername(), members.size());
+            members.forEach(member -> logger.info("  Member: {} (Status: {})", member.getUsername(), member.getStatus()));
+            return members;
+
+            // If you want coaches to see ONLY members they've chatted with, keep this original logic:
+            /*
+            List<ChatMessage> messagesWithCoach = chatMessageRepository.findBySenderIdOrReceiverId(currentUsername, currentUsername);
             Set<String> memberUsernames = messagesWithCoach.stream()
                     .map(msg -> msg.getSenderId().equals(currentUsername) ? msg.getReceiverId() : msg.getSenderId())
-                    .filter(username -> userRepository.findByUsername(username) != null && userRepository.findByUsername(username).getRole() == Role.Member) // Ensure it's a member and user exists
+                    .filter(username -> {
+                        User potentialMember = userRepository.findByUsername(username);
+                        return potentialMember != null && potentialMember.getRole() == Role.Member;
+                    })
                     .collect(Collectors.toSet());
-
-            // 3. Find all members (not just online) and filter by those who have chatted with the coach
-            List<User> allMembers = userRepository.findAllByRole(Role.Member); // Changed from findAllByRoleAndStatus
-            return allMembers.stream()
+            List<User> allMembers = userRepository.findAllByRole(Role.Member);
+            List<User> chattedMembers = allMembers.stream()
                     .filter(member -> memberUsernames.contains(member.getUsername()))
                     .collect(Collectors.toList());
+            logger.info("Coach {} found {} members (chatted only).", currentUser.getUsername(), chattedMembers.size());
+            chattedMembers.forEach(member -> logger.info("  Chatted Member: {} (Status: {})", member.getUsername(), member.getStatus()));
+            return chattedMembers;
+            */
         }
-        return List.of(); // Return empty list for other roles or if something goes wrong
+        logger.warn("User {} with unsupported role {} attempted to find connected users.", currentUser.getUsername(), currentUser.getRole());
+        return List.of();
     }
 }
