@@ -1,5 +1,6 @@
 package com.swp2.demo.Controller;
 
+import com.swp2.demo.Repository.UserRepository;
 import com.swp2.demo.entity.Role;
 import com.swp2.demo.entity.User;
 import com.swp2.demo.service.UserService;
@@ -14,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.UUID;
@@ -68,6 +70,16 @@ public class ProfileController {
         } else {
             return "redirect:/profile";
         }
+    }
+
+
+    @Autowired
+    private UserRepository userRepository;
+    @GetMapping("/admin/accounts/{id}/profile")
+    public String viewUserProfileAsAdmin(@PathVariable Long id, Model model) {
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        model.addAttribute("user", user);
+        return "profileForAdmin";
     }
 
 

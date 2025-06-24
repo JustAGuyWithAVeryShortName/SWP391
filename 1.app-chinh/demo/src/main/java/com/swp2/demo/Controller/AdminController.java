@@ -3,6 +3,8 @@ package com.swp2.demo.Controller;
 import com.swp2.demo.Repository.OrderRepository;
 import com.swp2.demo.Repository.UserRepository;
 import com.swp2.demo.entity.Member;
+import com.swp2.demo.entity.Role;
+import com.swp2.demo.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,6 +25,25 @@ public class AdminController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @GetMapping("/admin/accounts")
+    public String viewAllAccounts(Model model) {
+        List<User> allUsers = userRepository.findAll();
+
+        List<User> adminAndCoachUsers = allUsers.stream()
+                .filter(user -> user.getRole() == Role.Admin || user.getRole() == Role.Coach)
+                .toList();
+        List<User> normalUsers = allUsers.stream()
+                .filter(user -> user.getRole() != Role.Admin && user.getRole() != Role.Coach)
+                .toList();
+
+        model.addAttribute("adminCoachUsers", adminAndCoachUsers);
+        model.addAttribute("normalUsers", normalUsers);
+
+        return "accounts";
+    }
+
+
 
     @GetMapping("/admin")
     public String admin(Model model) {
