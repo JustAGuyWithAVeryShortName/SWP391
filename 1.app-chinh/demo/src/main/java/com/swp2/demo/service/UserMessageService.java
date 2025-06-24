@@ -25,6 +25,7 @@ public class UserMessageService {
         }
         return user; // Return the user if found
     }
+
     public void setStatus(String username, Status status) {
         User user = userRepository.findByUsername(username);
         if (user != null) { // Check if user was found
@@ -39,28 +40,29 @@ public class UserMessageService {
 
     public List<User> findConnectedUsers() {
         String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
-        User currentUser = userRepository.findByUsername(currentUsername); // This now returns User or null
+        User currentUser = userRepository.findByUsername(currentUsername);
 
         if (currentUser == null) {
             throw new RuntimeException("Current user not found for username: " + currentUsername);
         }
 
         if (currentUser.getRole() == Role.Member) {
-            // Members can see all online coaches
-            return userRepository.findAllByRoleAndStatus(Role.Coach, Status.ONLINE);
+            // Members can see all coaches (regardless of online status)
+            return userRepository.findAllByRole(Role.Coach); // Changed from findAllByRoleAndStatus
         } else if (currentUser.getRole() == Role.Coach) {
-            // Coaches can only see members who have texted them
+            // Coaches can only see members who have texted them (regardless of member's online status)
             // 1. Get all messages involving this coach
             List<ChatMessage> messagesWithCoach = chatMessageRepository.findBySenderIdOrReceiverId(currentUsername, currentUsername);
 
             // 2. Extract the usernames of the members from these messages
             Set<String> memberUsernames = messagesWithCoach.stream()
                     .map(msg -> msg.getSenderId().equals(currentUsername) ? msg.getReceiverId() : msg.getSenderId())
+                    .filter(username -> userRepository.findByUsername(username) != null && userRepository.findByUsername(username).getRole() == Role.Member) // Ensure it's a member and user exists
                     .collect(Collectors.toSet());
 
-            // 3. Find all online members and filter by those who have chatted with the coach
-            List<User> allOnlineMembers = userRepository.findAllByRoleAndStatus(Role.Member, Status.ONLINE);
-            return allOnlineMembers.stream()
+            // 3. Find all members (not just online) and filter by those who have chatted with the coach
+            List<User> allMembers = userRepository.findAllByRole(Role.Member); // Changed from findAllByRoleAndStatus
+            return allMembers.stream()
                     .filter(member -> memberUsernames.contains(member.getUsername()))
                     .collect(Collectors.toList());
         }

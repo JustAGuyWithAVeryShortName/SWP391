@@ -198,8 +198,9 @@ VALUES
 ('coach2', '123', 'coach2@example.com', 'Coach', 'User', 'Coach'),
 ('admin', '123', 'admin@example.com', 'Admin', 'User', 'Admin');
 
-
-
+select * from users
+select* from quit_plan
+select * from quit_plan_reasons
 
 
 

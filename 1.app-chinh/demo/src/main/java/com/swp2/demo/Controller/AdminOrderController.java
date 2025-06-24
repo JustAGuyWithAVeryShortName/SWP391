@@ -4,6 +4,7 @@ import com.swp2.demo.Repository.OrderRepository;
 import com.swp2.demo.Repository.UserRepository;
 import com.swp2.demo.entity.Member;
 import com.swp2.demo.entity.Order;
+import com.swp2.demo.entity.Role; // Import the Role enum
 import com.swp2.demo.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,13 +27,11 @@ public class AdminOrderController {
     @Autowired
     private UserRepository userRepository;
 
-
-
     @GetMapping
     public String listOrders(Model model) {
         List<Order> orders = orderRepository.findAll();
         model.addAttribute("orders", orders);
-        return "admin-orders"; // Tạo file admin-orders.html
+        return "admin-orders";
     }
 
     @PostMapping("/{orderId}/confirm")
@@ -41,20 +40,24 @@ public class AdminOrderController {
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
         if ("PAID".equals(order.getStatus())) {
-            return "redirect:/admin/orders"; // Đã xác nhận rồi thì bỏ qua
+            return "redirect:/admin/orders"; // Already confirmed, do nothing
         }
 
         order.setStatus("PAID");
         order.setConfirmedAt(LocalDateTime.now());
 
-        // ➔ Cập nhật User sang Member tương ứng
+        // Update User's member plan AND role
         User user = order.getUser();
-        user.setMember(order.getMemberPlan());
+        if (user != null) {
+            user.setMember(order.getMemberPlan());
+            // Set the user's role to MEMBER
+            user.setRole(Role.Member); // <--- ADD THIS LINE
+            userRepository.save(user);
+        }
 
         orderRepository.save(order);
-        userRepository.save(user);
 
-        return "redirect:/admin/orders"; // Trang quản lý đơn hàng
+        return "redirect:/admin/orders"; // Redirect to the order management page
     }
 
     @PostMapping("/{orderId}/delete")
@@ -64,14 +67,14 @@ public class AdminOrderController {
 
         User user = order.getUser();
 
-        // Nếu đơn đã được xác nhận → cần reset Member của User về FREE hoặc null
+        // If order was paid, reset User's member plan and role
         if ("PAID".equals(order.getStatus()) && user != null) {
-            user.setMember(null); // hoặc user.setMember(Member.FREE);
+            user.setMember(null); // or user.setMember(Member.FREE); based on your logic
+            user.setRole(Role.Guest); // <--- Consider resetting role to Guest or a default un-paid role
             userRepository.save(user);
         }
 
         orderRepository.delete(order);
         return "redirect:/admin/orders";
     }
-
 }
