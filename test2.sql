@@ -68,6 +68,9 @@ CREATE TABLE quit_plan (
     user_id INT,
     CONSTRAINT FK_quit_plan_user FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
+	ALTER TABLE quit_plan
+ADD daily_smoking_cigarettes INT,
+    daily_spending DECIMAL(12,2);
 -- Bảng chính lưu kế hoạch bỏ thuốc
 CREATE TABLE user_plan_step (
     id BIGINT PRIMARY KEY IDENTITY(1,1),
@@ -256,4 +259,32 @@ LEFT JOIN
     quit_plan_reasons qpr ON qp.id = qpr.plan_id
 ORDER BY 
     qp.id;
-	
+	SELECT * FROM Users WHERE username = 'd';
+	-- user_id này bạn lấy từ user đã login (ví dụ backend gán)
+DECLARE @userid INT = (SELECT user_id FROM Users WHERE username = 'member');
+
+INSERT INTO quit_plan (start_date, target_date, stages, custom_plan, daily_smoking_cigarettes, daily_spending, user_id)
+VALUES ('2025-06-24', '2025-07-24', 'Giảm dần', 'Kế hoạch mặc định', 15, 50000, @userid);
+
+	-- Lấy user_id theo username
+DECLARE @userid INT = (SELECT user_id FROM Users WHERE username = 'member');
+
+-- Thêm kế hoạch bỏ thuốc cho user này
+INSERT INTO quit_plan (
+    start_date, target_date, stages, custom_plan, 
+    daily_smoking_cigarettes, daily_spending, user_id
+)
+VALUES (
+    '2025-06-24', '2025-07-24', 'Giảm dần', 'Kế hoạch mặc định',
+    15, 50000, @userid
+);
+
+-- Lấy ID kế hoạch vừa chèn vào
+DECLARE @quit_plan_id BIGINT = SCOPE_IDENTITY();
+
+-- Thêm các bước kế hoạch ngày theo đúng kế hoạch vừa tạo
+INSERT INTO user_plan_step (date, day_index, target_cigarettes, actual_cigarettes, completed, quit_plan_id)
+VALUES
+('2025-06-24', 1, 15, 13, 1, @quit_plan_id),
+('2025-06-25', 2, 14, 12, 0, @quit_plan_id),
+('2025-06-26', 3, 13, NULL, 0, @quit_plan_id);
