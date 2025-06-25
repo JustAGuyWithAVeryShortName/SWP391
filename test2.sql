@@ -65,12 +65,12 @@ CREATE TABLE quit_plan (
     target_date DATE,
     stages NVARCHAR(255),
     custom_plan NVARCHAR(2000),
+    daily_smoking_cigarettes INT,
+    daily_spending DECIMAL(12,2),
     user_id INT,
     CONSTRAINT FK_quit_plan_user FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
-	ALTER TABLE quit_plan
-ADD daily_smoking_cigarettes INT,
-    daily_spending DECIMAL(12,2);
+
 -- Bảng chính lưu kế hoạch bỏ thuốc
 CREATE TABLE user_plan_step (
     id BIGINT PRIMARY KEY IDENTITY(1,1),
@@ -92,23 +92,12 @@ CREATE TABLE quit_plan_reasons (
 CREATE TABLE chat_message (
     id INT IDENTITY(1,1) PRIMARY KEY,
     sender_id NVARCHAR(255) NOT NULL,
-    receiverid NVARCHAR(255) NOT NULL,
+    receiver_id NVARCHAR(255) NOT NULL,
     content NVARCHAR(MAX) NOT NULL,
     timestamp DATETIME2 NOT NULL,
     
 );
-ALTER TABLE chat_message
-ALTER COLUMN sender_id NVARCHAR(255) NOT NULL;
 
-ALTER TABLE chat_message
-ALTER COLUMN receiver_id NVARCHAR(255) NOT NULL;
-
-select * from chat_message
-
-EXEC sp_rename 'chat_message.senderId', 'sender_id', 'COLUMN';
-
--- Rename receiverId to receiver_id
-EXEC sp_rename 'chat_message.receiverId', 'receiver_id', 'COLUMN';
 
 -- Question 1
 INSERT INTO question (question_text) VALUES ('How old are you?');
