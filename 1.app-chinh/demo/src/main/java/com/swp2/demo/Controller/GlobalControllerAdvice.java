@@ -16,6 +16,8 @@ public class GlobalControllerAdvice {
         if (user != null) {
             model.addAttribute("fullName", user.getFirstName());
             model.addAttribute("userRole", user.getRole());
+
+
         }
     }
 }

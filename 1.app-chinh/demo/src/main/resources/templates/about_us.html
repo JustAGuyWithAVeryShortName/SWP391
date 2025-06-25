@@ -36,6 +36,19 @@
         <a th:href="@{/member}" class="nav-item">Member</a>
         <a th:href="@{/about_us}" class="nav-item active">About Us</a>
 
+        <div class="nav-item dropdown-notice">
+            <button class="dropdown-toggle-notice" onclick="toggleNoticeDropdown()">
+                Notice <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="dropdown-menu-notice" id="noticeDropdown">
+                <div class="dropdown-item-notice" th:text="${message}"></div>
+                <div class="dropdown-item-notice view-all-link">
+                    <a th:href="@{/notice}">View all</a>
+                </div>
+            </div>
+        </div>
+
+
         <a th:href="@{/login}" class="nav-item" sec:authorize="!isAuthenticated()">Login</a>
 
         <!-- Nếu đã đăng nhập -->

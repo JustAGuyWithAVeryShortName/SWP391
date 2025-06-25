@@ -53,6 +53,8 @@ public class AdminOrderController {
             // Set the user's role to MEMBER
             user.setRole(Role.Member); // <--- ADD THIS LINE
             userRepository.save(user);
+
+
         }
 
         orderRepository.save(order);
