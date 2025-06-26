@@ -11,9 +11,6 @@
 
     <aside class="sidebar">
         <header class="sidebar-header">
-            <button class="icon-button" aria-label="Menu">
-                <svg xmlns="http://www.w3.org/2004/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-            </button>
             <button id="logout">Exit</button>
             <form class="search-form" role="search">
                 <input type="search" class="search-bar" placeholder="Search for messages...">
@@ -52,9 +49,7 @@
 
     <main class="chat-area">
         <header class="chat-header" th:if="${activeConversationPartner}" th:object="${activeConversationPartner}">
-            <button class="icon-button back-button" aria-label="Quay lại danh sách">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-            </button>
+
             <div class="avatar-container">
                 <span class="status-dot" th:classappend="*{status.name() == 'ONLINE'} ? 'online' : ''"></span>
             </div>
@@ -63,10 +58,11 @@
                 <span class="user-status" th:text="*{status.name() == 'ONLINE'} ? 'Online' : 'Offline'">Online</span>
             </div>
             <div class="chat-header-actions">
-
-                <button class="icon-button" aria-label="Tùy chọn khác">
+                <button th:if="${currentUserRoleString == 'Coach'}" class="icon-button" aria-label="Tùy chọn khác">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
                 </button>
+
+                <p style="color: blue; position: absolute; top: 10px; right: 10px; background: yellow; padding: 5px; z-index: 100;">Header Debug Role: <span th:text="${currentUser?.role}"></span></p>
             </div>
         </header>
 
@@ -85,7 +81,7 @@
         </div>
 
         <form class="chat-input-form"  id="messageForm" th:if="${activeConversationPartner}">
-            <textarea id="message" placeholder="Nhập tin nhắn..." rows="1" aria-label="Soạn tin nhắn"></textarea>
+            <textarea id="message" placeholder="Enter your message..." rows="1" aria-label="Soạn tin nhắn"></textarea>
             <div class="input-actions">
                 <button type="submit" class="icon-button send-button" aria-label="Gửi">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>

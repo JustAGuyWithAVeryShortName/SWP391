@@ -2,23 +2,22 @@
 use swp_test2
 
 CREATE TABLE Users (
-    user_id INT PRIMARY KEY IDENTITY(1,1),
-    username VARCHAR(50) UNIQUE NOT NULL,
-    password VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
-    first_name VARCHAR(50),
-    last_name VARCHAR(50),
-	gender VARCHAR(10) CHECK (gender IN ('Male', 'Female')),
+    user_id BIGINT PRIMARY KEY IDENTITY(1,1),
+    username NVARCHAR(50) UNIQUE NOT NULL,
+    password NVARCHAR(100) NOT NULL,
+    email NVARCHAR(100) UNIQUE NOT NULL,
+    first_name NVARCHAR(50),
+    last_name NVARCHAR(50),
+    gender NVARCHAR(10) CHECK (gender IN ('Male', 'Female')),
     date_of_birth DATE,
-    role VARCHAR(10) NOT NULL DEFAULT 'Guest' CHECK (role IN ('Guest', 'Member', 'Coach', 'Admin')),
-    member_plan VARCHAR(10) NULL CHECK (member_plan IN ('FREE', 'VIP', 'PREMIUM')),
-	created_at DATE DEFAULT GETDATE(),
-	status VARCHAR(10) NOT NULL DEFAULT 'OFFLINE' CHECK (status IN ('ONLINE', 'OFFLINE'))
-
+    role NVARCHAR(10) NOT NULL DEFAULT 'Guest' CHECK (role IN ('Guest', 'Member', 'Coach', 'Admin')),
+    member_plan NVARCHAR(10) NULL CHECK (member_plan IN ('FREE', 'VIP', 'PREMIUM')),
+    created_at DATE DEFAULT GETDATE(),
+    status NVARCHAR(10) NOT NULL DEFAULT 'OFFLINE' CHECK (status IN ('ONLINE', 'OFFLINE'))
 );
 CREATE TABLE Orders (
-    order_id INT PRIMARY KEY IDENTITY(1,1),
-    user_id INT NOT NULL FOREIGN KEY REFERENCES Users(user_id),
+    order_id BIGINT PRIMARY KEY IDENTITY(1,1),
+    user_id BIGINT NOT NULL FOREIGN KEY REFERENCES Users(user_id),
     member_plan VARCHAR(10) NULL CHECK (member_plan IN ('FREE', 'VIP', 'PREMIUM')),
     amount DECIMAL(12,2),
     status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
@@ -29,7 +28,7 @@ CREATE TABLE Orders (
 CREATE TABLE password_reset_token (
     id BIGINT PRIMARY KEY IDENTITY(1,1),
     token NVARCHAR(255) NOT NULL,
-    user_id INT NOT NULL,
+    user_id BIGINT NOT NULL,
     expiry_date DATETIME2 NOT NULL,
     CONSTRAINT FK_User_PasswordReset FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
@@ -46,14 +45,14 @@ CREATE TABLE question_option (
 
 CREATE TABLE user_answer (
     id INT IDENTITY(1,1) PRIMARY KEY,
-    user_id INT NOT NULL FOREIGN KEY REFERENCES Users(user_id),
+    user_id BIGINT NOT NULL FOREIGN KEY REFERENCES Users(user_id),
     question_id INT NOT NULL FOREIGN KEY REFERENCES question(id),
     option_id INT NOT NULL FOREIGN KEY REFERENCES question_option(id),
     created_at DATETIME DEFAULT GETDATE()
 );
 CREATE TABLE analysis_result (
     id INT IDENTITY(1,1) PRIMARY KEY,
-    user_id INT NOT NULL FOREIGN KEY REFERENCES users(user_id),
+    user_id BIGINT NOT NULL FOREIGN KEY REFERENCES users(user_id),
     analysis NVARCHAR(255) NOT NULL,
     recommendation NVARCHAR(MAX) NOT NULL,
     created_at DATETIME DEFAULT GETDATE()
@@ -67,7 +66,7 @@ CREATE TABLE quit_plan (
     custom_plan NVARCHAR(2000),
     daily_smoking_cigarettes INT,
     daily_spending DECIMAL(12,2),
-    user_id INT,
+    user_id BIGINT,
     CONSTRAINT FK_quit_plan_user FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
 
@@ -97,6 +96,31 @@ CREATE TABLE chat_message (
     timestamp DATETIME2 NOT NULL,
     
 );
+
+CREATE TABLE Feedback (
+    feedback_id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    username NVARCHAR(255),
+    rating INT,
+    comment NVARCHAR(MAX),
+    create_at DATETIME2,
+    user_id BIGINT,   -- Changed from INT to BIGINT
+    coach_id BIGINT,  -- Already BIGINT, now consistent
+
+    CONSTRAINT FK_Feedback_User
+        FOREIGN KEY (user_id)
+        REFERENCES Users(user_id), -- Now BIGINT references BIGINT
+
+    CONSTRAINT FK_Feedback_Coach
+        FOREIGN KEY (coach_id)
+        REFERENCES Users(user_id) -- Now BIGINT references BIGINT
+        ON DELETE SET NULL
+);
+
+CREATE TABLE Coach (
+    coach_id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    username NVARCHAR(255)
+);
+
 
 
 -- Question 1

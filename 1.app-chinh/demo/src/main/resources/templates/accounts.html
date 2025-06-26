@@ -22,13 +22,19 @@
     </div>
   </div>
 
-  <!-- Bảng Admin & Coach -->
+  <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+    <span th:text="${successMessage}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <span th:text="${errorMessage}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
   <h4 class="mb-2">Admin & Coach Accounts</h4>
   <div class="table-responsive mb-4">
     <table class="table table-bordered table-hover" style="table-layout: fixed; width: 100%;">
       <thead class="table-light">
       <tr>
-        <th style="width: 50px;">ID</th>
         <th class="nowrap" style="width: 150px;">Full-name</th>
         <th class="nowrap" style="width: 200px;">Username</th>
         <th class="nowrap" style="width: 150px;">Password</th>
@@ -41,7 +47,6 @@
       </thead>
       <tbody>
       <tr th:each="user : ${adminCoachUsers}">
-        <td th:text="${user.id}"></td>
         <td class="nowrap" th:text="|${user.lastName} ${user.firstName}|"></td>
         <td class="nowrap" th:text="${user.username}"></td>
         <td class="nowrap" th:text="${user.password}"></td>
@@ -53,7 +58,6 @@
           <div class="d-flex gap-1">
             <a th:href="@{/admin/accounts/{id}/profile(id=${user.id})}" class="btn btn-primary btn-sm">View</a>
 
-            <!-- Form Delete -->
             <form th:action="@{/admin/accounts/delete/{id}(id=${user.id})}" method="post" class="d-inline">
               <button type="submit" class="btn btn-danger btn-sm">Delete</button>
             </form>
@@ -64,13 +68,11 @@
     </table>
   </div>
 
-  <!-- Bảng các tài khoản khác -->
   <h4 class="mb-2">User Accounts</h4>
   <div class="table-responsive">
     <table class="table table-bordered table-hover" style="table-layout: fixed; width: 100%;">
       <thead class="table-light">
       <tr>
-        <th style="width: 50px;">ID</th>
         <th class="nowrap" style="width: 150px;">Full-name</th>
         <th class="nowrap" style="width: 200px;">Username</th>
         <th class="nowrap" style="width: 150px;">Password</th>
@@ -83,7 +85,6 @@
       </thead>
       <tbody>
       <tr th:each="user : ${normalUsers}">
-        <td th:text="${user.id}"></td>
         <td class="nowrap" th:text="|${user.lastName} ${user.firstName}|"></td>
         <td class="nowrap" th:text="${user.username}"></td>
         <td class="nowrap" th:text="${user.password}"></td>
@@ -105,6 +106,6 @@
     </table>
   </div>
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -1,5 +1,9 @@
 package com.swp2.demo.Controller;
 
+// In ChatController.java
+
+// In ChatController.java
+
 import com.swp2.demo.Repository.ChatMessageRepository;
 import com.swp2.demo.entity.ChatMessage;
 import com.swp2.demo.entity.User;
@@ -61,6 +65,9 @@ public class ChatController {
                 currentUser.getId(), currentUser.getUsername(), currentUser.getEmail(), currentUser.getRole());
 
         model.addAttribute("currentUser", currentUser);
+        // ADD THIS NEW LINE: Pass the role as a simple string
+        model.addAttribute("currentUserRoleString", currentUser.getRole().name());
+
 
         List<User> connectedUsers = userService.findConnectedUsers();
 
