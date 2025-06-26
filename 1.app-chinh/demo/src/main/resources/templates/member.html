@@ -1,26 +1,24 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
-
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
+    <title>SmokeLite - Member</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Membership - SmokeLite</title>
-    <link rel="stylesheet" th:href="@{/css/member.css}">
 
-
+    <!-- CSS và font giống trang home -->
+    <link rel="stylesheet" th:href="@{/css/home.css}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
 </head>
-
 <body>
 
+<!-- ==== HEADER ==== -->
 <header class="main-header">
     <div class="logo-container">
-        <a th:href="@{/home}"> <img th:src="@{/images/1.png}" alt="SmokeLite Logo" class="logo" />
-        </a>
+        <a th:href="@{/home}"><img th:src="@{/images/1.png}" alt="SmokeLite Logo" class="logo" /></a>
     </div>
+
     <nav class="main-nav">
         <a th:href="@{/home}" class="nav-item">Home</a>
         <a th:href="@{/member}" class="nav-item active">Member</a>
@@ -37,7 +35,6 @@
                 </div>
             </div>
         </div>
-
 
         <a th:href="@{/login}" class="nav-item" sec:authorize="!isAuthenticated()">Login</a>
 
@@ -57,77 +54,177 @@
     </nav>
 </header>
 
-<section class="membership-section">
-    <h2>Choose Your Membership Plan</h2>
-    <div class="plans">
-        <div class="plan">
-            <h3>Basic</h3>
-            <div class="price">FREE</div>
-            <ul>
-                <li>Access basic features</li>
-                <li>Email support</li>
-                <li>Community Forum</li>
-            </ul>
-            <div th:if="${currentMember?.name() == 'FREE'}">
-                <button disabled style="opacity: 0.5; cursor: not-allowed;">Đã đăng ký</button>
-            </div>
-            <form th:if="${currentMember == null or currentMember.name() != 'FREE'}"
-                  th:action="@{/payment}" method="get">
-                <input type="hidden" name="plan" value="FREE" />
-                <button type="submit">Register</button>
-            </form>
-        </div>
 
-        <div class="plan">
-            <h3>VIP</h3>
-            <div class="price">₫5,000 / tháng</div>
-            <ul>
-                <li>All Basic features</li>
-                <li>Progress Tracker</li>
-                <li>Exclusive Resources</li>
-            </ul>
-            <div th:if="${currentMember?.name() == 'VIP'}">
-                <button disabled style="opacity: 0.5; cursor: not-allowed;">Đã đăng ký</button>
-            </div>
-            <form th:if="${currentMember == null or currentMember.name() != 'VIP'}"
-                  th:action="@{/payment}" method="get">
-                <input type="hidden" name="plan" value="VIP" />
-                <button type="submit">Register</button>
-            </form>
 
-        </div>
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 
-        <div class="plan">
-            <h3>Premium</h3>
-            <div class="price">₫10,000 / tháng</div>
-            <ul>
-                <li>All Premium features</li>
-                <li>1:1 Live Coaching</li>
-                <li>Priority Support</li>
-            </ul>
-            <div th:if="${currentMember?.name() == 'PREMIUM'}">
-                <button disabled style="opacity: 0.5; cursor: not-allowed;">Đã đăng ký</button>
-            </div>
-            <form th:if="${currentMember == null or currentMember.name() != 'PREMIUM'}"
-                  th:action="@{/payment}" method="get">
-                <input type="hidden" name="plan" value="PREMIUM" />
-                <button type="submit">Register</button>
-            </form>
-        </div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Membership - SmokeLite</title>
+
+    <link rel="stylesheet" th:href="@{/css/member.css}">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body>
+
+<header class="main-header">
+    <div class="logo-container">
+        <a th:href="@{/home}">
+            <img th:src="@{/images/1.png}" alt="SmokeLite Logo" class="logo" />
+        </a>
     </div>
-</section>
 
-<footer>
-    <div class="address">
-        <p><strong>Address</strong></p>
-        <p>Thu Duc, HCM</p>
-        <div class="socials">
-            <a href="#"><img src="https://img.icons8.com/ios-filled/24/facebook--v1.png" alt="Facebook" /></a>
-            <a href="#"><img src="https://img.icons8.com/ios-filled/24/github.png" alt="GitHub" /></a>
-            <a href="#"><img src="https://img.icons8.com/ios-filled/24/whatsapp.png" alt="WhatsApp" /></a>
+
+    <nav class="main-nav" id="primary-navigation">
+        <a th:href="@{/home}" class="nav-item">Home</a>
+        <a th:href="@{/member}" class="nav-item active">Member</a>
+        <a th:href="@{/about_us}" class="nav-item">About Us</a>
+
+        <div class="nav-item dropdown-notice">
+            <button class="dropdown-toggle-notice">
+                Notice <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="dropdown-menu-notice" id="noticeDropdown">
+                <div class="dropdown-item-notice" th:text="${message}"></div>
+                <div class="dropdown-item-notice view-all-link">
+                    <a th:href="@{/notice}">View all</a>
+                </div>
+            </div>
         </div>
-    </div>
-</footer>
+
+        <div class="user-actions">
+            <a th:href="@{/login}" class="nav-item" sec:authorize="!isAuthenticated()">Login</a>
+
+            <div class="nav-item dropdown" sec:authorize="isAuthenticated()">
+                <button class="dropdown-toggle">
+                    Hi, <span th:text="${fullName}">User</span> <i class="fa-solid fa-chevron-down"></i>
+                </button>
+                <div class="dropdown-menu">
+                    <a th:href="@{/profile}" class="dropdown-item">Profile</a>
+                    <a th:href="@{/dashboard}" class="dropdown-item">View Plan</a>
+                    <form th:action="@{/logout}" method="post" class="logout-form">
+                        <button type="submit" class="dropdown-item">Logout</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
+<main>
+    <section class="membership-section">
+        <div class="section-header">
+            <h2>Choose Your Membership Plan</h2>
+            <p>Unlock exclusive features and get the support you need on your journey.</p>
+        </div>
+        <div class="plans">
+            <div class="plan">
+                <h3>Basic</h3>
+                <div class="price">FREE</div>
+                <ul>
+                    <li><i class="fa-solid fa-check"></i> Access basic features</li>
+                    <li><i class="fa-solid fa-check"></i> Email support</li>
+                    <li><i class="fa-solid fa-check"></i> Community Forum</li>
+                </ul>
+                <div class="plan-footer">
+                    <div th:if="${currentMember?.name() == 'FREE'}">
+                        <button class="btn-current" disabled>Current Plan</button>
+                    </div>
+                    <form th:if="${currentMember == null or currentMember.name() != 'FREE'}" th:action="@{/payment}" method="get">
+                        <input type="hidden" name="plan" value="FREE" />
+                        <button type="submit">Choose Plan</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="plan">
+                <h3>VIP</h3>
+                <div class="price">₫5,000 <span class="price-period">/ month</span></div>
+                <ul>
+                    <li><i class="fa-solid fa-check"></i> All Basic features</li>
+                    <li><i class="fa-solid fa-star"></i> Progress Tracker</li>
+                    <li><i class="fa-solid fa-star"></i> Exclusive Resources</li>
+                </ul>
+                <div class="plan-footer">
+                    <div th:if="${currentMember?.name() == 'VIP'}">
+                        <button class="btn-current" disabled>Current Plan</button>
+                    </div>
+                    <form th:if="${currentMember == null or currentMember.name() != 'VIP'}" th:action="@{/payment}" method="get">
+                        <input type="hidden" name="plan" value="VIP" />
+                        <button type="submit">Choose Plan</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="plan recommended">
+                <span class="recommended-badge">Recommended</span>
+                <h3>Premium</h3>
+                <div class="price">₫10,000 <span class="price-period">/ month</span></div>
+                <ul>
+                    <li><i class="fa-solid fa-check"></i> All VIP features</li>
+                    <li><i class="fa-solid fa-crown"></i> 1:1 Live Coaching</li>
+                    <li><i class="fa-solid fa-crown"></i> Priority Support</li>
+                </ul>
+                <div class="plan-footer">
+                    <div th:if="${currentMember?.name() == 'PREMIUM'}">
+                        <button class="btn-current" disabled>Current Plan</button>
+                    </div>
+                    <form th:if="${currentMember == null or currentMember.name() != 'PREMIUM'}" th:action="@{/payment}" method="get">
+                        <input type="hidden" name="plan" value="PREMIUM" />
+                        <button type="submit">Choose Plan</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+<script>
+    const navToggle = document.querySelector('.nav-toggle');
+    const primaryNav = document.querySelector('#primary-navigation');
+    const icon = navToggle.querySelector('i');
+
+    navToggle.addEventListener('click', () => {
+        const isVisible = primaryNav.getAttribute('data-visible') === 'true';
+
+        if (isVisible) {
+            primaryNav.setAttribute('data-visible', 'false');
+            navToggle.setAttribute('aria-expanded', 'false');
+            icon.classList.remove('fa-xmark');
+            icon.classList.add('fa-bars');
+        } else {
+            primaryNav.setAttribute('data-visible', 'true');
+            navToggle.setAttribute('aria-expanded', 'true');
+            icon.classList.remove('fa-bars');
+            icon.classList.add('fa-xmark');
+        }
+    });
+</script>
 </body>
 
 </html>
+<!-- Nút back to top -->
+<a href="#" class="back-to-top"><i class="fas fa-arrow-up"></i></a>
+
+</body>
+</html>
+<!-- ==== FOOTER ==== -->
+<footer class="main-footer">
+    <div class="container">
+        <div class="footer-address">
+            <p class="footer-heading"><strong>Address</strong></p>
+            <p>Thu Duc, Hcm</p>
+            <div class="social-icons">
+                <a href="#" class="social-link" aria-label="Facebook"><img src="https://img.icons8.com/ios-filled/24/facebook--v1.png" alt="Facebook" /></a>
+                <a href="#" class="social-link" aria-label="GitHub"><img src="https://img.icons8.com/ios-filled/24/github.png" alt="GitHub" /></a>
+                <a href="#" class="social-link" aria-label="WhatsApp"><img src="https://img.icons8.com/ios-filled/24/whatsapp.png" alt="WhatsApp" /></a>
+            </div>
+        </div>
+        <p class="copyright">&copy; 2025 SmokeLite. All Rights Reserved.</p>
+    </div>
+</footer>
