@@ -5,6 +5,176 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Messenger | Cải tiến bởi Gemini</title>
     <link rel="stylesheet" th:href="@{/css/messenger.css}">
+    <style>
+        /* --- NEW CSS FOR THE 3-DOT DROPDOWN --- */
+        .dropdown-container {
+            position: relative;
+            display: inline-block; /* Allows the container to wrap its content */
+            margin-left: auto; /* Pushes the icon to the right within chat-header-actions */
+        }
+
+        .vertical-dots-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 8px; /* Add some padding around the icon for a larger clickable area */
+            border-radius: 5px; /* Slightly rounded corners for the clickable area */
+            transition: background-color 0.2s ease; /* Smooth transition for hover effect */
+        }
+
+        .vertical-dots-icon:hover {
+            background-color: #e0e0e0; /* Background color on hover */
+        }
+
+        .dot {
+            width: 5px; /* Adjust dot size as needed */
+            height: 5px; /* Adjust dot size as needed */
+            background-color: #666; /* Color of the dots */
+            border-radius: 50%; /* Makes them circular */
+            margin: 2px 0; /* Space between dots */
+            transition: background-color 0.2s ease; /* Smooth transition for dot color */
+        }
+
+        .vertical-dots-icon:hover .dot {
+            background-color: #333; /* Darken dots on hover */
+        }
+
+        /* NEW WRAPPER FOR DROPDOWN AND INFO TABLES */
+        .dropdown-content-wrapper {
+            display: none; /* Hidden by default */
+            position: absolute;
+            top: 100%; /* Position below the icon */
+            right: 0; /* Align to the right of the icon */
+            margin-top: 5px; /* Small gap between icon and menu */
+            /* Use flexbox to arrange menu and table side-by-side */
+            display: flex;
+            flex-direction: row; /* Arrange horizontally */
+            gap: 15px; /* Space between dropdown menu and info table */
+            z-index: 1000; /* Ensure it's on top of other content */
+
+            opacity: 0; /* For fade-in animation */
+            transform: translateY(-10px); /* For slide-up animation */
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        /* Class to show the dropdown menu and info table */
+        .dropdown-content-wrapper.show {
+            display: flex; /* Show the flex container */
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .dropdown-menu {
+            /* No longer needs position: absolute, as it's a flex item */
+            background-color: #ffffff;
+            min-width: 180px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            border-radius: 5px;
+            padding: 8px 0;
+            flex-shrink: 0; /* Prevent the menu from shrinking */
+        }
+
+        .dropdown-menu a {
+            color: #333;
+            padding: 10px 20px;
+            text-decoration: none;
+            display: block;
+            white-space: nowrap; /* Prevent menu items from wrapping */
+        }
+
+        .dropdown-menu a:hover {
+            background-color: #f1f1f1;
+            color: #007bff; /* Highlight text on hover */
+        }
+
+        /* Contextual Info Tables */
+        .info-table {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            padding: 15px;
+            /* Increased min-width to accommodate content */
+            min-width: 480px; /* Slightly wider */
+            max-width: 700px; /* Increased max-width significantly to allow content to fit */
+            display: none; /* Hidden by default, JavaScript will show individually */
+            font-size: 0.9em;
+            flex-shrink: 0; /* Prevent table from shrinking */
+            align-self: flex-start; /* Align table to the top of the flex container */
+            animation: fadeIn 0.2s ease-out; /* Keep animation for individual table show */
+        }
+
+        .info-table.show {
+            display: block; /* Show individual table */
+        }
+
+        .info-table h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 1.1em;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+        }
+
+        .info-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+            /* We'll use grid for flexible column sizing */
+            /* table-layout: fixed; */ /* Removed as grid handles layout */
+        }
+
+        /* Make each table row a grid container */
+        .info-table table tr {
+            display: grid;
+            /* Auto-size the first column (label), 1fr for the second (content) */
+            /* This ensures content takes all available space and wraps */
+            grid-template-columns: auto 1fr;
+            gap: 5px; /* Small gap between columns */
+        }
+
+        .info-table td {
+            padding: 6px 0;
+            vertical-align: top;
+            word-wrap: break-word; /* Allows long words to break and wrap */
+            word-break: break-word; /* Ensures very long strings break */
+        }
+
+        .info-table td:first-child {
+            font-weight: bold;
+            color: #555;
+            text-align: right; /* Align labels to the right */
+            padding-right: 10px; /* Add padding to separate label from content */
+            white-space: nowrap; /* Prevent label from wrapping if possible */
+        }
+
+        /* The second cell will naturally take the remaining space due to 1fr */
+        .info-table td:nth-child(2) {
+            /* No specific width needed here, grid handles it */
+        }
+
+        .info-table .action-link {
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid #eee;
+            color: #007bff; /* Match your link color */
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .info-table .action-link:hover {
+            text-decoration: underline;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* --- END NEW CSS --- */
+    </style>
 </head>
 <body>
 <div class="chat-app">
@@ -49,7 +219,6 @@
 
     <main class="chat-area">
         <header class="chat-header" th:if="${activeConversationPartner}" th:object="${activeConversationPartner}">
-
             <div class="avatar-container">
                 <span class="status-dot" th:classappend="*{status.name() == 'ONLINE'} ? 'online' : ''"></span>
             </div>
@@ -58,11 +227,51 @@
                 <span class="user-status" th:text="*{status.name() == 'ONLINE'} ? 'Online' : 'Offline'">Online</span>
             </div>
             <div class="chat-header-actions">
-                <button th:if="${currentUserRoleString == 'Coach'}" class="icon-button" aria-label="Tùy chọn khác">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
-                </button>
+                <div class="dropdown-container" th:if="${currentUserRoleString == 'Coach'}">
+                    <div class="vertical-dots-icon" id="chatOptionsIcon">
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                    </div>
 
-                <p style="color: blue; position: absolute; top: 10px; right: 10px; background: yellow; padding: 5px; z-index: 100;">Header Debug Role: <span th:text="${currentUser?.role}"></span></p>
+                    <div class="dropdown-content-wrapper" id="dropdownContentWrapper">
+                        <div class="dropdown-menu" id="chatOptionsDropdown">
+                            <a href="#" data-action="personal-info">Personal information</a>
+                            <a href="#" data-action="survey-answer">Survey answer</a>
+                            <a href="#" data-action="quit-plan">Quit plan</a>
+                        </div>
+
+                        <div class="info-table" id="personalInfoTable">
+                            <h4>Personal Information</h4>
+                            <table>
+                                <tr><td>Last Name:</td><td id="personalInfoLastName">N/A</td></tr>
+                                <tr><td>First Name:</td><td id="personalInfoFirstName">N/A</td></tr>
+                                <tr><td>Email:</td><td id="personalInfoEmail">N/A</td></tr>
+                            </table>
+                        </div>
+
+                        <div class="info-table" id="surveyAnswerTable">
+                            <h4>Latest Survey Summary</h4>
+                            <table>
+                                <tr><td>Survey Level:</td><td id="surveyLevel">Moderate Dependence Level</td></tr>
+                                <tr><td>Date Taken:</td><td id="surveyDateTaken">Today</td></tr>
+                            </table>
+                        </div>
+
+                        <div class="info-table" id="quitPlanTable">
+                            <h4>Quit Plan Status</h4>
+                            <table>
+                                <tr><td>Start Date:</td><td id="quitPlanStartDate">N/A</td></tr>
+                                <tr><td>Target Date:</td><td id="quitPlanTargetDate">N/A</td></tr>
+                                <tr><td>Stages:</td><td id="quitPlanStages">N/A</td></tr>
+                                <tr><td>Plans:</td><td id="quitPlanCustomPlan">N/A</td></tr>
+                                <tr><td>Methods:</td><td id="quitPlanMethod">N/A</td></tr>
+                                <tr><td>Daily Cigarettes:</td><td id="quitPlanDailyCigarettes">N/A</td></tr> <tr><td>Daily Spending:</td><td id="quitPlanDailySpending">N/A</td></tr>
+                                <tr><td>Reasons:</td><td id="quitPlanReasons">N/A</td></tr>
+                            </table>
+                        </div>
+
+                    </div> </div>
             </div>
         </header>
 
@@ -70,7 +279,8 @@
             <th:block th:each="msg, iterStat : ${messages}">
                 <div th:if="${iterStat.first or !messages[iterStat.index-1].timestamp.toLocalDate().isEqual(msg.timestamp.toLocalDate())}"
                      class="date-separator">
-                    <span th:text="${#temporals.format(msg.timestamp, 'EEEE, dd MMMM yyyy HH:mm')}"></span> </div>
+                    <span th:text="${#temporals.format(msg.timestamp, 'EEEE, dd MMMM')}"></span>
+                </div>
 
                 <div class="message-group" th:classappend="${msg.senderId == currentUser.username ? 'sent' : 'received'}" th:attr="data-sender-id=${msg.senderId}">
                     <div class="message-bubble">
@@ -96,93 +306,183 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // --- DOM Element References ---
         const messageForm = document.querySelector('#messageForm');
         const messageInput = document.querySelector('#message');
         const chatArea = document.querySelector('#chat-messages');
         const logout = document.querySelector('#logout');
+
+        const chatOptionsIcon = document.getElementById('chatOptionsIcon');
+        const chatOptionsDropdown = document.getElementById('chatOptionsDropdown');
+        const dropdownContentWrapper = document.getElementById('dropdownContentWrapper');
+
+        const personalInfoTable = document.getElementById('personalInfoTable');
+        const surveyAnswerTable = document.getElementById('surveyAnswerTable');
+        const quitPlanTable = document.getElementById('quitPlanTable');
+        const infoTables = [personalInfoTable, surveyAnswerTable, quitPlanTable];
+
+        const personalInfoLastName = document.getElementById('personalInfoLastName');
+        const personalInfoFirstName = document.getElementById('personalInfoFirstName');
+        const personalInfoEmail = document.getElementById('personalInfoEmail');
+
+        const surveyLevelCell = document.getElementById('surveyLevel');
+        // DELETED: surveyRecommendationCell is no longer needed in JS as the element is removed from HTML
+        const surveyDateTakenCell = document.getElementById('surveyDateTaken');
+
+        // Add references for Quit Plan cells
+        const quitPlanStartDate = document.getElementById('quitPlanStartDate');
+        const quitPlanTargetDate = document.getElementById('quitPlanTargetDate');
+        const quitPlanStages = document.getElementById('quitPlanStages');
+        const quitPlanMethod = document.getElementById('quitPlanMethod');
+        const quitPlanCustomPlan = document.getElementById('quitPlanCustomPlan');
+        const quitPlanDailyCigarettes = document.getElementById('quitPlanDailyCigarettes');
+        const quitPlanDailySpending = document.getElementById('quitPlanDailySpending');
+        const quitPlanReasons = document.getElementById('quitPlanReasons');
+
+
+        // --- State Variables ---
         let selectedUserId = null;
         let stompClient = null;
         const username = '[[${username}]]';
+        const notificationState = {};
+        let lastMessageDate = null;
 
-        const notificationState = {}; // Keep track of unread notifications
+        // --- MODIFICATION: Robust Fetch Helper ---
+        // This helper function handles all fetch requests that expect a JSON response.
+        // It checks for server errors before attempting to parse the response.
+        async function fetchAndParse(url, options) {
+            try {
+                const response = await fetch(url, options);
+
+                // If the response is not OK (e.g., status 404, 500), the body is likely not JSON.
+                if (!response.ok) {
+                    // Read the response as text to see what the server actually sent (e.g., an HTML error page).
+                    const errorText = await response.text();
+                    console.error(`Network response was not ok for URL: ${url}`);
+                    console.error(`Status: ${response.status} ${response.statusText}`);
+                    console.error('Server response body:', errorText); // This is the crucial log!
+                    throw new Error(`Server returned status ${response.status}`);
+                }
+
+                // If the response is OK, we can safely parse it as JSON.
+                return await response.json();
+
+            } catch (error) {
+                console.error(`Failed to fetch or parse from URL: ${url}`, error);
+                throw error; // Re-throw the error to be handled by the calling function.
+            }
+        }
+
 
         function connect(event) {
-            if (event) {
-                event.preventDefault();
-            }
-            const socket = new SockJS('http://localhost:8080/ws'); // ← thêm domain host backend vào!
+            if (event) event.preventDefault();
+            const socket = new SockJS('/ws');
             stompClient = Stomp.over(socket);
-            stompClient.connect({}, onConnected);
+            stompClient.connect({}, onConnected, onError); // Added onError callback
+        }
+
+        function onError(error) {
+            console.error('STOMP Error:', error);
+            // You might want to attempt to reconnect here
         }
 
         function onConnected() {
             stompClient.subscribe(`/user/${username}/queue/messages`, onMessageReceived);
-            stompClient.subscribe(`/user/public`, onMessageReceived); // For public status updates or broadcasts
+            stompClient.subscribe(`/user/public`, onMessageReceived);
             stompClient.send("/app/user.addUser", {}, JSON.stringify({ senderId: username, status: 'ONLINE' }));
-
-            // Initial setup of connected users.
-            // This will now gracefully update or add elements, not just clear and rebuild.
             findAndDisplayConnectedUsers();
         }
 
         async function findAndDisplayConnectedUsers() {
-            const connectedUsersResponse = await fetch('/users');
-            const connectedUsers = await connectedUsersResponse.json();
-            const connectedUsersList = document.getElementById('connectedUsers');
-            if (!connectedUsersList) return;
+            try {
+                // MODIFICATION: Using the robust fetch helper
+                const connectedUsers = await fetchAndParse('/users');
+                const connectedUsersList = document.getElementById('connectedUsers');
+                if (!connectedUsersList) return;
 
-            // Map current elements by their ID for quick lookup
-            const existingUserElements = new Map();
-            Array.from(connectedUsersList.children).forEach(element => {
-                existingUserElements.set(element.id, element);
-            });
+                const existingUserElements = new Map(Array.from(connectedUsersList.children).map(el => [el.id, el]));
+                const activeUsernames = new Set();
 
-            // Filter out the current user and process
-            const usersToProcess = connectedUsers.filter(user => user.username !== username);
-            const activeUsernames = new Set(); // To keep track of users that are still active
+                connectedUsers.filter(user => user.username !== username).forEach(user => {
+                    const userId = user.username;
+                    activeUsernames.add(userId);
+                    let userElement = existingUserElements.get(userId);
 
-            usersToProcess.forEach(user => {
-                const userId = user.username;
-                activeUsernames.add(userId);
-                let userElement = existingUserElements.get(userId);
+                    if (userElement) {
+                        userElement.querySelector('.status-dot').classList.toggle('online', user.status?.toUpperCase() === 'ONLINE');
+                    } else {
+                        userElement = appendUserElement(user, connectedUsersList);
+                    }
+                    existingUserElements.delete(userId);
+                });
 
-                if (userElement) {
-                    // User already exists, update their status and potentially last message/time
-                    userElement.querySelector('.status-dot').classList.toggle('online', user.status.toUpperCase() === 'ONLINE');
-                    // You might need to update the last message and time if your /users endpoint provides it
-                    // userElement.querySelector('.last-message').textContent = user.lastMessage || 'No recent messages';
-                    // userElement.querySelector('.time').textContent = user.time || '';
-                } else {
-                    // New user, create and append
-                    userElement = appendUserElement(user, connectedUsersList);
+                existingUserElements.forEach(element => connectedUsersList.removeChild(element));
+                document.querySelectorAll('.conversation-item').forEach(item => {
+                    item.removeEventListener('click', userItemClick);
+                    item.addEventListener('click', userItemClick);
+                });
+
+                setupChatOptions(); // Extracted setup logic into its own function for clarity
+            } catch (error) {
+                console.error('Could not display connected users.', error);
+            }
+        }
+
+        function setupChatOptions() {
+            if (chatOptionsIcon && chatOptionsDropdown && dropdownContentWrapper) {
+                function hideAllInfoTables() {
+                    infoTables.forEach(table => table.classList.remove('show'));
                 }
-                // Remove from map to track users that are no longer connected
-                existingUserElements.delete(userId);
-            });
 
-            // Any remaining elements in existingUserElements map are users who have disconnected
-            existingUserElements.forEach(element => {
-                connectedUsersList.removeChild(element);
-            });
+                chatOptionsIcon.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    dropdownContentWrapper.classList.toggle('show');
+                    hideAllInfoTables();
+                });
 
-            // Re-attach click listeners to ALL current conversation items
-            // This is crucial because new elements won't have them, and if elements were removed,
-            // their listeners are gone.
-            document.querySelectorAll('.conversation-item').forEach(item => {
-                item.removeEventListener('click', userItemClick); // Prevent duplicate listeners
-                item.addEventListener('click', userItemClick);
-            });
+                chatOptionsDropdown.querySelectorAll('a').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        const action = item.dataset.action;
+                        hideAllInfoTables();
+
+                        let tableToShow;
+                        if (action === 'personal-info') {
+                            tableToShow = personalInfoTable;
+                            fetchAndPopulatePersonalInfo(selectedUserId);
+                        } else if (action === 'survey-answer') {
+                            tableToShow = surveyAnswerTable;
+                            fetchAndPopulateSurveyAnswer(selectedUserId);
+                        } else if (action === 'quit-plan') {
+                            tableToShow = quitPlanTable;
+                            fetchAndPopulateQuitPlan(selectedUserId); // Call new function here
+                        }
+
+                        if (tableToShow) tableToShow.classList.add('show');
+                    });
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!chatOptionsIcon.contains(e.target) && !dropdownContentWrapper.contains(e.target)) {
+                        dropdownContentWrapper.classList.remove('show');
+                        hideAllInfoTables();
+                    }
+                });
+
+                infoTables.forEach(table => table.addEventListener('click', (e) => e.stopPropagation()));
+            }
         }
 
 
         function appendUserElement(user, connectedUsersList) {
             const divItem = document.createElement('div');
-            // Ensure classes match Thymeleaf structure
             divItem.classList.add('conversation-item');
-            divItem.setAttribute('data-conversation-id', user.username);
-            divItem.id = user.username; // Assign ID for easy lookup
+            divItem.id = user.username;
+            divItem.dataset.conversationId = user.username;
 
-            const isUserOnline = user.status && user.status.toUpperCase() === 'ONLINE';
+            const isUserOnline = user.status?.toUpperCase() === 'ONLINE';
             const badgeVisible = notificationState[user.username] ? 'inline-block' : 'none';
 
             divItem.innerHTML = `
@@ -197,9 +497,7 @@
                     <div class="conversation-footer">
                         <p class="last-message">No recent messages</p> <span class="badge bg-danger ms-auto" id="notify-${user.username}" style="display: ${badgeVisible};">New</span>
                     </div>
-                </div>
-            `;
-            // Do NOT add event listener here. It's done in findAndDisplayConnectedUsers for all.
+                </div>`;
             connectedUsersList.appendChild(divItem);
             return divItem;
         }
@@ -208,178 +506,186 @@
             document.querySelectorAll('.conversation-item').forEach(item => item.classList.remove('active'));
             const clickedUserElement = event.currentTarget;
             clickedUserElement.classList.add('active');
+            document.getElementById('messageForm')?.style.setProperty('display', 'flex', 'important');
 
-            const messageFormElement = document.getElementById('messageForm');
-            if (messageFormElement) {
-                messageFormElement.style.display = 'flex';
-            }
-
-            selectedUserId = clickedUserElement.getAttribute('data-conversation-id');
-
-            // Update the chat header with the selected user's name
+            selectedUserId = clickedUserElement.dataset.conversationId;
             const connectedUserFullnameElement = document.querySelector('#connected-user-fullname');
             if (connectedUserFullnameElement) {
-                const usernameEl = clickedUserElement.querySelector('.user-username');
-                if (usernameEl) {
-                    connectedUserFullnameElement.textContent = usernameEl.textContent;
-                }
+                connectedUserFullnameElement.textContent = clickedUserElement.querySelector('.user-username')?.textContent || 'N/A';
             }
 
-            // Hide notification badge for the selected user
             const notificationBadge = document.getElementById(`notify-${selectedUserId}`);
-            if (notificationBadge) {
-                notificationBadge.style.display = 'none';
-            }
-            delete notificationState[selectedUserId]; // Clear notification state
+            if (notificationBadge) notificationBadge.style.display = 'none';
+            delete notificationState[selectedUserId];
 
-            fetchAndDisplayUserChat(); // Load chat history for the selected user
-            openChat(); // Show chat area on mobile
+            fetchAndDisplayUserChat();
+            openChat();
         }
 
-        let lastMessageDate = null; // Track date for message separators
-
         async function fetchAndDisplayUserChat() {
-            const userChatResponse = await fetch(`/messages/${username}/${selectedUserId}`);
-            const userChat = await userChatResponse.json();
-            if (chatArea) {
-                chatArea.innerHTML = ''; // Clear existing messages
-                lastMessageDate = null; // Reset date tracker for a new chat
+            try {
+                // MODIFICATION: Using the robust fetch helper
+                const userChat = await fetchAndParse(`/messages/${username}/${selectedUserId}`);
+                if (chatArea) {
+                    chatArea.innerHTML = '';
+                    lastMessageDate = null;
+                    userChat.forEach(chat => displayMessage(chat.senderId, chat.content, chat.timestamp));
+                    chatArea.scrollTop = chatArea.scrollHeight;
+                }
+            } catch (error) {
+                console.error(`Could not fetch chat for user ${selectedUserId}.`, error);
+                if(chatArea) chatArea.innerHTML = '<p class="error-message">Could not load chat history.</p>';
+            }
+        }
 
-                userChat.forEach(chat => displayMessage(chat.senderId, chat.content, chat.timestamp));
-                chatArea.scrollTop = chatArea.scrollHeight; // Scroll to bottom
+        async function fetchAndPopulatePersonalInfo(userId) {
+            if (!userId) return;
+            try {
+                // MODIFICATION: Using the robust fetch helper
+                const userProfile = await fetchAndParse(`/api/users/${userId}/profile`);
+                if (personalInfoLastName) personalInfoLastName.textContent = userProfile.lastName || 'N/A';
+                if (personalInfoFirstName) personalInfoFirstName.textContent = userProfile.firstName || 'N/A';
+                if (personalInfoEmail) personalInfoEmail.textContent = userProfile.email || 'N/A';
+            } catch (error) {
+                console.error(`Error fetching personal info for user ${userId}:`, error);
+                if (personalInfoLastName) personalInfoLastName.textContent = 'Error';
+                if (personalInfoFirstName) personalInfoFirstName.textContent = 'Error';
+                if (personalInfoEmail) personalInfoEmail.textContent = 'Error';
+            }
+        }
+
+        async function fetchAndPopulateSurveyAnswer(userId) {
+            if (!userId) return;
+            try {
+                // MODIFICATION: Using the robust fetch helper
+                const surveyData = await fetchAndParse(`/api/users/${userId}/latest-survey-answer`);
+                if (surveyLevelCell) surveyLevelCell.textContent = surveyData.analysis || 'N/A';
+                // surveyRecommendationCell is no longer here
+                if (surveyDateTakenCell) {
+                    surveyDateTakenCell.textContent = surveyData.createdAt ?
+                        new Date(surveyData.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) :
+                        'N/A';
+                }
+            } catch (error) {
+                console.error(`Error fetching survey answer for user ${userId}:`, error);
+                if (surveyLevelCell) surveyLevelCell.textContent = 'N/A';
+                // No longer need to reset surveyRecommendationCell
+                if (surveyDateTakenCell) surveyDateTakenCell.textContent = 'N/A';
+            }
+        }
+
+        // --- NEW FUNCTION: Fetch and Populate Quit Plan Data ---
+        async function fetchAndPopulateQuitPlan(userId) {
+            if (!userId) return;
+            try {
+                const quitPlanData = await fetchAndParse(`/api/users/${userId}/latest-quit-plan`); // Call new endpoint
+
+                if (quitPlanStartDate) quitPlanStartDate.textContent = quitPlanData.startDate || 'N/A';
+                if (quitPlanTargetDate) quitPlanTargetDate.textContent = quitPlanData.targetDate || 'N/A';
+                if (quitPlanStages) quitPlanStages.textContent = quitPlanData.stages || 'N/A';
+                if (quitPlanMethod) quitPlanMethod.textContent = quitPlanData.method || 'N/A';
+                if (quitPlanCustomPlan) quitPlanCustomPlan.textContent = quitPlanData.customPlan || 'N/A';
+                if (quitPlanDailyCigarettes) quitPlanDailyCigarettes.textContent = quitPlanData.dailySmokingCigarettes != null ? quitPlanData.dailySmokingCigarettes : 'N/A';
+                if (quitPlanDailySpending) quitPlanDailySpending.textContent = quitPlanData.dailySpending != null ? quitPlanData.dailySpending : 'N/A';
+                if (quitPlanReasons) quitPlanReasons.textContent = quitPlanData.reasons && quitPlanData.reasons.length > 0 ? quitPlanData.reasons.join(', ') : 'N/A'; // Join reasons array
+            } catch (error) {
+                console.error(`Error fetching quit plan for user ${userId}:`, error);
+                // Reset fields on error
+                if (quitPlanStartDate) quitPlanStartDate.textContent = 'N/A';
+                if (quitPlanTargetDate) quitPlanTargetDate.textContent = 'N/A';
+                if (quitPlanStages) quitPlanStages.textContent = 'N/A';
+                if (quitPlanMethod) quitPlanMethod.textContent = 'N/A';
+                if (quitPlanCustomPlan) quitPlanCustomPlan.textContent = 'N/A';
+                if (quitPlanDailyCigarettes) quitPlanDailyCigarettes.textContent = 'N/A';
+                if (quitPlanDailySpending) quitPlanDailySpending.textContent = 'N/A';
+                if (quitPlanReasons) quitPlanReasons.textContent = 'N/A';
+            }
+        }
+
+        // --- MODIFICATION: Safe message parsing ---
+        function onMessageReceived(payload) {
+            try {
+                // This is a critical point. If payload.body is not valid JSON, the original code would crash here.
+                const message = JSON.parse(payload.body);
+
+                if (message.type === 'STATUS_UPDATE') {
+                    findAndDisplayConnectedUsers();
+                    return;
+                }
+
+                if (selectedUserId && selectedUserId === message.senderId) {
+                    displayMessage(message.senderId, message.content, message.timestamp);
+                } else {
+                    notificationState[message.senderId] = true;
+                    const notificationBadge = document.getElementById(`notify-${message.senderId}`);
+                    if (notificationBadge) notificationBadge.style.display = 'inline-block';
+
+                    const userElement = document.getElementById(message.senderId);
+                    if (userElement) {
+                        userElement.querySelector('.last-message').textContent = message.content;
+                        if (message.timestamp) {
+                            const msgDate = new Date(message.timestamp);
+                            userElement.querySelector('.time').textContent = `${msgDate.getHours().toString().padStart(2, '0')}:${msgDate.getMinutes().toString().padStart(2, '0')}`;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to parse incoming WebSocket message:", error);
+                console.error("Raw non-JSON message body received:", payload.body); // This is the crucial log!
             }
         }
 
         function displayMessage(senderId, content, timestampString) {
+            if (!chatArea) return;
             const messageDate = new Date(timestampString);
-            const today = new Date();
-            const yesterday = new Date(today);
-            yesterday.setDate(today.getDate() - 1);
-
-            let dateSeparatorText = '';
-            // Check if date has changed or if it's the first message
             if (!lastMessageDate || messageDate.toDateString() !== lastMessageDate.toDateString()) {
-                if (messageDate.toDateString() === today.toDateString()) {
-                    dateSeparatorText = 'Today';
-                } else if (messageDate.toDateString() === yesterday.toDateString()) {
-                    dateSeparatorText = 'Yesterday';
-                } else {
-                    // Custom formatting for other dates to match Thymeleaf output: EEEE, dd MMMM yyyy
-                    const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-                    // Example: "Thứ Hai, 24 tháng Sáu 2024"
-                    dateSeparatorText = messageDate.toLocaleDateString('vi-VN', options);
-                    // Capitalize first letter of day and month if needed (locale dependent)
+                const today = new Date();
+                const yesterday = new Date();
+                yesterday.setDate(today.getDate() - 1);
+                let dateSeparatorText = '';
+
+                if (messageDate.toDateString() === today.toDateString()) dateSeparatorText = 'Today';
+                else if (messageDate.toDateString() === yesterday.toDateString()) dateSeparatorText = 'Yesterday';
+                else {
+                    dateSeparatorText = messageDate.toLocaleDateString('vi-VN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
                     dateSeparatorText = dateSeparatorText.charAt(0).toUpperCase() + dateSeparatorText.slice(1);
-                    // Replace 'tháng sáu' with 'Tháng Sáu' and similar for other months.
-                    // This is a simple capitalization, for full proper case you might need more complex logic.
                 }
-
-                const dateSeparatorDiv = document.createElement('div');
-                dateSeparatorDiv.classList.add('date-separator');
-                // You had HH:mm in your Thymeleaf template for date separators, so I'll include it here.
-                dateSeparatorDiv.innerHTML = `<span>${dateSeparatorText} ${messageDate.getHours().toString().padStart(2, '0')}:${messageDate.getMinutes().toString().padStart(2, '0')}</span>`;
-                chatArea.appendChild(dateSeparatorDiv);
-                lastMessageDate = messageDate; // Update lastMessageDate after adding separator
+                chatArea.insertAdjacentHTML('beforeend', `<div class="date-separator"><span>${dateSeparatorText}</span></div>`);
+                lastMessageDate = messageDate;
             }
 
-            const messageGroup = document.createElement('div');
-            messageGroup.classList.add('message-group');
-            if (senderId === username) {
-                messageGroup.classList.add('sent');
-            } else {
-                messageGroup.classList.add('received');
-            }
-            messageGroup.setAttribute('data-sender-id', senderId);
-
-            const messageBubble = document.createElement('div');
-            messageBubble.classList.add('message-bubble');
-            messageBubble.innerHTML = `<p>${content}</p>`; // Use innerHTML to allow HTML content inside <p> if needed
-
-            messageGroup.appendChild(messageBubble);
-            chatArea.appendChild(messageGroup);
-
+            const messageGroupClass = senderId === username ? 'sent' : 'received';
+            const messageGroup = `
+                <div class="message-group ${messageGroupClass}" data-sender-id="${senderId}">
+                    <div class="message-bubble"><p>${content}</p></div>
+                </div>`;
+            chatArea.insertAdjacentHTML('beforeend', messageGroup);
             chatArea.scrollTop = chatArea.scrollHeight;
         }
-
 
         function sendMessage(event) {
             event.preventDefault();
             const messageContent = messageInput.value.trim();
             if (messageContent && stompClient && selectedUserId) {
-                const chatMessage = {
-                    senderId: username,
-                    receiverId: selectedUserId,
-                    content: messageContent,
-                    timestamp: new Date() // Sending a JS Date object, Spring will convert to LocalDateTime
-                };
+                const chatMessage = { senderId: username, receiverId: selectedUserId, content: messageContent, timestamp: new Date() };
                 stompClient.send("/app/chat", {}, JSON.stringify(chatMessage));
-                // Immediately display the sent message in the chat
-                displayMessage(username, messageContent, new Date().toISOString()); // Use ISOString for consistent parsing
-                messageInput.value = ''; // Clear input field
-                chatArea.scrollTop = chatArea.scrollHeight; // Scroll to bottom
-            }
-        }
-
-        function onMessageReceived(payload) {
-            const message = JSON.parse(payload.body);
-
-            // Assuming a 'type' field for status updates from backend if you send them on /user/public
-            if (message.type === 'STATUS_UPDATE') {
-                findAndDisplayConnectedUsers(); // Refresh user list if status changes
-                return; // Don't treat as a chat message
-            }
-
-            // Handle incoming chat messages
-            if (selectedUserId && selectedUserId === message.senderId) {
-                displayMessage(message.senderId, message.content, message.timestamp);
-                // If the chat is active, hide the notification badge
-                const notificationBadge = document.getElementById(`notify-${message.senderId}`);
-                if (notificationBadge) {
-                    notificationBadge.style.display = 'none';
-                }
-            } else {
-                // If message is from a non-active chat, show notification
-                notificationState[message.senderId] = true;
-                const notificationBadge = document.getElementById(`notify-${message.senderId}`);
-                if (notificationBadge) {
-                    notificationBadge.style.display = 'inline-block';
-                }
-                // Optional: Update last message preview in sidebar for non-active chats
-                const userElement = document.getElementById(message.senderId);
-                if (userElement) {
-                    const lastMessageP = userElement.querySelector('.last-message');
-                    if (lastMessageP) {
-                        lastMessageP.textContent = message.content;
-                    }
-                    const timeSpan = userElement.querySelector('.time');
-                    if (timeSpan && message.timestamp) {
-                        const msgDate = new Date(message.timestamp);
-                        timeSpan.textContent = `${msgDate.getHours().toString().padStart(2, '0')}:${msgDate.getMinutes().toString().padStart(2, '0')}`;
-                    }
-                }
+                displayMessage(username, messageContent, new Date().toISOString());
+                messageInput.value = '';
+                messageInput.style.height = 'auto';
+                chatArea.scrollTop = chatArea.scrollHeight;
             }
         }
 
         function onLogout() {
-            if (stompClient) { // Check if stompClient is initialized
+            if (stompClient) {
                 stompClient.send("/app/user.disconnectUser", {}, JSON.stringify({ senderId: username, status: 'OFFLINE' }));
             }
-            // CẢI TIẾN: Chuyển hướng đến trang người dùng sau khi đăng xuất
-            window.location.href = '/dashboard'; // Thay '/userpage' bằng URL trang người dùng thực tế của bạn
+            window.location.href = '/dashboard';
         }
 
-        // Attach event listeners after DOM is loaded
-        if (messageForm) {
-            messageForm.addEventListener('submit', sendMessage);
-        } else {
-            console.error("Error: messageForm element not found. It might be conditionally rendered by Thymeleaf.");
-        }
-
-        if (logout) {
-            logout.addEventListener('click', onLogout);
-        } else {
-            console.warn("Warning: logout element with ID 'logout' not found.");
-        }
+        // --- Event Listeners and Initializers ---
+        if (messageForm) messageForm.addEventListener('submit', sendMessage);
+        if (logout) logout.addEventListener('click', onLogout);
 
         const textarea = document.querySelector('.chat-input-form textarea');
         if (textarea) {
@@ -391,30 +697,12 @@
 
         const chatApp = document.querySelector('.chat-app');
         const backButton = document.querySelector('.back-button');
+        const openChat = () => chatApp?.classList.add('show-chat-area');
+        const closeChat = () => chatApp?.classList.remove('show-chat-area');
+        if (backButton) backButton.addEventListener('click', closeChat);
 
-        const openChat = () => {
-            if (chatApp) {
-                chatApp.classList.add('show-chat-area');
-            }
-        };
-
-        const closeChat = () => {
-            if (chatApp) {
-                chatApp.classList.remove('show-chat-area');
-            }
-        };
-
-        if (backButton) {
-            backButton.addEventListener('click', closeChat);
-        }
-
-        // Initial setup for the chat messages container to scroll to the bottom
-        const messagesContainer = document.querySelector('#chat-messages');
-        if (messagesContainer) {
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-
-        // Establish WebSocket connection when DOM is ready
         connect();
     });
 </script>
+</body>
+</html>

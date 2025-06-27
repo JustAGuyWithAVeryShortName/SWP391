@@ -2,6 +2,7 @@ package com.swp2.demo.entity;
 
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
@@ -62,25 +63,27 @@ public class User {
     // --- New Relationships for cascading delete ---
 
     // For UserAnswer
+    // Add @JsonIgnore to break the circular reference
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserAnswer> userAnswers = new ArrayList<>();
 
-    // For QuitPlan
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<QuitPlan> quitPlans = new ArrayList<>();
 
-    // For AnalysisResultEntity
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AnalysisResultEntity> analysisResults = new ArrayList<>();
 
-    // For Order (Consider if you truly want to delete orders when a user is deleted)
-    // If you want to delete orders, use CascadeType.REMOVE. If not, handle manually or set FK to null.
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE) // No orphanRemoval here usually, as orders aren't "orphaned" by removing from a user collection
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Order> orders = new ArrayList<>();
 
-    // For Feedback (User as author of feedback)
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Feedback> authoredFeedback = new ArrayList<>();
+
 
     // For Feedback (User as coach) - if a user can also be a coach
     // This is more complex, as a coach might have many feedback entries from different users.

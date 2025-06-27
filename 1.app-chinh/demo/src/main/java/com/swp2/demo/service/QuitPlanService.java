@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class QuitPlanService {
@@ -82,6 +83,9 @@ public class QuitPlanService {
                 .filter(s -> s.getActualCigarettes() != null)
                 .mapToInt(s -> Math.max(0, s.getTargetCigarettes() - s.getActualCigarettes()) * pricePerCigarette)
                 .sum();
+    }
+    public Optional<QuitPlan> getLatestQuitPlanByUsername(String username) {
+        return repository.findTopByUser_UsernameOrderByIdDesc(username);
     }
 
 }
