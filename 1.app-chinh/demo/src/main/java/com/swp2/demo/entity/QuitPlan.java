@@ -22,6 +22,16 @@ public class QuitPlan {
     private LocalDate targetDate;
     private String stages;
 
+    @Column(name = "method", nullable = false)
+    private String method;
+
+    @PrePersist
+    public void ensureDefaultMethod() {
+        if (this.method == null) {
+            this.method = "reduce_gradually";
+        }
+    }
+
     @Column(length = 2000)
     private String customPlan;
 
@@ -29,32 +39,13 @@ public class QuitPlan {
     @JoinColumn(name = "user_id")
     private User user;
 
-    // ✅ Thêm số điếu hút mỗi ngày
     @Column(name = "daily_smoking_cigarettes")
     private Integer dailySmokingCigarettes;
 
-    // ✅ Thêm số tiền chi tiêu mỗi ngày (BigDecimal)
     @Column(name = "daily_spending")
     private BigDecimal dailySpending;
 
-    // --- Getter & Setter cho các field mới ---
-    public Integer getDailySmokingCigarettes() {
-        return dailySmokingCigarettes;
-    }
-
-    public void setDailySmokingCigarettes(Integer dailySmokingCigarettes) {
-        this.dailySmokingCigarettes = dailySmokingCigarettes;
-    }
-
-    public BigDecimal getDailySpending() {
-        return dailySpending;
-    }
-
-    public void setDailySpending(BigDecimal dailySpending) {
-        this.dailySpending = dailySpending;
-    }
-
-    // --- Các getter/setter cũ ---
+    // ======= GETTERS & SETTERS =======
     public Long getId() {
         return id;
     }
@@ -95,6 +86,14 @@ public class QuitPlan {
         this.stages = stages;
     }
 
+    public String getMethod() {
+        return method;
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
     public String getCustomPlan() {
         return customPlan;
     }
@@ -109,5 +108,21 @@ public class QuitPlan {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Integer getDailySmokingCigarettes() {
+        return dailySmokingCigarettes;
+    }
+
+    public void setDailySmokingCigarettes(Integer dailySmokingCigarettes) {
+        this.dailySmokingCigarettes = dailySmokingCigarettes;
+    }
+
+    public BigDecimal getDailySpending() {
+        return dailySpending;
+    }
+
+    public void setDailySpending(BigDecimal dailySpending) {
+        this.dailySpending = dailySpending;
     }
 }

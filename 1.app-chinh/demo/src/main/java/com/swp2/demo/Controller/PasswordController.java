@@ -1,4 +1,4 @@
-/*package com.swp2.demo.Controller;
+package com.swp2.demo.Controller;
 
 import com.swp2.demo.entity.User;
 import com.swp2.demo.service.UserService;
@@ -50,4 +50,4 @@ public class PasswordController {
         model.addAttribute("message", "Đổi mật khẩu thành công.");
         return "change-password";
     }
-}*/
+}

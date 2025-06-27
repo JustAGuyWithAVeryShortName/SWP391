@@ -4,16 +4,16 @@ import com.swp2.demo.entity.QuitPlan;
 import com.swp2.demo.entity.UserPlanStep;
 import com.swp2.demo.Repository.QuitPlanRepository;
 import com.swp2.demo.repository.UserPlanStepRepository;
+import com.swp2.demo.service.QuitPlanService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import jakarta.servlet.http.HttpSession;
+
 import java.math.BigDecimal;
 import java.time.*;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -24,6 +24,9 @@ public class ProgressController {
 
     @Autowired
     private UserPlanStepRepository userPlanStepRepository;
+
+    @Autowired
+    private QuitPlanService quitPlanService;
 
     public static class HealthProgress {
         private String currentStatus;
@@ -72,7 +75,7 @@ public class ProgressController {
         Long userId = (Long) session.getAttribute("userId");
 
         if (userId == null) {
-            return "redirect:/login"; // hoặc hiển thị lỗi
+            return "redirect:/login";
         }
 
         QuitPlan plan = quitPlanRepository.findByUserId(userId).stream().findFirst().orElse(null);
@@ -81,38 +84,59 @@ public class ProgressController {
             model.addAttribute("error", "Chưa có kế hoạch bỏ thuốc.");
             return "error";
         }
-        System.out.println("🔍 Start Date from DB: " + plan.getStartDate());
-        System.out.println("🕒 Server Timezone: " + ZoneId.systemDefault());
 
         ZoneId zoneVN = ZoneId.of("Asia/Ho_Chi_Minh");
         ZonedDateTime now = ZonedDateTime.now(zoneVN);
         ZonedDateTime startDateTime = plan.getStartDate().atStartOfDay(zoneVN);
-
         long daysSinceQuit = Duration.between(startDateTime, now).toDays();
         if (daysSinceQuit < 0) daysSinceQuit = 0;
 
-        long cigarettesAvoided = 0;
-        BigDecimal moneySaved = BigDecimal.ZERO;
-
-        if (plan.getDailySmokingCigarettes() != null) {
-            cigarettesAvoided = plan.getDailySmokingCigarettes() * daysSinceQuit;
-        }
-
-        if (plan.getDailySpending() != null) {
-            moneySaved = plan.getDailySpending().multiply(BigDecimal.valueOf(daysSinceQuit));
-        }
-        model.addAttribute("cigarettesAvoided", cigarettesAvoided);
         model.addAttribute("daysSinceQuit", daysSinceQuit);
-        model.addAttribute("moneySaved", String.format("%,.0f", moneySaved));
         model.addAttribute("healthProgress", getHealthProgress(daysSinceQuit));
+        model.addAttribute("achievedMilestones", getAchievedMilestones(daysSinceQuit, defineMilestones()));
+        model.addAttribute("upcomingMilestones", getUpcomingMilestones(daysSinceQuit, defineMilestones()));
 
-        List<Milestone> allMilestones = defineMilestones();
-        model.addAttribute("achievedMilestones", getAchievedMilestones(daysSinceQuit, allMilestones));
-        model.addAttribute("upcomingMilestones", getUpcomingMilestones(daysSinceQuit, allMilestones));
+        List<UserPlanStep> originalSteps = userPlanStepRepository.findByQuitPlan(plan);
+        List<UserPlanStep> displaySteps = new ArrayList<>();
 
-        List<UserPlanStep> steps = userPlanStepRepository.findByQuitPlan(plan);
-        model.addAttribute("steps", steps);
+        for (UserPlanStep step : originalSteps) {
+            UserPlanStep copy = new UserPlanStep();
+            copy.setId(step.getId());
+            copy.setDate(step.getDate());
+            copy.setDayIndex(step.getDayIndex());
+            copy.setActualCigarettes(step.getActualCigarettes());
+            copy.setQuitPlan(step.getQuitPlan());
+
+            if ("quit_abruptly".equalsIgnoreCase(plan.getMethod())) {
+                copy.setTargetCigarettes(0);
+                if (copy.getActualCigarettes() != null) {
+                    copy.setCompleted(copy.getActualCigarettes() == 0);
+                }
+            } else {
+                copy.setTargetCigarettes(step.getTargetCigarettes());
+                if (copy.getActualCigarettes() != null) {
+                    copy.setCompleted(copy.getActualCigarettes() <= copy.getTargetCigarettes());
+                }
+            }
+
+            displaySteps.add(copy);
+        }
+
+        model.addAttribute("steps", displaySteps);
         model.addAttribute("planId", plan.getId());
+
+        int pricePerCigarette = 0;
+        if (plan.getDailySmokingCigarettes() != null && plan.getDailySmokingCigarettes() > 0) {
+            pricePerCigarette = plan.getDailySpending().intValue() / plan.getDailySmokingCigarettes();
+        }
+
+        int avoided = quitPlanService.calculateCigarettesAvoided(displaySteps);
+        int saved = quitPlanService.calculateMoneySaved(displaySteps, pricePerCigarette);
+
+        model.addAttribute("cigarettesAvoided", Math.max(0, avoided));
+        model.addAttribute("cigarettesOver", Math.abs(Math.min(0, avoided)));
+        model.addAttribute("moneySaved", String.format("%,d", saved));
+        model.addAttribute("method", plan.getMethod());
 
         return "track-progress";
     }
@@ -147,28 +171,23 @@ public class ProgressController {
     }
 
     private List<Milestone> defineMilestones() {
-        List<Milestone> milestones = new ArrayList<>();
-        milestones.add(new Milestone("1 Ngày Vàng", 1));
-        milestones.add(new Milestone("Thanh Lọc Nicotine", 3));
-        milestones.add(new Milestone("Tuần Đầu Tiên", 7));
-        milestones.add(new Milestone("Hô Hấp Cải Thiện", 14));
-        milestones.add(new Milestone("Chạm Mốc 1 Tháng", 30));
-        milestones.add(new Milestone("Năng Lượng Trở Lại", 90));
-        milestones.add(new Milestone("Nửa Năm Kiên Trì", 180));
-        milestones.add(new Milestone("Chúc Mừng 1 Năm", 365));
-        return milestones;
+        return Arrays.asList(
+                new Milestone("1 Ngày Vàng", 1),
+                new Milestone("Thanh Lọc Nicotine", 3),
+                new Milestone("Tuần Đầu Tiên", 7),
+                new Milestone("Hô Hấp Cải Thiện", 14),
+                new Milestone("Chạm Mốc 1 Tháng", 30),
+                new Milestone("Năng Lượng Trở Lại", 90),
+                new Milestone("Nửa Năm Kiên Trì", 180),
+                new Milestone("Chúc Mừng 1 Năm", 365)
+        );
     }
 
     private List<Milestone> getAchievedMilestones(long days, List<Milestone> all) {
-        return all.stream()
-                .filter(m -> days >= m.getDaysToAchieve())
-                .collect(Collectors.toList());
+        return all.stream().filter(m -> days >= m.getDaysToAchieve()).collect(Collectors.toList());
     }
 
     private List<Milestone> getUpcomingMilestones(long days, List<Milestone> all) {
-        return all.stream()
-                .filter(m -> days < m.getDaysToAchieve())
-                .limit(2)
-                .collect(Collectors.toList());
+        return all.stream().filter(m -> days < m.getDaysToAchieve()).limit(2).collect(Collectors.toList());
     }
 }

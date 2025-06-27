@@ -43,7 +43,8 @@ public class QuitPlanService {
         LocalDate end = quitPlan.getTargetDate();
 
         long totalDays = ChronoUnit.DAYS.between(start, end) + 1;
-        int dailyDecrease = (int) Math.ceil((double) initialCigarettesPerDay / totalDays);
+
+        String method = quitPlan.getMethod(); // lấy phương pháp từ plan
 
         for (int i = 0; i < totalDays; i++) {
             UserPlanStep step = new UserPlanStep();
@@ -51,7 +52,15 @@ public class QuitPlanService {
             step.setDate(start.plusDays(i));
             step.setDayIndex(i + 1);
 
-            int target = Math.max(initialCigarettesPerDay - (i * dailyDecrease), 0);
+            int target;
+
+            if ("quit_abruptly".equalsIgnoreCase(method)) {
+                target = 0; // Cold turkey => bỏ ngay lập tức
+            } else {
+                int dailyDecrease = (int) Math.ceil((double) initialCigarettesPerDay / totalDays);
+                target = Math.max(initialCigarettesPerDay - (i * dailyDecrease), 0);
+            }
+
             step.setTargetCigarettes(target);
             step.setCompleted(false);
             step.setActualCigarettes(null);
@@ -59,4 +68,21 @@ public class QuitPlanService {
             userPlanStepRepository.save(step);
         }
     }
+
+    public int calculateCigarettesAvoided(List<UserPlanStep> steps) {
+        return steps.stream()
+                .filter(s -> s.getActualCigarettes() != null)
+                .mapToInt(s -> s.getTargetCigarettes() - s.getActualCigarettes()) // ✔️ bỏ Math.max
+                .sum();
+    }
+
+
+    public int calculateMoneySaved(List<UserPlanStep> steps, int pricePerCigarette) {
+        return steps.stream()
+                .filter(s -> s.getActualCigarettes() != null)
+                .mapToInt(s -> Math.max(0, s.getTargetCigarettes() - s.getActualCigarettes()) * pricePerCigarette)
+                .sum();
+    }
+
 }
+

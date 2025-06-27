@@ -15,17 +15,6 @@ CREATE TABLE Users (
     created_at DATE DEFAULT GETDATE(),
     status NVARCHAR(10) NOT NULL DEFAULT 'OFFLINE' CHECK (status IN ('ONLINE', 'OFFLINE'))
 );
-CREATE TABLE message_home (
-message_id INT PRIMARY KEY IDENTITY(1,1),
-user_id BIGINT NOT NULL, -- người gửi
-content NVARCHAR(500) NOT NULL,
-sent_at DATETIME DEFAULT GETDATE(),
-
-FOREIGN KEY (user_id) REFERENCES Users(user_id)
-ON DELETE CASCADE
-ON UPDATE CASCADE
-);
-
 CREATE TABLE Orders (
     order_id BIGINT PRIMARY KEY IDENTITY(1,1),
     user_id BIGINT NOT NULL FOREIGN KEY REFERENCES Users(user_id),
@@ -75,11 +64,23 @@ CREATE TABLE quit_plan (
     target_date DATE,
     stages NVARCHAR(255),
     custom_plan NVARCHAR(2000),
+    method NVARCHAR(50) CHECK (method IN ('quit_abruptly', 'reduce_gradually')) NOT NULL DEFAULT 'reduce_gradually',
     daily_smoking_cigarettes INT,
     daily_spending DECIMAL(12,2),
     user_id BIGINT,
     CONSTRAINT FK_quit_plan_user FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
+
+-- Lấy ID kế hoạch cold turkey vừa thêm
+DECLARE @cold_turkey_plan_id BIGINT = SCOPE_IDENTITY();
+
+-- Các bước: mục tiêu luôn là 0
+INSERT INTO user_plan_step (date, day_index, target_cigarettes, actual_cigarettes, completed, quit_plan_id)
+VALUES
+('2025-06-24', 1, 0, 0, 1, @cold_turkey_plan_id),
+('2025-06-25', 2, 0, 2, 0, @cold_turkey_plan_id),
+('2025-06-26', 3, 0, NULL, 0, @cold_turkey_plan_id);
+
 
 -- Bảng chính lưu kế hoạch bỏ thuốc
 CREATE TABLE user_plan_step (
@@ -249,7 +250,7 @@ DROP TABLE IF EXISTS question;
 DROP TABLE IF EXISTS password_reset_token;
 DROP TABLE IF EXISTS Orders;
 DROP TABLE IF EXISTS Users;
-Drop table if exists message_home
+
 
 
  drop table Users
@@ -301,10 +302,12 @@ DECLARE @userid INT = (SELECT user_id FROM Users WHERE username = 'member');
 -- Thêm kế hoạch bỏ thuốc cho user này
 INSERT INTO quit_plan (
     start_date, target_date, stages, custom_plan, 
+	 method,
     daily_smoking_cigarettes, daily_spending, user_id
 )
 VALUES (
     '2025-06-24', '2025-07-24', 'Giảm dần', 'Kế hoạch mặc định',
+	'quit_abruptly',
     15, 50000, @userid
 );
 
@@ -317,3 +320,5 @@ VALUES
 ('2025-06-24', 1, 15, 13, 1, @quit_plan_id),
 ('2025-06-25', 2, 14, 12, 0, @quit_plan_id),
 ('2025-06-26', 3, 13, NULL, 0, @quit_plan_id);
+
+
