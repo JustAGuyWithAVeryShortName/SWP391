@@ -67,7 +67,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
             @Override
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
                 StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-                // In ra xác nhận
+                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                if (auth != null && accessor.getUser() == null) {
+                    accessor.setUser(auth); // Gán Principal để dùng được trong controller
+                }
                 return message;
             }
         });}

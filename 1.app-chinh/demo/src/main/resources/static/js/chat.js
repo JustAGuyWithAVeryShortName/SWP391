@@ -36,17 +36,18 @@ function appendMessage(message) {
     const row = table.insertRow(-1);
     const cell = row.insertCell(0);
 
-    const lastName = message.user?.lastName || "";
-    const firstName = message.user?.firstName || "";
+    // ✅ Không còn message.user -> dùng trực tiếp
+    const lastName = message.lastName || "";
+    const firstName = message.firstName || "";
     const fullName = `${lastName} ${firstName}`.trim();
 
     const nameSpan = document.createElement('span');
     nameSpan.textContent = fullName;
 
-    // ✅ So sánh username hoặc email với currentUsername
+    // ✅ So sánh username trực tiếp
     if (
-        message.user?.username === currentUsername ||
-        message.user?.email === currentUsername
+        message.username === currentUsername ||
+        message.email === currentUsername
     ) {
         nameSpan.style.color = "blue";
         nameSpan.style.fontWeight = "bold";
@@ -57,7 +58,9 @@ function appendMessage(message) {
 
     cell.appendChild(nameSpan);
     cell.appendChild(messageSpan);
+
     const wrapper = document.querySelector('.chat-table-wrapper');
     wrapper.scrollTop = wrapper.scrollHeight;
 }
+
 

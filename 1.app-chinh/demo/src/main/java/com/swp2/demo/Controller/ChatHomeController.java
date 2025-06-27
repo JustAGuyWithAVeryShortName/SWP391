@@ -4,16 +4,17 @@ import com.swp2.demo.Repository.MessageHomeRepository;
 import com.swp2.demo.Repository.UserRepository;
 import com.swp2.demo.entity.MessageHome;
 import com.swp2.demo.entity.User;
+import com.swp2.demo.entity.dto.MessageHomeDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -28,23 +29,27 @@ public class ChatHomeController {
 
     @GetMapping("/api/chat/history")
     @ResponseBody
-    public List<MessageHome> getChatHistory() {
-        return messageRepo.findAllByOrderBySentAtAsc();
+    public List<MessageHomeDTO> getChatHistory() {
+        return messageRepo.findAllByOrderBySentAtAsc()
+                .stream()
+                .map(MessageHomeDTO::new)
+                .toList();
     }
 
 
     @MessageMapping("/chat.send")
     @SendTo("/topic/public")
-    public MessageHome send(MessageHome message, Authentication authentication) {
+    public MessageHomeDTO send(MessageHome message, Principal principal) {
         String username = "anonymous";
 
-        if (authentication instanceof OAuth2AuthenticationToken oauthToken) {
+        if (principal instanceof OAuth2AuthenticationToken oauthToken) {
             Map<String, Object> attributes = oauthToken.getPrincipal().getAttributes();
-            username = (String) attributes.get("email"); // ✅ Lấy đúng email
-        } else {
-            username = authentication.getName(); // với login thường
+            username = (String) attributes.get("email");
+        } else if (principal instanceof Authentication auth) {
+            username = auth.getName();
+        } else if (principal != null) {
+            username = principal.getName();
         }
-
 
         User user = userRepository.findByUsername(username);
         if (user == null) {
@@ -55,6 +60,6 @@ public class ChatHomeController {
         message.setSentAt(LocalDateTime.now());
 
         messageRepo.save(message);
-        return message;
+        return new MessageHomeDTO(message); // ✅ đúng kiểu trả về
     }
 }

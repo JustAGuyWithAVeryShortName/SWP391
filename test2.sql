@@ -17,7 +17,7 @@ CREATE TABLE Users (
 );
 CREATE TABLE message_home (
 message_id INT PRIMARY KEY IDENTITY(1,1),
-user_id INT NOT NULL, -- người gửi
+user_id BIGINT NOT NULL, -- người gửi
 content NVARCHAR(500) NOT NULL,
 sent_at DATETIME DEFAULT GETDATE(),
 
@@ -249,7 +249,7 @@ DROP TABLE IF EXISTS question;
 DROP TABLE IF EXISTS password_reset_token;
 DROP TABLE IF EXISTS Orders;
 DROP TABLE IF EXISTS Users;
-
+Drop table if exists message_home
 
 
  drop table Users
