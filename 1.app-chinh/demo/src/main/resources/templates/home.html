@@ -34,12 +34,6 @@
             </div>
         </div>
 
-
-
-
-
-
-
         <a th:href="@{/login}" class="nav-item" sec:authorize="!isAuthenticated()">Login</a>
 
         <!-- Nếu đã đăng nhập -->
@@ -103,6 +97,72 @@
             </div>
         </div>
     </section>
+    <!-- Bảng chat và rating feedback============ -->
+ <div class="chat-rating-wrapper">
+     <section class="chat-section">
+         <div class="container">
+             <h2 class="section-title">Community Chat</h2>
+
+             <div class="chat-table-wrapper">
+                 <table class="chat-table" id="chat-table">
+                     <!-- Tin nhắn sẽ được append ở đây bằng JS -->
+                 </table>
+             </div>
+
+             <form class="chat-form" id="chat-form">
+                 <textarea id="message-content" placeholder="Type your message..." required></textarea>
+                 <button class="btn-primary" type="submit">Send</button>
+             </form>
+         </div>
+     </section>
+     <section class="rating-section">
+        <div class="rating-container">
+            <h2 class="section-title">Feedback & Rating</h2>
+            <table class="table-feedback">
+
+            </table>
+
+            <div class="star-rating">
+                <input type="radio" id="star1" name="rating" value="1" />
+                <label for="star1">★</label>
+
+                <input type="radio" id="star2" name="rating" value="2" />
+                <label for="star2">★</label>
+
+                <input type="radio" id="star3" name="rating" value="3" />
+                <label for="star3">★</label>
+
+                <input type="radio" id="star4" name="rating" value="4" />
+                <label for="star4">★</label>
+
+                <input type="radio" id="star5" name="rating" value="5" />
+                <label for="star5">★</label>
+            </div>
+
+
+            <p>Chia sẻ trải nghiệm của bạn:</p>
+            <textarea placeholder="Nhập phản hồi của bạn..."></textarea>
+            <button type="submit" class="btn-feedback">Send</button>
+
+            <!-- của chat -->
+            <script th:inline="javascript">
+                /*<![CDATA[*/
+                const currentUsername = /*[[${finalUsername}]]*/ 'anonymous';
+                /*]]>*/
+            </script>
+            <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
+            <script src="/js/chat.js"></script>
+
+        </div>
+    </section>
+    </div>
+
+
+
+
+
+
 
     <section class="features-section">
         <div class="container">

@@ -1,14 +1,24 @@
 package com.swp2.demo.Controller;
 
+import com.swp2.demo.Repository.MessageHomeRepository;
+import com.swp2.demo.Repository.UserRepository;
+import com.swp2.demo.entity.MessageHome;
+import com.swp2.demo.entity.User;
 import com.swp2.demo.security.CustomUserDetails;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.security.Principal;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -129,10 +139,23 @@ public class HomeController {
                             "<p><strong>Every hour smoke-free is a victory.</strong> Your body is working for you — give it the chance it deserves.</p>"
             )
     );
-
+    @Autowired
+    private MessageHomeRepository messageRepo;
+    @Autowired
+    private UserRepository userRepo;
     // ========== Trang chủ ==========
     @GetMapping({"/", "/home"})
-    public String home(Model model) {
+    public String home(Model model, Authentication authentication) {
+        String finalUsername = "anonymous";
+
+        if (authentication instanceof OAuth2AuthenticationToken oauth) {
+            finalUsername = (String) oauth.getPrincipal().getAttributes().get("email");
+        } else if (authentication != null) {
+            finalUsername = authentication.getName();
+        }
+
+        model.addAttribute("finalUsername", finalUsername);
+
         List<LeaderboardUser> leaderboard = Arrays.asList(
                 new LeaderboardUser(1, "Thanh Nguyen", 152),
                 new LeaderboardUser(2, "Minh Tran", 140),
@@ -146,6 +169,8 @@ public class HomeController {
 
         return "home";
     }
+
+
 
     // ========== Trang chi tiết bài viết ==========
     @GetMapping("/blog/{id}")

@@ -47,6 +47,168 @@ img { max-width: 100%; display: block; height: auto; }
 }
 
 /* ==== HEADER ==== */
+/* Gộp 2 phần hiển thị ngang nhau */
+.chat-rating-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+}
+
+/* Phần RATING */
+.rating-container h2{
+    font-size: 30px;
+}
+.table-feedback{
+    height: 120px;
+    border: 1px solid black;
+}
+.rating-section {
+    width: 300px;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+}
+.rating-section p{
+    margin: 0;
+}
+
+.rating-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.rating-container textarea {
+    width: 100%;
+    height: 100px;
+    resize: vertical;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #aaa;
+}
+
+.btn-feedback {
+    background-color: #007bff;
+    color: #fff;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    align-self: flex-end;
+    font-weight: bold;
+}
+
+.btn-feedback:hover {
+    background-color: #0056b3;
+}
+
+.star-rating {
+    direction: rtl;
+    font-size: 32px;
+    unicode-bidi: bidi-override;
+    display: inline-flex;
+    margin-top: 20px;
+    margin-right: 55px;
+}
+
+.star-rating input {
+    display: none;
+}
+
+.star-rating label {
+    color: #ccc;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.star-rating input:checked ~ label,
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    color: gold;
+}
+
+
+.chat-section{
+    background: #ffffff ;
+    padding: 5px 0 20px 0;
+    width: 700px;
+    margin-left: 20px;
+    border-radius: 30px;
+    border: 1px solid #ccc;
+}
+.section-title {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+
+}
+
+/* Bảng hiển thị tin nhắn */
+.chat-table-wrapper {
+    max-height: 300px;
+    overflow-y: auto;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid black;
+    height: 250px;
+}
+
+.chat-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.chat-table th,
+.chat-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.chat-table th {
+    background-color: #f0f0f0;
+    font-weight: bold;
+}
+
+/* Form nhập */
+.chat-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-form textarea {
+    width: 100%;
+    height: 100px;
+    padding: 10px;
+    resize: vertical;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    font-size: 1rem;
+}
+
+.chat-form .btn-primary {
+    align-self: flex-end;
+    padding: 8px 16px;
+    background-color: #007bff;
+    border: none;
+    color: #fff;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.chat-form .btn-primary:hover {
+    background-color: #0056b3;
+}
+
+/*==========================*/
+
+
+
 .dropdown-notice {
     position: relative;
 }

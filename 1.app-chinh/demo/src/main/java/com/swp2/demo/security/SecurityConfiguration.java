@@ -47,7 +47,6 @@ public class SecurityConfiguration {
                                 "/ws/**","/about_us","/.well-known/**"
 
                         ).permitAll()
-
                         .requestMatchers(HttpMethod.POST, "/questionnaire").permitAll()
                         .requestMatchers(HttpMethod.GET, "/questionnaire").authenticated()
                         .requestMatchers("/admin/**").hasAuthority("Admin")

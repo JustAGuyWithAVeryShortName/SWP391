@@ -1,11 +1,19 @@
 package com.swp2.demo.entity;
 
+
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+
 import java.util.ArrayList;
 import java.util.List; // Import List
+
+
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 
 @Entity
 @Table(name="Users")
