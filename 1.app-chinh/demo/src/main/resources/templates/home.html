@@ -144,24 +144,10 @@
             <textarea placeholder="Nhập phản hồi của bạn..."></textarea>
             <button type="submit" class="btn-feedback">Send</button>
 
-            <!-- của chat -->
-            <script th:inline="javascript">
-                /*<![CDATA[*/
-                const currentUsername = /*[[${finalUsername}]]*/ 'anonymous';
-                /*]]>*/
-            </script>
-            <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
-            <script src="/js/chat.js"></script>
 
         </div>
     </section>
     </div>
-
-
-
-
-
 
 
     <section class="features-section">
@@ -216,6 +202,18 @@
 </footer>
 
 <a href="#" class="back-to-top"><i class="fas fa-arrow-up"></i></a>
+
+<!-- của chat -->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const currentUsername = /*[[${finalUsername}]]*/ 'anonymous';
+    /*]]>*/
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
+<script src="/js/chat.js"></script>
+
 
 </body>
 </html>
