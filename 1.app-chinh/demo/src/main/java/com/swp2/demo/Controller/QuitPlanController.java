@@ -195,7 +195,7 @@ public class QuitPlanController {
     public String createNewPlan(@AuthenticationPrincipal Object principal, HttpSession session) {
         User user = extractUser(principal);
         if (user != null) {
-            quitPlanService.deleteByUserId(user.getId());
+            quitPlanService.deleteByUserId(user.getId()); // Xoá tất cả kế hoạch cũ
             session.removeAttribute("userQuitPlan");
         }
         return "redirect:/questionnaire";

@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
 </head>
 <body>
+<p style="color:red;">Phương pháp hiện tại: <span th:text="${method}">?</span></p>
 <section class="track-progress">
     <div class="container">
         <h1><i class="fas fa-rocket"></i> Hành Trình Bỏ Thuốc Của Bạn</h1>
@@ -75,10 +76,8 @@
                 <tr th:each="step : ${steps}">
                     <td th:text="${#temporals.format(step.date, 'dd/MM/yyyy')}">--</td>
                     <td th:text="${step.dayIndex}">--</td>
-                    <td>
-                        <span th:if="${method == 'quit_abruptly'}">0 🚬</span>
-                        <span th:unless="${method == 'quit_abruptly'}" th:text="${step.targetCigarettes + ' 🚬'}">--</span>
-                    </td>
+                    <td th:text="${step.targetCigarettes + ' 🚬'}">--</td>
+
 
                     <td th:text="${step.actualCigarettes != null ? step.actualCigarettes + ' 🚬' : 'Chưa có'}"
                         th:classappend="${step.actualCigarettes == null} ? 'text-gray' : ''">--</td>
@@ -123,7 +122,6 @@
             animate();
         });
     });
-    <p style="color:red;">Phương pháp: <span th:text="${method}">?</span></p>
 
 </script>
 </body>

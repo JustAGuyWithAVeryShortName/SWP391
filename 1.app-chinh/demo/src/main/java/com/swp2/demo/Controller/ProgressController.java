@@ -28,6 +28,7 @@ public class ProgressController {
     @Autowired
     private QuitPlanService quitPlanService;
 
+
     public static class HealthProgress {
         private String currentStatus;
         private int percentage;
@@ -78,7 +79,10 @@ public class ProgressController {
             return "redirect:/login";
         }
 
-        QuitPlan plan = quitPlanRepository.findByUserId(userId).stream().findFirst().orElse(null);
+        QuitPlan plan = quitPlanRepository.findLatestByUserId(userId).stream()
+                .findFirst()
+                .orElse(null);
+
 
         if (plan == null) {
             model.addAttribute("error", "Chưa có kế hoạch bỏ thuốc.");
@@ -137,6 +141,17 @@ public class ProgressController {
         model.addAttribute("cigarettesOver", Math.abs(Math.min(0, avoided)));
         model.addAttribute("moneySaved", String.format("%,d", saved));
         model.addAttribute("method", plan.getMethod());
+
+        System.out.println("🚨 Kế hoạch: " + plan.getId() + " | Phương pháp: " + plan.getMethod());
+        for (UserPlanStep step : displaySteps) {
+            System.out.println("🗓️ Ngày " + step.getDayIndex() + " | Target: " + step.getTargetCigarettes() + " | Actual: " + step.getActualCigarettes());
+
+            System.out.println("✅ Session userId: " + userId);
+            quitPlanRepository.findLatestByUserId(userId).forEach(p ->
+                    System.out.println("👉 Plan ID: " + p.getId() + " | Method: " + p.getMethod())
+            );
+
+        }
 
         return "track-progress";
     }

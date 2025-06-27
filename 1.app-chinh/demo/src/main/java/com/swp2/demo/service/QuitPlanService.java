@@ -27,7 +27,7 @@ public class QuitPlanService {
     }
 
     public List<QuitPlan> getPlansByUserId(Long userId) {
-        return repository.findByUserId(userId);
+        return repository.findLatestByUserId(userId);
     }
 
     public boolean hasPlan(Long userId) {

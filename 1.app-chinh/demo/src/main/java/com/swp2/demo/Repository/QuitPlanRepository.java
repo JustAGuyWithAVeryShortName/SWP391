@@ -2,13 +2,16 @@ package com.swp2.demo.Repository;
 
 import com.swp2.demo.entity.QuitPlan;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
 public interface QuitPlanRepository extends JpaRepository<QuitPlan, Long> {
-    List<QuitPlan> findByUserId(Long userId);
+    @Query("SELECT q FROM QuitPlan q WHERE q.user.id = :userId ORDER BY q.id DESC")
+    List<QuitPlan> findLatestByUserId(@Param("userId") Long userId);
     boolean existsByUserId(Long userId);
     void deleteByUserId(Long userId);
 
