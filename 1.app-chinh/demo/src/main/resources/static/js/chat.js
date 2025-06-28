@@ -20,6 +20,12 @@ window.addEventListener('DOMContentLoaded', () => {
     if (chatForm) {
         chatForm.addEventListener('submit', function (event) {
             event.preventDefault();
+
+            if (!window.isAuthenticated) {
+                window.location.href = "/login";
+                return;
+            }
+
             const content = document.getElementById('message-content').value;
             if (content.trim() !== "") {
                 stompClient.send("/app/chat.send", {}, JSON.stringify({ content }));
