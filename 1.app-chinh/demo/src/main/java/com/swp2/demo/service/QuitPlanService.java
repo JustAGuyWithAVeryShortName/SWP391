@@ -56,11 +56,13 @@ public class QuitPlanService {
             int target;
 
             if ("quit_abruptly".equalsIgnoreCase(method)) {
-                target = 0; // Cold turkey => bỏ ngay lập tức
+                target = 0; // Cold turkey
             } else {
                 int dailyDecrease = (int) Math.ceil((double) initialCigarettesPerDay / totalDays);
                 target = Math.max(initialCigarettesPerDay - (i * dailyDecrease), 0);
             }
+
+
 
             step.setTargetCigarettes(target);
             step.setCompleted(false);

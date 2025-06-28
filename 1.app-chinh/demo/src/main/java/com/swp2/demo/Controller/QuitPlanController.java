@@ -108,6 +108,13 @@ public class QuitPlanController {
             return "redirect:/quit-plan";
         }
 
+        switch (plan.getStages()) {
+            case "Gradual reduction" -> plan.setMethod("reduce_gradually");
+            case "Cold turkey", "Cold turkey (quit abruptly)" -> plan.setMethod("quit_abruptly");
+            default -> plan.setMethod("reduce_gradually");
+        }
+
+
         if ((plan.getCustomPlan() == null || plan.getCustomPlan().isBlank()) && !"custom".equals(plan.getStages())) {
             String suggestion = generatePlanSuggestion(plan);
             plan.setCustomPlan(suggestion);
@@ -119,17 +126,21 @@ public class QuitPlanController {
         }
         plan.setUser(user);
 
-        if (user == null) {
-            return "redirect:/login";
-        }
-        plan.setUser(user);
+
+
+     //   plan.setMethod(plan.getStages());
+
 
 // 👉 Kiểm tra và sửa nếu ngày startDate bị lệch do múi giờ
         ZoneId serverZone = ZoneId.systemDefault();
         ZoneId vietnamZone = ZoneId.of("Asia/Ho_Chi_Minh");
 
-        System.out.println("🔍 Start Date from DB: " + plan.getStartDate());
-        System.out.println("🕒 Server Timezone: " + serverZone);
+       // System.out.println("🔍 Start Date from DB: " + plan.getStartDate());
+       // System.out.println("🕒 Server Timezone: " + serverZone);
+
+       // System.out.println("📌 Stage được chọn: " + plan.getStages());
+       // System.out.println("✅ Method được lưu: " + plan.getMethod());
+
 
         LocalDate nowVN = LocalDate.now(vietnamZone);
         if (plan.getStartDate() != null && plan.getStartDate().isAfter(nowVN.plusDays(1))) {
@@ -204,6 +215,15 @@ public class QuitPlanController {
     @GetMapping("/plan/edit")
     public String editPlan(@AuthenticationPrincipal Object principal, HttpSession session) {
         session.removeAttribute("userQuitPlan");
+        User user = extractUser(principal);
+        if (user != null) {
+            List<QuitPlan> plans = quitPlanService.getPlansByUserId(user.getId());
+            if (!plans.isEmpty()) {
+                QuitPlan plan = plans.get(0);
+                plan.setCustomPlan(null); // Xoá để regenerate khi /quit-plan
+                quitPlanService.save(plan);
+            }
+        }
         return "redirect:/quit-plan";
     }
 
@@ -239,7 +259,10 @@ public class QuitPlanController {
         };
     }
 
-    private String generatePlanSuggestion(QuitPlan plan) {
+
+
+
+   private String generatePlanSuggestion(QuitPlan plan) {
         if (plan.getStages() == null) return "Please select a method to get detailed suggestions.";
         return switch (plan.getStages()) {
             case "Gradual reduction" ->

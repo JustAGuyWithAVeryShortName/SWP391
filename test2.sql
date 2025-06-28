@@ -17,7 +17,7 @@ CREATE TABLE Users (
 );
 CREATE TABLE message_home (
     message_id BIGINT PRIMARY KEY IDENTITY(1,1),
-    user_id INT NOT NULL,
+    user_id BIGINT NOT NULL,
     content NVARCHAR(500) NOT NULL,
     sent_at DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (user_id) REFERENCES Users(user_id)
@@ -80,17 +80,6 @@ CREATE TABLE quit_plan (
     user_id BIGINT,
     CONSTRAINT FK_quit_plan_user FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
-
--- Lấy ID kế hoạch cold turkey vừa thêm
-DECLARE @cold_turkey_plan_id BIGINT = SCOPE_IDENTITY();
-
--- Các bước: mục tiêu luôn là 0
-INSERT INTO user_plan_step (date, day_index, target_cigarettes, actual_cigarettes, completed, quit_plan_id)
-VALUES
-('2025-06-24', 1, 0, 0, 1, @cold_turkey_plan_id),
-('2025-06-25', 2, 0, 2, 0, @cold_turkey_plan_id),
-('2025-06-26', 3, 0, NULL, 0, @cold_turkey_plan_id);
-
 
 -- Bảng chính lưu kế hoạch bỏ thuốc
 CREATE TABLE user_plan_step (
@@ -259,6 +248,10 @@ DROP TABLE IF EXISTS question_option;
 DROP TABLE IF EXISTS question;
 DROP TABLE IF EXISTS password_reset_token;
 DROP TABLE IF EXISTS Orders;
+DROP TABLE IF EXISTS message_home;
+DROP TABLE IF EXISTS chat_message;
+DROP TABLE IF EXISTS Coach;
+DROP TABLE IF EXISTS Feedback;
 DROP TABLE IF EXISTS Users;
 
 
