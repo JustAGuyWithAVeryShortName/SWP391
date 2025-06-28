@@ -1,199 +1,517 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SmokeLite Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <style>
+        /* --- 1. Cài đặt biến và Kiểu dáng tổng thể --- */
+        :root {
+            /* CẢI TIẾN: Chọn tông màu xanh hiện đại, dễ chịu hơn */
+            --primary-color: #0d6efd;
+            --primary-color-light: #e7f0ff;
+            --primary-color-hover: #0b5ed7;
+
+            --text-color: #343a40;
+            --text-color-muted: #151313;
+            --bg-color: #f8f9fa;
+            --border-color: #dee2e6;
+
+            /* CẢI TIẾN: Bóng đổ mềm mại, tinh tế hơn */
+            --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --card-shadow-hover: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+            --border-radius: 0.75rem; /* 12px */
+            --border-radius-sm: 0.5rem; /* 8px */
+        }
+
         body {
-            background-color: #f2f6fc;
-            font-family: 'Poppins', sans-serif;
-        }
-        .main-header {
+            background-color: var(--bg-color);
+            font-family: 'Be Vietnam Pro', sans-serif;
+            color: var(--text-color);
             display: flex;
-            justify-content: center; /* Căn giữa logo */
-            align-items: center;
-            height: 90px;
-            background-color: #fff;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            font-size: 15px; /* CẢI TIẾN: Đặt font-size cơ bản */
         }
-        .logo-container img.logo {
-            height: 70px;
-            transform: scale(1.8);
-            transform-origin: center center;
-            margin-left: 90px;
-        }
-        .card-stat {
+
+        /* --- 2. Bố cục Sidebar --- */
+        .sidebar {
+            width: 260px;
+            background-color: #ffffff;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 1.5rem;
+            border-right: 1px solid var(--border-color); /* CẢI TIẾN: Thêm đường viền phải tinh tế */
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px;
-            background-color: #e0e5e7;
+            flex-direction: column;
+            transition: width 0.3s ease;
+            z-index: 1000;
         }
-        .section-title {
-            background: #f2f6fc;
-            padding: 10px;
-            border-radius: 5px;
+
+        .sidebar .logo-container {
+            padding: 0 1rem;
+            margin-bottom: 2.5rem; /* CẢI TIẾN: Tăng khoảng cách */
             text-align: center;
-            font-weight: bold;
-            margin-bottom: 10px;
         }
-        .edit-btn {
-            margin-top: 10px;
-            background-color: #009dff;
-            color: white;
+
+        .sidebar .logo {
+            height: 120px;
+            width: auto;
+        }
+
+        .sidebar .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1rem; /* CẢI TIẾN: Tăng padding cho dễ click */
+            border-radius: var(--border-radius-sm);
+            color: var(--text-color-muted);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            transition: background-color 0.2s, color 0.2s, transform 0.2s;
+        }
+
+        .sidebar .nav-link i {
+            margin-right: 1rem;
+            font-size: 1.25rem;
+            width: 24px; /* CẢI TIẾN: Căn chỉnh icon thẳng hàng */
+            text-align: center;
+        }
+
+        /* CẢI TIẾN: Hiệu ứng hover rõ ràng và mượt mà hơn */
+        .sidebar .nav-link:hover {
+            background-color: var(--primary-color-light);
+            color: var(--primary-color);
+            transform: translateX(5px);
+        }
+
+        .sidebar .nav-link.active {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            font-weight: 600;
+        }
+        .sidebar .nav-link.active i {
+            color: #ffffff;
+        }
+
+        .sidebar .logout-button {
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border-radius: var(--border-radius-sm);
+            font-weight: 500;
+            color: #dc3545;
+            background-color: #fce8ea;
             border: none;
+            transition: background-color 0.2s;
+            font-size: 1rem;
         }
-        .edit-btn:hover {
-            background-color: #007acc;
+        .sidebar .logout-button:hover{
+            background-color: #f8d7da;
+            color: #842029;
         }
-        #pieChart {
-            width: 450px !important;
-            height: 450px !important;
-            display: block;
-            margin: 0 auto;
+        .sidebar .logout-button i {
+            margin-right: 1rem;
+            font-size: 1.25rem;
         }
+
+        /* --- 3. Bố cục Header và Nội dung chính --- */
+        .page-container {
+            margin-left: 260px;
+            width: calc(100% - 260px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* CẢI TIẾN: Thêm Header tách biệt */
+        .page-header {
+            background-color: #fff;
+            padding: 1.25rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .page-header h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .main-content {
+            padding: 2rem;
+            flex-grow: 1; /* Đảm bảo content chiếm hết không gian còn lại */
+        }
+
+        /* --- 4. Cải tiến Card --- */
+        .card {
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: none; /* CẢI TIẾN: Bỏ shadow mặc định, chỉ hiện khi hover */
+            background-color: #fff;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            height: 100%; /* CẢI TIẾN: Giúp các card trên cùng một hàng cao bằng nhau */
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--card-shadow-hover);
+        }
+
+        .card-header {
+            background-color: #fff;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 600;
+            font-size: 1.1rem;
+            padding: 1rem 1.5rem;
+            border-top-left-radius: var(--border-radius);
+            border-top-right-radius: var(--border-radius);
+        }
+
+        .card-footer {
+            background-color: #f8f9fa;
+            border-top: 1px solid var(--border-color);
+            border-bottom-left-radius: var(--border-radius);
+            border-bottom-right-radius: var(--border-radius);
+        }
+
+        /* --- 5. Các thành phần UI cụ thể (Stat Cards, Buttons, Lists) --- */
+        .stat-card .card-body {
+            display: flex;
+            align-items: center;
+            padding: 1.5rem;
+        }
+
+        .stat-card .icon-container {
+            width: 56px;
+            height: 56px;
+            border-radius: var(--border-radius-sm);
+            display: grid;
+            place-items: center;
+            margin-right: 1.25rem;
+            font-size: 1.75rem;
+        }
+        .stat-card .icon-container.bg-primary-light { background-color: var(--primary-color-light); color: var(--primary-color); }
+        .stat-card .icon-container.bg-success-light { background-color: #e6f9f0; color: #198754; }
+        .stat-card .icon-container.bg-warning-light { background-color: #fff8e6; color: #ffc107; }
+        .stat-card .icon-container.bg-info-light { background-color: #e6f7ff; color: #0dcaf0; }
+
+
+        .stat-card .stat-info h4 {
+            font-size: 2rem; /* CẢI TIẾN: Số liệu to, rõ hơn */
+            font-weight: 700;
+            margin: 0;
+            color: var(--text-color);
+        }
+
+        .stat-card .stat-info p {
+            margin: 0;
+            color: var(--text-color-muted);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        a.stat-card-link {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .btn {
+            font-weight: 500;
+            padding: 0.6rem 1.2rem;
+            border-radius: var(--border-radius-sm);
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .btn-primary:hover {
+            background-color: var(--primary-color-hover);
+            border-color: var(--primary-color-hover);
+        }
+
+        .list-group {
+            border-radius: 0;
+        }
+        .list-group-item {
+            padding: 1rem 1.5rem;
+        }
+
+        .feedback-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 1rem 0;
+        }
+        .feedback-item:not(:last-child) {
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .feedback-item img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 1rem;
+        }
+        .feedback-item .content .user-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        .feedback-item .content .rating {
+            color: #ffc107;
+            margin-bottom: 0.35rem;
+            font-size: 0.8rem; /* CẢI TIẾN: Kích thước sao nhỏ lại cho tinh tế */
+        }
+        .feedback-item .content .comment {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--text-color-muted);
+            line-height: 1.5;
+        }
+
     </style>
 </head>
 <body>
-<header class="main-header d-flex justify-content-between align-items-center px-4">
-    <div></div> <!-- Phần này để đẩy logo vào giữa bằng flex -->
-    <div class="logo-container text-center">
+
+<nav class="sidebar">
+    <div class="logo-container">
         <a th:href="@{/admin}">
             <img th:src="@{/images/1.png}" alt="SmokeLite Logo" class="logo" />
         </a>
     </div>
-    <div>
-        <form th:action="@{/logout}" method="post">
-            <button type="submit" class="btn btn-outline-danger">Logout</button>
-        </form>
-    </div>
-</header>
 
-
-
-<!-- Nút Quản lý đơn hàng -->
-<div class="container mt-4 text-center">
-    <a th:href="@{/admin/orders}" class="btn btn-primary">Quản lý đơn hàng</a>
-</div>
-<!-- Stats Row -->
-<div class="container mt-4">
-    <div class="row text-center g-3">
-        <div class="col-md-3">
-            <div class="card card-stat">
-                <div>
-                    <img th:src="@{/images/4.png}" width="50">
-                    <p class="m-0">Today Member</p>
-                </div>
-                <h4 th:text="${todayMembers}">0</h4>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <a th:href="@{/admin/accounts}" class="text-decoration-none text-dark">
-            <div class="card card-stat">
-                <div>
-                    <img th:src="@{/images/5.png}" width="50">
-                    <p class="m-0">Total Account</p>
-                </div>
-                <h4 th:text="${totalMembers}">0</h4>
-            </div>
+    <ul class="nav flex-column flex-grow-1">
+        <li class="nav-item">
+            <a class="nav-link active" th:href="@{/admin}">
+                <i class="bi bi-grid-1x2-fill"></i>
+                <span>Dashboard</span>
             </a>
-        </div>
-        <div class="col-md-3">
-            <div class="card card-stat">
-                <div>
-                    <img th:src="@{/images/6.png}" width="50">
-                    <p class="m-0">Total Blog</p>
-                </div>
-                <h4>3</h4>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card card-stat">
-                <div>
-                    <img th:src="@{/images/7.png}" width="50">
-                    <p class="m-0">Total Rating</p>
-                </div>
-                <h4>45</h4>
-            </div>
-        </div>
-    </div>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/admin/orders}">
+                <i class="bi bi-box-seam-fill"></i>
+                <span>Quản lý đơn hàng</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/admin/accounts}">
+                <i class="bi bi-people-fill"></i>
+                <span>Quản lý tài khoản</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">
+                <i class="bi bi-file-earmark-text-fill"></i>
+                <span>Quản lý Blog</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">
+                <i class="bi bi-star-fill"></i>
+                <span>Ratings & Feedback</span>
+            </a>
+        </li>
+    </ul>
 
-    <!-- Charts -->
-    <div class="row mt-4 g-3">
-        <div class="col-md-6">
-            <div class="card p-3">
-                <div class="section-title">Membership</div>
-                <canvas id="pieChart"></canvas>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card p-3">
-                <div class="section-title">Dashboard</div>
-                <canvas id="lineChart"></canvas>
-            </div>
-        </div>
-    </div>
+    <form th:action="@{/logout}" method="post">
+        <button type="submit" class="logout-button">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>Logout</span>
+        </button>
+    </form>
+</nav>
 
-    <!-- Lists -->
-    <div class="row mt-4 g-3">
-        <div class="col-md-4">
-            <div class="card p-3">
-                <div class="section-title">Member</div>
-                <ul class="list-group overflow-auto" style="max-height: 150px;">
-                    <li class="list-group-item">Member A</li>
-                    <li class="list-group-item">Member B</li>
-                    <li class="list-group-item">Member C</li>
-                </ul>
-                <a th:href="@{/editForAdmin.html}" class="btn-primary">Find Support</a>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card p-3">
-                <div class="section-title">Coach</div>
-                <ul class="list-group overflow-auto" style="max-height: 150px;">
-                    <li class="list-group-item">Coach X</li>
-                    <li class="list-group-item">Coach Y</li>
-                </ul>
-                <button class="btn edit-btn">Edit</button>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card p-3">
-                <div class="section-title">Rating & Feedback</div>
-                <div class="overflow-auto" style="max-height: 150px;">
-                    <img th:src="@{/images/3.png}" alt="User Icon" width="40" style="vertical-align:middle;margin:0px 10px">
-                    <p><strong>User A</strong><br>★★★★★<br>Great coach!</p>
-                    <img th:src="@{/images/3.png}" alt="User Icon" width="40" style="vertical-align:middle;margin:0px 10px">
-                    <p><strong>User B</strong><br>★★★★☆<br>Helpful sessions!</p>
+<div class="page-container">
+    <header class="page-header">
+        <h1 class="text-gray-800">Dashboard Overview</h1>
+    </header>
+
+    <main class="main-content">
+        <div class="container-fluid p-0">
+            <div class="row g-4 mb-4">
+                <div class="col-xl-3 col-md-6">
+                    <div class="card stat-card">
+                        <div class="card-body">
+                            <div class="icon-container bg-primary-light">
+                                <i class="bi bi-person-plus-fill"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h4 th:text="${todayMembers}">0</h4>
+                                <p>Today's Members</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <button class="btn edit-btn">View all</button>
+                <div class="col-xl-3 col-md-6">
+                    <a th:href="@{/admin/accounts}" class="stat-card-link">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <div class="icon-container bg-success-light">
+                                    <i class="bi bi-people-fill"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h4 th:text="${totalMembers}">0</h4>
+                                    <p>Total Accounts</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card stat-card">
+                        <div class="card-body">
+                            <div class="icon-container bg-info-light">
+                                <i class="bi bi-file-post"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h4>3</h4>
+                                <p>Total Blogs</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card stat-card">
+                        <div class="card-body">
+                            <div class="icon-container bg-warning-light">
+                                <i class="bi bi-star-half"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h4>45</h4>
+                                <p>Total Ratings</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-4">
+                <div class="col-lg-7">
+                    <div class="card">
+                        <div class="card-header">Thống kê thành viên theo tháng</div>
+                        <div class="card-body p-3">
+                            <canvas id="lineChart" style="max-height: 320px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <div class="card">
+                        <div class="card-header">Cơ cấu thành viên</div>
+                        <div class="card-body p-3 d-flex justify-content-center align-items-center">
+                            <canvas id="pieChart" style="max-height: 320px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header">Thành viên mới</div>
+                        <div class="card-body p-0">
+                            <div class="overflow-auto" style="max-height: 265px;">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">Member A</li>
+                                    <li class="list-group-item">Member B</li>
+                                    <li class="list-group-item">Member C</li>
+                                    <li class="list-group-item">Member D</li>
+                                    <li class="list-group-item">Member E</li>
+                                    <li class="list-group-item">Member F</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-footer text-center">
+                            <a href="#" class="btn btn-sm btn-outline-primary">Xem tất cả thành viên</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header">Danh sách Coach</div>
+                        <div class="card-body p-0">
+                            <div class="overflow-auto" style="max-height: 265px;">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">Coach X</li>
+                                    <li class="list-group-item">Coach Y</li>
+                                    <li class="list-group-item">Coach Z</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-footer text-center">
+                            <a href="#" class="btn btn-sm btn-outline-primary">Quản lý Coach</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header">Đánh giá gần đây</div>
+                        <div class="card-body p-3">
+                            <div class="overflow-auto" style="max-height: 241px;">
+                                <div class="feedback-item">
+                                    <img th:src="@{/images/3.png}" alt="User Icon">
+                                    <div class="content">
+                                        <p class="user-name">User A</p>
+                                        <p class="rating">★★★★★</p>
+                                        <p class="comment">Great coach!</p>
+                                    </div>
+                                </div>
+                                <div class="feedback-item">
+                                    <img th:src="@{/images/3.png}" alt="User Icon">
+                                    <div class="content">
+                                        <p class="user-name">User B</p>
+                                        <p class="rating">★★★★☆</p>
+                                        <p class="comment">Helpful sessions, learned a lot about new techniques.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer text-center">
+                            <a href="#" class="btn btn-sm btn-outline-primary">Xem tất cả đánh giá</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+    </main>
 </div>
 
-<!-- Chart Scripts -->
 <script th:inline="javascript">
+    /*<![CDATA[*/
+    const pieLabels = /*[[${labels}]]*/ ['Coach', 'Premium Member', 'Normal Member'];
+    const pieData = /*[[${values}]]*/ [10, 25, 65];
+    const monthlyUserData = /*[[${monthlyUserData}]]*/ [5, 8, 12, 10, 15, 20, 18, 25, 22, 30, 28, 35];
+    /*]]>*/
 
-    const pieLabels = /*[[${labels}]]*/ [];
-    const pieData = /*[[${values}]]*/ [];
-    const monthlyUserData = /*[[${monthlyUserData}]]*/ [];
+    // --- CẢI TIẾN: Cấu hình chung cho Chart ---
+    const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
+    const textColorMuted = getComputedStyle(document.documentElement).getPropertyValue('--text-color-muted').trim();
+    const borderColor = getComputedStyle(document.documentElement).getPropertyValue('--border-color').trim();
+    const primaryColorLight = getComputedStyle(document.documentElement).getPropertyValue('--primary-color-light').trim();
 
+    Chart.defaults.font.family = "'Be Vietnam Pro', sans-serif";
+    Chart.defaults.color = textColorMuted;
+
+    // --- Biểu đồ tròn (Pie Chart) ---
     new Chart(document.getElementById('pieChart'), {
         type: 'pie',
         data: {
             labels: pieLabels,
             datasets: [{
                 data: pieData,
-                backgroundColor: ['#36A2EB', '#FF6384', '#4BC0C0']
+                backgroundColor: [primaryColor, '#17a2b8', '#6c757d'], // Giữ màu sắc để phân biệt
+                borderColor: '#fff',
+                borderWidth: 4, // CẢI TIẾN: Tăng border để các miếng bánh tách bạch hơn
+                hoverOffset: 10
             }]
         },
         options: {
+            responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 datalabels: {
                     color: '#fff',
@@ -208,30 +526,76 @@
                     }
                 },
                 legend: {
-                    position: 'bottom'
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true,
+                        pointStyle: 'circle'
+                    }
                 }
             }
         },
         plugins: [ChartDataLabels]
     });
+
+    // --- Biểu đồ đường (Line Chart) ---
     new Chart(document.getElementById('lineChart'), {
         type: 'line',
         data: {
-            labels: ['Tháng 1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
             datasets: [{
                 label: 'New Members in ' + new Date().getFullYear(),
                 data: monthlyUserData,
-                borderColor: '#36A2EB',
-                backgroundColor: '#36A2EB22',
-                tension: 0.3,
-                fill: true
+                borderColor: primaryColor,
+                backgroundColor: primaryColorLight, // CẢI TIẾN: Dùng màu nền nhạt từ biến CSS
+                tension: 0.4,
+                fill: true,
+                pointBackgroundColor: primaryColor,
+                pointBorderColor: '#fff',
+                pointHoverRadius: 7,
+                pointHoverBackgroundColor: primaryColor,
+                pointRadius: 5, // CẢI TIẾN: Hiện rõ điểm trên đường
+                pointBorderWidth: 2
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
-                legend: { position: 'top' },
-                title: { display: true, text: 'Thống kê thành viên theo tháng' }
+                datalabels: {
+                    display: false // Ẩn label số trên line chart cho đỡ rối
+                },
+                legend: {
+                    display: false
+                },
+                tooltip: { // CẢI TIẾN: Tùy chỉnh tooltip
+                    backgroundColor: '#fff',
+                    titleColor: '#333',
+                    bodyColor: '#666',
+                    borderColor: borderColor,
+                    borderWidth: 1,
+                    padding: 10,
+                    displayColors: false,
+                    callbacks: {
+                        label: function(context) {
+                            return ` ${context.parsed.y} new members`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: borderColor, // CẢI TIẾN: Dùng màu từ biến CSS
+                        drawBorder: false,
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
             }
         }
     });
