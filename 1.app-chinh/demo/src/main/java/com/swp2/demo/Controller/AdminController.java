@@ -8,6 +8,8 @@ import com.swp2.demo.entity.Role;
 import com.swp2.demo.entity.User;
 import com.swp2.demo.entity.Feedback; // Import Feedback
 import com.swp2.demo.entity.dto.RegisterDTO;
+import com.swp2.demo.service.FeedbackService;
+
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -39,6 +41,12 @@ public class AdminController {
     @Autowired
     private FeedbackRepository feedbackRepository; // Inject FeedbackRepository
 
+    private final FeedbackService feedbackService;
+
+    public AdminController(FeedbackService feedbackService) {
+        this.feedbackService = feedbackService;
+    }
+
     @GetMapping("/admin/accounts")
     public String viewAllAccounts(Model model) {
         List<User> allUsers = userRepository.findAll();
@@ -64,10 +72,13 @@ public class AdminController {
         long freeCount = userRepository.countByMember(Member.FREE);
         long vipCount = userRepository.countByMember(Member.VIP);
         long premiumCount = userRepository.countByMember(Member.PREMIUM);
+        long totalFeedbacks = feedbackService.getTotalFeedbackCount();
+
 
         model.addAttribute("totalMembers", totalMembers);
         model.addAttribute("todayMembers", todayMembers);
         model.addAttribute("pendingOrders", pendingOrders);
+        model.addAttribute("totalFeedbacks", totalFeedbacks);
 
         model.addAttribute("labels", List.of("Free", "VIP", "Premium"));
         model.addAttribute("values", List.of(freeCount, vipCount, premiumCount));

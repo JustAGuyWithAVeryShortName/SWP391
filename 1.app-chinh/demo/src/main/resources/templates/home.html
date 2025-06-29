@@ -9,6 +9,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
 </head>
 <body>
 
@@ -36,7 +40,6 @@
 
         <a th:href="@{/login}" class="nav-item" sec:authorize="!isAuthenticated()">Login</a>
 
-        <!-- Nếu đã đăng nhập -->
         <div class="nav-item dropdown" sec:authorize="isAuthenticated()">
             <button class="dropdown-toggle">
                 Hi, <span th:text="${fullName}">User</span> <i class="fa-solid fa-chevron-down"></i>
@@ -97,56 +100,57 @@
             </div>
         </div>
     </section>
-    <!-- Bảng chat và rating feedback============ -->
- <div class="chat-rating-wrapper">
-     <section class="chat-section">
-         <div class="container">
-             <h2 class="section-title">Community Chat</h2>
+    <div class="chat-rating-wrapper">
+        <section class="chat-section">
+            <div class="container">
+                <h2 class="section-title">Community Chat</h2>
 
-             <div class="chat-table-wrapper">
-                 <table class="chat-table" id="chat-table">
-                     <!-- Tin nhắn sẽ được append ở đây bằng JS -->
-                 </table>
-             </div>
+                <div class="chat-table-wrapper">
+                    <table class="chat-table" id="chat-table">
+                    </table>
+                </div>
 
-             <form class="chat-form" id="chat-form">
-                 <textarea id="message-content" placeholder="Type your message..." required></textarea>
-                 <button class="btn-primary" type="submit">Send</button>
-             </form>
-         </div>
-     </section>
-     <section class="rating-section">
-        <div class="rating-container">
-            <h2 class="section-title">Feedback & Rating</h2>
-            <table class="table-feedback">
-
-            </table>
-
-            <div class="star-rating">
-                <input type="radio" id="star1" name="rating" value="1" />
-                <label for="star1">★</label>
-
-                <input type="radio" id="star2" name="rating" value="2" />
-                <label for="star2">★</label>
-
-                <input type="radio" id="star3" name="rating" value="3" />
-                <label for="star3">★</label>
-
-                <input type="radio" id="star4" name="rating" value="4" />
-                <label for="star4">★</label>
-
-                <input type="radio" id="star5" name="rating" value="5" />
-                <label for="star5">★</label>
+                <form class="chat-form" id="chat-form">
+                    <textarea id="message-content" placeholder="Type your message..." required></textarea>
+                    <button class="btn-primary" type="submit">Send</button>
+                </form>
             </div>
+        </section>
+        <section class="rating-section">
+            <div class="rating-container">
+                <h2 class="section-title">Feedback & Rating</h2>
+                <div id="feedbackMessage" style="margin-bottom: 10px; font-weight: bold;"></div>
 
+                <div id="feedbackFormContainer" sec:authorize="isAuthenticated()">
+                    <form id="feedback-form">
+                        <div class="star-rating">
+                            <input type="radio" id="star5" name="rating" value="5" />
+                            <label for="star5">★</label>
 
-            <p>Chia sẻ trải nghiệm của bạn:</p>
-            <textarea placeholder="Nhập phản hồi của bạn..."></textarea>
-            <button type="submit" class="btn-feedback">Send</button>
+                            <input type="radio" id="star4" name="rating" value="4" />
+                            <label for="star4">★</label>
 
+                            <input type="radio" id="star3" name="rating" value="3" />
+                            <label for="star3">★</label>
 
-        </div>
-    </section>
+                            <input type="radio" id="star2" name="rating" value="2" />
+                            <label for="star2">★</label>
+
+                            <input type="radio" id="star1" name="rating" value="1" />
+                            <label for="star1">★</label>
+                        </div>
+
+                        <p>Share your experience:</p>
+                        <textarea id="feedback-comment" placeholder="Enter your feedback..." required></textarea>
+                        <button type="submit" class="btn-feedback">Send</button>
+                    </form>
+                </div>
+
+                <div id="notMemberMessage" sec:authorize="!isAuthenticated()" class="not-member-message">
+                    <p>Please <a th:href="@{/login}">log in</a> as a Member to submit feedback.</p>
+                </div>
+            </div>
+        </section>
     </div>
 
 
@@ -203,16 +207,17 @@
 
 <a href="#" class="back-to-top"><i class="fas fa-arrow-up"></i></a>
 
-<!-- của chat -->
 <script th:inline="javascript">
     /*<![CDATA[*/
     const currentUsername = /*[[${finalUsername}]]*/ 'anonymous';
+    const isAuthenticatedUser = /*[[${#authorization.expression('isAuthenticated()')}]]*/ false;
     /*]]>*/
 </script>
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 
 <script src="/js/chat.js"></script>
+<script src="/js/feedback.js"></script>
 
 
 </body>

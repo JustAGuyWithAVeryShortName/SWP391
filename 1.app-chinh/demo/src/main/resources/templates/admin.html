@@ -311,7 +311,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link" th:href="@{/admin/ratings}">
                 <i class="bi bi-star-fill"></i>
                 <span>Ratings & Feedback</span>
             </a>
@@ -376,17 +376,19 @@
                     </div>
                 </div>
                 <div class="col-xl-3 col-md-6">
-                    <div class="card stat-card">
-                        <div class="card-body">
-                            <div class="icon-container bg-warning-light">
-                                <i class="bi bi-star-half"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h4>45</h4>
-                                <p>Total Ratings</p>
+                    <a th:href="@{/admin/ratings}" class="stat-card-link">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <div class="icon-container bg-warning-light">
+                                    <i class="bi bi-star-half"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h4 th:text="${totalFeedbacks}">0</h4>
+                                    <p>Total Ratings</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
             </div>
 
@@ -404,74 +406,6 @@
                         <div class="card-header">Cơ cấu thành viên</div>
                         <div class="card-body p-3 d-flex justify-content-center align-items-center">
                             <canvas id="pieChart" style="max-height: 320px;"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row g-4">
-                <div class="col-lg-4">
-                    <div class="card">
-                        <div class="card-header">Thành viên mới</div>
-                        <div class="card-body p-0">
-                            <div class="overflow-auto" style="max-height: 265px;">
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item">Member A</li>
-                                    <li class="list-group-item">Member B</li>
-                                    <li class="list-group-item">Member C</li>
-                                    <li class="list-group-item">Member D</li>
-                                    <li class="list-group-item">Member E</li>
-                                    <li class="list-group-item">Member F</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="card-footer text-center">
-                            <a href="#" class="btn btn-sm btn-outline-primary">Xem tất cả thành viên</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4">
-                    <div class="card">
-                        <div class="card-header">Danh sách Coach</div>
-                        <div class="card-body p-0">
-                            <div class="overflow-auto" style="max-height: 265px;">
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item">Coach X</li>
-                                    <li class="list-group-item">Coach Y</li>
-                                    <li class="list-group-item">Coach Z</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="card-footer text-center">
-                            <a href="#" class="btn btn-sm btn-outline-primary">Quản lý Coach</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4">
-                    <div class="card">
-                        <div class="card-header">Đánh giá gần đây</div>
-                        <div class="card-body p-3">
-                            <div class="overflow-auto" style="max-height: 241px;">
-                                <div class="feedback-item">
-                                    <img th:src="@{/images/3.png}" alt="User Icon">
-                                    <div class="content">
-                                        <p class="user-name">User A</p>
-                                        <p class="rating">★★★★★</p>
-                                        <p class="comment">Great coach!</p>
-                                    </div>
-                                </div>
-                                <div class="feedback-item">
-                                    <img th:src="@{/images/3.png}" alt="User Icon">
-                                    <div class="content">
-                                        <p class="user-name">User B</p>
-                                        <p class="rating">★★★★☆</p>
-                                        <p class="comment">Helpful sessions, learned a lot about new techniques.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-footer text-center">
-                            <a href="#" class="btn btn-sm btn-outline-primary">Xem tất cả đánh giá</a>
                         </div>
                     </div>
                 </div>

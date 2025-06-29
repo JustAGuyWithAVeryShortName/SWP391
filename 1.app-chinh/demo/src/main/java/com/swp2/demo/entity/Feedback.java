@@ -29,11 +29,19 @@ public class Feedback{
     @Column(name = "create_at")
     private LocalDateTime createdAt;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "coach_id")
     private User coach;
+
+    public Feedback(int rating, String comment, User user) {
+        this.rating = rating;
+        this.comment = comment;
+        this.user = user;
+        this.username = user.getUsername(); // Populate username from the User object
+        this.createdAt = LocalDateTime.now(); // Set creation time
+    }
 }
