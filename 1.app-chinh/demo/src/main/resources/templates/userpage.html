@@ -27,17 +27,20 @@
                 Notice <i class="fa-solid fa-chevron-down"></i>
             </button>
             <div class="dropdown-menu-notice" id="noticeDropdown">
-                <div class="dropdown-item-notice" th:text="${message}"></div>
+                <div class="dropdown-item-notice" th:if="${message != null}">
+                    <i class="fa-solid fa-bell"></i> <span th:text="${message}">Bạn đã tiết kiệm được 150.000đ!</span>
+                </div>
+                <div class="dropdown-item-notice" th:if="${message == null}">
+                    <span>Không có thông báo mới</span>
+                </div>
                 <div class="dropdown-item-notice view-all-link">
                     <a th:href="@{/notice}">View all</a>
                 </div>
             </div>
         </div>
 
-
         <a th:href="@{/login}" class="nav-item" sec:authorize="!isAuthenticated()">Login</a>
 
-        <!-- Nếu đã đăng nhập -->
         <div class="nav-item dropdown" sec:authorize="isAuthenticated()">
             <button class="dropdown-toggle">
                 Hi, <span th:text="${fullName}">User</span> <i class="fa-solid fa-chevron-down"></i>
@@ -66,14 +69,13 @@
                 <h3>My Quitting Plan</h3>
                 <p>Review and update your personalized plan to quit smoking.</p>
                 <a th:if="${hasPlan}" th:href="@{/user/plan}" class="btn-primary">View My Plan</a>
-                <a th:if="${!hasPlan}" th:href="@{/questionnaire}" class="btn-primary">View My Plan</a>
-
+                <a th:if="${!hasPlan}" th:href="@{/questionnaire}" class="btn-primary">Create Plan</a>
             </div>
             <div class="card">
                 <i class="fas fa-chart-line icon"></i>
                 <h3>Track Progress</h3>
                 <p>See your health improvements, money saved, and milestones.</p>
-                <a th:href="@{/track-progress}" class="btn-primary">View Progess</a>
+                <a th:href="@{/track-progress}" class="btn-primary">View Progress</a>
             </div>
             <div class="card">
                 <i class="fas fa-users icon"></i>
@@ -89,7 +91,7 @@
     <div class="container">
         <div class="footer-address">
             <p class="footer-heading"><strong>Address</strong></p>
-            <p>Thu Duc, Hcm</p>
+            <p>Thu Duc, HCM</p>
             <div class="social-icons">
                 <a href="#" class="social-link"><img src="https://img.icons8.com/ios-filled/24/facebook--v1.png" alt="Facebook" /></a>
                 <a href="#" class="social-link"><img src="https://img.icons8.com/ios-filled/24/github.png" alt="GitHub" /></a>
@@ -101,6 +103,73 @@
 </footer>
 
 <a href="#" class="back-to-top"><i class="fas fa-arrow-up"></i></a>
+
+<!-- Notice dropdown script -->
+<script>
+    function toggleNoticeDropdown() {
+        const dropdown = document.getElementById("noticeDropdown");
+        dropdown.classList.toggle("show");
+    }
+
+    window.onclick = function(event) {
+        if (!event.target.matches('.dropdown-toggle-notice')) {
+            const dropdowns = document.getElementsByClassName("dropdown-menu-notice");
+            for (let i = 0; i < dropdowns.length; i++) {
+                const openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
+            }
+        }
+    }
+</script>
+
+<style>
+    /* Minimal styles for dropdown if not yet included */
+    .dropdown-notice {
+        position: relative;
+    }
+
+    .dropdown-menu-notice {
+        position: absolute;
+        right: 0;
+        top: 100%;
+        background: white;
+        padding: 1rem;
+        border-radius: 12px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        display: none;
+        min-width: 240px;
+        z-index: 999;
+    }
+
+    .dropdown-menu-notice.show {
+        display: block;
+    }
+
+    .dropdown-item-notice {
+        padding: 0.5rem 0;
+        font-size: 0.9rem;
+        color: #333;
+        border-bottom: 1px solid #eee;
+    }
+
+    .dropdown-item-notice:last-child {
+        border-bottom: none;
+        text-align: center;
+    }
+
+    .dropdown-toggle-notice {
+        background: none;
+        border: none;
+        font: inherit;
+        color: inherit;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+</style>
 
 </body>
 </html>
