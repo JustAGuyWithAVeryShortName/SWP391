@@ -196,26 +196,27 @@
                     </thead>
                     <tbody>
                     <tr th:each="feedback : ${feedbacks}">
-                        <td th:text="${feedback.user.username}"></td> <td>
+                        <td th:text="${feedback.user?.username ?: 'N/A'}"></td>
+                        <td>
                             <span class="rating-stars">
-                                <i th:each="i : ${#numbers.sequence(1, feedback.rating)}" class="bi bi-star-fill"></i>
-                                <i th:each="i : ${#numbers.sequence(feedback.rating + 1, 5)}" class="bi bi-star"></i>
+                                <th:block th:each="i : ${#numbers.sequence(1, 5)}">
+                                    <i th:classappend="${i <= feedback.rating} ? 'bi-star-fill' : 'bi-star'" class="bi"></i>
+                                </th:block>
                             </span>
-                        <span th:text="|(${feedback.rating}/5)|"></span>
-                    </td>
-                        <td class="text-start" th:text="${feedback.comment}"></td>
-                        <td th:text="${#temporals.format(feedback.createAt, 'yyyy-MM-dd HH:mm:ss')}"></td> <td class="text-center">
-                        <div class="d-flex justify-content-center gap-2">
-                            <a th:href="@{/admin/ratings/{id}/detail(id=${feedback.id})}" class="btn btn-sm btn-outline-info" title="View Details">
-                                <i class="bi bi-info-circle-fill"></i>
-                            </a>
-                            <form th:action="@{/admin/ratings/delete/{id}(id=${feedback.id})}" method="post">
-                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Confirm delete this feedback?')">
-                                    <i class="bi bi-trash3-fill"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </td>
+                            <span th:text="|(${feedback.rating}/5)|"></span>
+                        </td><td class="text-start" th:text="${feedback.comment}"></td>
+                        <td th:text="${#temporals.format(feedback.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                        <td class="text-center">
+                            <div class="d-flex justify-content-center gap-2">
+                                <a th:href="@{/admin/accounts/{userId}(userId=${feedback.user.id})}" class="btn btn-sm btn-outline-info" title="View User Profile">
+                                    <i class="bi bi-person-fill"></i> </a>
+                                <form th:action="@{/admin/ratings/delete/{id}(id=${feedback.id})}" method="post">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Confirm delete this feedback?')">
+                                        <i class="bi bi-trash3-fill"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(feedbacks)}">
                         <td colspan="5" class="text-center p-3">No feedback available.</td>

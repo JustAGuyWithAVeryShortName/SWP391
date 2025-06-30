@@ -57,6 +57,7 @@ public class AdminFeedbackController {
         return "admin/feedback-detail"; // You need to create this HTML template
     }
 
+
     /**
      * Handles the deletion of a feedback record.
      * Accessible via POST to /admin/ratings/delete/{id}
@@ -76,6 +77,7 @@ public class AdminFeedbackController {
         }
         return "redirect:/admin/ratings"; // Correct redirect path
     }
+
 
     // You might also consider adding an endpoint to get the total count for the dashboard
     // @GetMapping("/count")

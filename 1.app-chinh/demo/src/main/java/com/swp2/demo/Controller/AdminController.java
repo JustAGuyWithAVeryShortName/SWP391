@@ -9,6 +9,7 @@ import com.swp2.demo.entity.User;
 import com.swp2.demo.entity.Feedback; // Import Feedback
 import com.swp2.demo.entity.dto.RegisterDTO;
 import com.swp2.demo.service.FeedbackService;
+import com.swp2.demo.service.UserService;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +44,12 @@ public class AdminController {
 
     private final FeedbackService feedbackService;
 
-    public AdminController(FeedbackService feedbackService) {
+    @Autowired
+    private UserService userService;
+
+    public AdminController(FeedbackService feedbackService, UserService userService) {
         this.feedbackService = feedbackService;
+        this.userService = userService;
     }
 
     @GetMapping("/admin/accounts")
@@ -193,5 +198,20 @@ public class AdminController {
             model.addAttribute("registerDTO", registerDTO);
             return "register/formAdmin"; // Corrected return view name
         }
+    }
+
+    @GetMapping("/admin/accounts/{id}")
+    public String getUserDetail(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        // --- CHANGE STARTS HERE ---
+        User user = userService.findById(id); // Directly call findById which returns User (or null)
+
+        if (user == null) { // Check if the returned User object is null
+            redirectAttributes.addFlashAttribute("errorMessage", "Account not found.");
+            return "redirect:admin/ratings";
+        }
+
+        model.addAttribute("user", user); // Add the found user to the model
+        // --- CHANGE ENDS HERE ---
+        return "profile-for-admin-feedback";
     }
 }
