@@ -19,6 +19,18 @@
 }
 
 /* ---- BASE STYLES ---- */
+.notice-time {
+    font-size: 0.75rem;
+    color: #999;
+    display: block;
+    margin-top: 2px;
+}
+
+.newest-notice {
+    background-color: #f0f8ff;
+    border-left: 4px solid #007bff;
+    font-weight: bold;
+}
 * {
     margin: 0;
     padding: 0;

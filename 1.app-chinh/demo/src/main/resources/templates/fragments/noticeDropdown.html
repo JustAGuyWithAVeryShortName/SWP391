@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div th:fragment="noticeDropdown">
+    <div class="nav-item dropdown-notice">
+        <button class="dropdown-toggle-notice" onclick="toggleNoticeDropdown(this)">
+            Notice <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="dropdown-menu-notice">
+            <div th:if="${notifications != null and !notifications.isEmpty()}"
+                 th:each="noti, iterStat : ${notifications}"
+                 class="dropdown-item-notice"
+                 th:classappend="${iterStat.index == 0} ? ' newest-notice'">
+                <p th:text="${noti.content}"></p>
+                <small class="notice-time"
+                       th:text="${#temporals.format(noti.createdAt, 'dd/MM/yyyy HH:mm')}"></small>
+            </div>
+
+            <div th:if="${notifications == null or notifications.isEmpty()}" class="dropdown-item-notice">
+                <p>No notifications.</p>
+            </div>
+
+            <div class="dropdown-item-notice view-all-link">
+                <a th:href="@{/notice}">View all</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

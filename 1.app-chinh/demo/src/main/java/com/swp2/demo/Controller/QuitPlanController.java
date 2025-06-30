@@ -2,6 +2,8 @@ package com.swp2.demo.Controller;
 
 import java.time.ZoneId;
 
+import com.swp2.demo.Repository.NotificationRepository;
+import com.swp2.demo.entity.Notification;
 import com.swp2.demo.entity.QuitPlan;
 import com.swp2.demo.entity.User;
 import com.swp2.demo.service.QuitPlanService;
@@ -166,6 +168,9 @@ public class QuitPlanController {
      * @param model   Model to pass data to view.
      * @return View name "user-plan" or redirect if no plan found.
      */
+    @Autowired
+    private NotificationRepository notificationRepository;
+
     @GetMapping("/user/plan")
     public String viewUserPlan(@RequestParam(name = "month", required = false) Integer month,
                                @RequestParam(name = "year", required = false) Integer year,
@@ -195,6 +200,47 @@ public class QuitPlanController {
         model.addAttribute("calendar", generateCalendarData(currentPlan, calendarMonth));
         model.addAttribute("monthDisplay", calendarMonth.getMonthValue() + "/" + calendarMonth.getYear());
         model.addAttribute("stats", calculateStats(currentPlan));
+
+        // thông báo
+
+        LocalDate today = LocalDate.now();
+        LocalDate startDate = currentPlan.getStartDate();
+        LocalDate endDate = currentPlan.getTargetDate();
+
+        if (today.isAfter(endDate)) {
+            String todayMessage = "🎉 Bạn đã hoàn thành kế hoạch cai thuốc!";
+            boolean exists = notificationRepository.existsByUserIdAndContentAndCreatedAtBetween(
+                    user.getId(),
+                    todayMessage,
+                    today.atStartOfDay(),
+                    today.plusDays(1).atStartOfDay()
+            );
+            if (!exists) {
+                Notification n = new Notification(user.getId(), todayMessage);
+                notificationRepository.save(n);
+            }
+        } else if (!today.isBefore(startDate)) {
+            long daysPassed = ChronoUnit.DAYS.between(startDate, today) + 1;
+            long totalDays = ChronoUnit.DAYS.between(startDate, endDate) + 1;
+            long daysLeft = totalDays - daysPassed;
+
+            String todayMessage = "Bạn đã cai được " + daysPassed + " ngày! Cố lên, còn " + daysLeft + " ngày nữa!";
+            boolean exists = notificationRepository.existsByUserIdAndContentAndCreatedAtBetween(
+                    user.getId(),
+                    todayMessage,
+                    today.atStartOfDay(),
+                    today.plusDays(1).atStartOfDay()
+            );
+            if (!exists) {
+                Notification n = new Notification(user.getId(), todayMessage);
+                notificationRepository.save(n);
+            }
+        }
+
+
+        List<Notification> notifications = notificationRepository.findByUserIdOrderByCreatedAtDesc(user.getId());
+        model.addAttribute("notifications", notifications);
+
 
         return "user-plan";
     }

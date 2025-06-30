@@ -41,11 +41,26 @@
     <div class="left-buttons">
       <a th:href="@{/questionnaire}" class="button button--secondary">Redo the survey</a>
     </div>
-    <div class="right-buttons">
-      <a th:href="@{/member}" class="button button--success">Start Quitting</a>
-    </div>
-  </div>
 
-</div>
+    <div class="right-buttons">
+
+      <!-- Nếu user là Member -->
+      <a th:if="${user.role == T(com.swp2.demo.entity.Role).Member}"
+         th:href="@{/quit-plan}"
+         class="button button--success">
+        Start Quitting
+      </a>
+
+      <!-- Nếu user KHÔNG phải Member -->
+      <a th:if="${user.role != T(com.swp2.demo.entity.Role).Member}"
+         th:href="@{/member}"
+         class="button button--success">
+        Start Quitting
+      </a>
+
+    </div>
+
+
+  </div>
 </body>
 </html>

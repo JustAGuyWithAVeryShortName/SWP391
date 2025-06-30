@@ -146,6 +146,19 @@ img { max-width: 100%; display: block; height: auto; }
 }
 
 /* Bảng hiển thị tin nhắn */
+.notice-time {
+    font-size: 0.75rem;
+    color: #999;
+    display: block;
+    margin-top: 2px;
+}
+
+.newest-notice {
+    background-color: #f0f8ff;
+    border-left: 4px solid #007bff;
+    font-weight: bold;
+}
+
 .chat-table-wrapper {
     max-height: 300px;
     overflow-y: auto;

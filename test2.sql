@@ -15,6 +15,15 @@ CREATE TABLE Users (
     created_at DATE DEFAULT GETDATE(),
     status NVARCHAR(10) NOT NULL DEFAULT 'OFFLINE' CHECK (status IN ('ONLINE', 'OFFLINE'))
 );
+CREATE TABLE notification (
+    id BIGINT PRIMARY KEY IDENTITY(1,1),
+    user_id BIGINT NOT NULL,
+    content NVARCHAR(255) NOT NULL,
+    created_at DATETIME DEFAULT GETDATE(),
+    is_read BIT DEFAULT 0,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)
+);
+
 CREATE TABLE message_home (
     message_id BIGINT PRIMARY KEY IDENTITY(1,1),
     user_id BIGINT NOT NULL,

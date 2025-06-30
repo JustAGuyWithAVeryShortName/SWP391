@@ -19,6 +19,7 @@ window.addEventListener('DOMContentLoaded', () => {
             messages.forEach(message => {
                 appendMessage(message);
             });
+
         })
         .catch(error => {
             console.error('Error fetching chat history:', error);

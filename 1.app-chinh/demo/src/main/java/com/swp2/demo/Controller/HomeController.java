@@ -1,8 +1,10 @@
 package com.swp2.demo.Controller;
 
 import com.swp2.demo.Repository.MessageHomeRepository;
+import com.swp2.demo.Repository.NotificationRepository;
 import com.swp2.demo.Repository.UserRepository;
 import com.swp2.demo.entity.MessageHome;
+import com.swp2.demo.entity.Notification;
 import com.swp2.demo.entity.User;
 import com.swp2.demo.security.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +14,7 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
@@ -143,18 +142,35 @@ public class HomeController {
     private MessageHomeRepository messageRepo;
     @Autowired
     private UserRepository userRepo;
+    @Autowired
+    private NotificationRepository notificationRepository;
+
     // ========== Trang chủ ==========
     @GetMapping({"/", "/home"})
     public String home(Model model, Authentication authentication) {
         String finalUsername = "anonymous";
+        User user = null;
 
         if (authentication instanceof OAuth2AuthenticationToken oauth) {
             finalUsername = (String) oauth.getPrincipal().getAttributes().get("email");
+            user = userRepo.findByEmail(finalUsername);
         } else if (authentication != null) {
             finalUsername = authentication.getName();
-        }
+            user = userRepo.findByUsername(finalUsername);        }
 
         model.addAttribute("finalUsername", finalUsername);
+
+        //thông báo
+      /*  if (user != null) {
+            List<Notification> allNotifications = notificationRepository.findByUserIdOrderByCreatedAtDesc(user.getId());
+
+            List<Notification> topNotifications = allNotifications.size() > 3
+                    ? allNotifications.subList(0, 3)
+                    : allNotifications;
+
+            model.addAttribute("notifications", topNotifications); // Cho dropdown ở home.html
+            model.addAttribute("allNotifications", allNotifications); // Cho trang /notice
+        }*/
 
         List<LeaderboardUser> leaderboard = Arrays.asList(
                 new LeaderboardUser(1, "Thanh Nguyen", 152),
@@ -168,6 +184,21 @@ public class HomeController {
 
 
         return "home";
+    }
+
+    @GetMapping("/notice")
+    public String viewAllNotifications(Model model, Authentication authentication) {
+        if (authentication == null) return "redirect:/login";
+
+        String username = authentication.getName();
+        User user = userRepo.findByUsername(username);
+
+        if (user != null) {
+            List<Notification> allNotifications = notificationRepository.findByUserIdOrderByCreatedAtDesc(user.getId());
+            model.addAttribute("allNotifications", allNotifications);
+        }
+
+        return "notice"; // dùng templates/notice.html
     }
 
 

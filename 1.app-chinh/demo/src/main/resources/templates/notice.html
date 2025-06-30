@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div th:each="noti : ${allNotifications}" class="notice-item">
+    <p th:text="${noti.content}"></p>
+    <span th:text="${#temporals.format(noti.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
+</div>
+
+</body>
+</html>

@@ -49,11 +49,11 @@ public class QuestionController {
         User user = (User) session.getAttribute("loggedInUser");
 
         if (user == null) {
-            System.out.println("❌ Không có user trong session. Chuyển hướng login.");
+            System.out.println("Không có user trong session. Chuyển hướng login.");
             return "redirect:/login";
         }
 
-        System.out.println("✅ Đã login với user: " + user.getUsername());
+      //  System.out.println("✅ Đã login với user: " + user.getUsername());
 
         userAnswerRepository.deleteByUser(user);
 
@@ -85,12 +85,14 @@ public class QuestionController {
         AnalysisResultEntity resultEntity = new AnalysisResultEntity(user, result.analysis, result.recommendation);
         analysisResultRepository.save(resultEntity);
 
+     /*Note*/   model.addAttribute("user", user);
+
         model.addAttribute("questions", questions);
         model.addAttribute("answers", selectedOptionTexts);
         model.addAttribute("analysisResult", result.analysis);
         model.addAttribute("recommendation", result.recommendation);
 
-        System.out.println("🎯 Trả lời thành công. Chuyển đến trang result.");
+     //   System.out.println("🎯 Trả lời thành công. Chuyển đến trang result.");
 
         return "result"; // Trả về result.html
     }
