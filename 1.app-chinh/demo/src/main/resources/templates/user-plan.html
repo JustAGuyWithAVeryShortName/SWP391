@@ -10,13 +10,12 @@
 <body>
 <div class="container" th:if="${plan != null}">
     <header class="header">
-        <a th:href="@{/dashboard}"> <img th:src="@{/images/1.png}" alt="SmokeLite Logo" class="logo" />
-
+        <a th:href="@{/dashboard}">
+            <img th:src="@{/images/1.png}" alt="SmokeLite Logo" class="logo" />
         </a>
         <h2 class="main-title">One Step Closer</h2>
         <p class="motivation-quote">"A journey of a thousand miles begins with a single step."</p>
     </header>
-
 
     <div class="stat-cards" th:if="${stats != null}">
         <div class="card success">
@@ -34,8 +33,14 @@
     <div class="main-content">
         <section class="plan-details">
             <h3><i class="fa-solid fa-bullseye"></i> Your Quit Plan</h3>
-            <p><strong><i class="fa-solid fa-flag-checkered"></i> Target Date:</strong> <span th:text="${#temporals.format(plan.targetDate, 'dd-MM-yyyy')}"></span></p>
-            <p><strong><i class="fa-solid fa-shoe-prints"></i> Method:</strong> <span th:text="${plan.stages}"></span></p>
+            <p>
+                <strong><i class="fa-solid fa-flag-checkered"></i> Target Date:</strong>
+                <span th:text="${#temporals.format(plan.targetDate, 'dd-MM-yyyy')}"></span>
+            </p>
+            <p>
+                <strong><i class="fa-solid fa-shoe-prints"></i> Method:</strong>
+                <span th:text="${plan.stages}"></span>
+            </p>
 
             <div>
                 <strong><i class="fa-solid fa-lightbulb"></i> Your Reasons:</strong>
@@ -58,43 +63,39 @@
         </section>
 
         <section class="calendar-section" th:if="${calendar != null}">
-            <h3 th:text="'Schedule for ' + ${#temporals.format(T(java.time.YearMonth).parse(calendar.monthName()), 'M/yyyy')}">Monthly Schedule</h3>
-            <div class="calendar">
-                <div class="calendar-header" th:each="dayName : ${calendar.weekDays()}" th:text="${dayName}"></div>
-                <div th:each="day : ${calendar.days()}" th:classappend="${day.status()}" class="calendar-day">
-                    <span th:text="${day.dayNumber() != 0 ? day.dayNumber() : ''}"></span>
-                </div>
+            <div class="calendar-title-bar">
+                <h3><i class="fa-regular fa-calendar-days"></i> <span th:text="${monthDisplay}">Schedule</span></h3>
+
+                <form method="get" action="/user/plan" class="calendar-form">
+                    <select name="month" id="month">
+                        <option th:each="m : ${#numbers.sequence(1,12)}"
+                                th:value="${m}"
+                                th:text="${T(java.time.Month).of(m)}"
+                                th:selected="${T(java.time.YearMonth).parse(calendar.monthName()).monthValue == m}">
+                        </option>
+                    </select>
+
+                    <select name="year" id="year">
+                        <option th:each="y : ${#numbers.sequence(2024, 2030)}"
+                                th:value="${y}"
+                                th:text="${y}"
+                                th:selected="${T(java.time.YearMonth).parse(calendar.monthName()).year == y}">
+                        </option>
+                    </select>
+
+                    <button type="submit" class="btn btn-primary">Go</button>
+                </form>
             </div>
 
-            <section class="form-group" style="margin-top: 2rem;">
-                <label class="main-label" style="font-weight: 600; font-size: 1.2rem;">Calendar Legend</label>
-                <ul style="list-style: none; padding: 0; margin: 1.2rem 0 0;">
-                    <li style="display: flex; align-items: center; margin-bottom: 0.8rem;">
-                        <div style="width: 18px; height: 18px; background-color: var(--success-color); margin-right: 12px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1);"></div>
-                        <span><strong>Start Date:</strong> The day your journey begins.</span>
-                    </li>
-                    <li style="display: flex; align-items: center; margin-bottom: 0.8rem;">
-                        <div style="width: 18px; height: 18px; background-color: var(--warning-color); margin-right: 12px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1);"></div>
-                        <span><strong>Target Date:</strong> Your smoke-free goal!</span>
-                    </li>
-                    <li style="display: flex; align-items: center; margin-bottom: 0.8rem;">
-                        <div style="width: 18px; height: 18px; background-color: var(--primary-color); margin-right: 12px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1);"></div>
-                        <span><strong>Today:</strong> The current date.</span>
-                    </li>
-                    <li style="display: flex; align-items: center; margin-bottom: 0.8rem;">
-                        <div style="width: 18px; height: 18px; background-color: #d1f3df; margin-right: 12px; border-radius: 4px;"></div>
-                        <span><strong>Completed Day:</strong> A successful day in your plan.</span>
-                    </li>
-                    <li style="display: flex; align-items: center; margin-bottom: 0.8rem;">
-                        <div style="width: 18px; height: 18px; background-color: var(--gray); border: 1px solid var(--border); margin-right: 12px; border-radius: 4px;"></div>
-                        <span><strong>Upcoming Day:</strong> A future day in your plan.</span>
-                    </li>
-                    <li style="display: flex; align-items: center;">
-                        <div style="width: 18px; height: 18px; text-align: center; color: #ccc; margin-right: 12px;">-</div>
-                        <span><strong>Outside Plan:</strong> Days before your journey begins.</span>
-                    </li>
-                </ul>
-            </section>
+            <div class="calendar">
+                <div class="calendar-header" th:each="dayName : ${calendar.weekDays()}" th:text="${dayName}"></div>
+                <div th:each="day : ${calendar.days()}"
+                     th:class="'calendar-day ' + ${day.status()}"
+                     th:attr="data-title=${day.status() == 'start-date' ? 'Start Date' :
+                                          day.status() == 'target-date' ? 'Target Date' :
+                                          day.status() == 'today' ? 'Today' : null}"
+                     th:text="${day.dayNumber() != 0 ? day.dayNumber() : ''}"></div>
+            </div>
         </section>
     </div>
 

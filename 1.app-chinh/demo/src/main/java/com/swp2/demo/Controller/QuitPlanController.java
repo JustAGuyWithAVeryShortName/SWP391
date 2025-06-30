@@ -167,37 +167,35 @@ public class QuitPlanController {
      * @return View name "user-plan" or redirect if no plan found.
      */
     @GetMapping("/user/plan")
-    public String viewUserPlan(HttpSession session, Model model) {
-        // Get plan from session
+    public String viewUserPlan(@RequestParam(name = "month", required = false) Integer month,
+                               @RequestParam(name = "year", required = false) Integer year,
+                               HttpSession session,
+                               Model model) {
         User user = (User) session.getAttribute("loggedInUser");
-        if (user == null) {
-            // This is a fallback, ideally you'd get the user from the @AuthenticationPrincipal
-            // For now, we'll assume the session has the user. If not, login.
-            return "redirect:/login";
-        }
+        if (user == null) return "redirect:/login";
 
         QuitPlan currentPlan = (QuitPlan) session.getAttribute("userQuitPlan");
-
         if (currentPlan == null) {
-            // Nếu session chưa có → lấy từ DB
             List<QuitPlan> plans = quitPlanService.getPlansByUserId(user.getId());
             if (!plans.isEmpty()) {
-                currentPlan = plans.get(0); // Giả sử chỉ 1 plan cho mỗi user
-                session.setAttribute("userQuitPlan", currentPlan); // Cache lại vào session
+                currentPlan = plans.get(0);
+                session.setAttribute("userQuitPlan", currentPlan);
             }
         }
 
+        if (currentPlan == null) return "redirect:/quit-plan";
 
-        if (currentPlan != null) {
-            // If plan exists, calculate stats and pass to view
-            model.addAttribute("plan", currentPlan);
-            model.addAttribute("progress", calculateProgress(currentPlan));
-            model.addAttribute("calendar", generateCalendarData(currentPlan));
-            model.addAttribute("stats", calculateStats(currentPlan)); // Data for stats cards
-        } else {
-            // If no plan found, redirect to create new one
-            return "redirect:/quit-plan";
-        }
+        // ✅ Lấy tháng/năm từ request (nếu có) hoặc dùng tháng hiện tại
+        YearMonth calendarMonth = (month != null && year != null)
+                ? YearMonth.of(year, month)
+                : YearMonth.now();
+
+        model.addAttribute("plan", currentPlan);
+        model.addAttribute("progress", calculateProgress(currentPlan));
+        model.addAttribute("calendar", generateCalendarData(currentPlan, calendarMonth));
+        model.addAttribute("monthDisplay", calendarMonth.getMonthValue() + "/" + calendarMonth.getYear());
+        model.addAttribute("stats", calculateStats(currentPlan));
+
         return "user-plan";
     }
 
@@ -315,26 +313,23 @@ public class QuitPlanController {
         return new QuitStats(daysSmokeFree, daysRemaining);
     }
 
-    private CalendarData generateCalendarData(QuitPlan plan) {
+    private CalendarData generateCalendarData(QuitPlan plan, YearMonth month) {
         LocalDate today = LocalDate.now();
-        YearMonth currentMonth = YearMonth.from(today);
-        LocalDate firstDayOfMonth = currentMonth.atDay(1);
-        int firstDayOfWeekValue = firstDayOfMonth.getDayOfWeek().getValue(); // Monday=1, Sunday=7
+        LocalDate firstDayOfMonth = month.atDay(1);
+        int firstDayOfWeekValue = firstDayOfMonth.getDayOfWeek().getValue(); // Monday = 1
 
         List<CalendarDay> days = new ArrayList<>();
-        // Add empty slots before first day of month
         for (int i = 1; i < firstDayOfWeekValue; i++) {
             days.add(new CalendarDay(0, "empty"));
         }
 
-        // Add days of the month
-        for (int day = 1; day <= currentMonth.lengthOfMonth(); day++) {
-            LocalDate date = currentMonth.atDay(day);
+        for (int day = 1; day <= month.lengthOfMonth(); day++) {
+            LocalDate date = month.atDay(day);
             String status = getDayStatus(date, today, plan.getStartDate(), plan.getTargetDate());
             days.add(new CalendarDay(day, status));
         }
 
-        return new CalendarData(currentMonth.toString(), List.of("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"), days);
+        return new CalendarData(month.toString(), List.of("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"), days);
     }
 
     // ===== PHƯƠNG THỨC ĐÃ ĐƯỢC CẬP NHẬT =====
