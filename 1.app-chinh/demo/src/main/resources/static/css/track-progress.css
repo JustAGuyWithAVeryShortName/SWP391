@@ -43,6 +43,7 @@ body {
     margin-bottom: 4rem;
 }
 
+/* ==== Thống kê đầu trang ==== */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -97,7 +98,7 @@ body {
     margin: 0;
 }
 
-/* Progress Card */
+/* ==== Phục hồi sức khỏe và milestones ==== */
 .progress-card, .milestones-card {
     background: var(--white);
     padding: 2.5rem;
@@ -148,7 +149,7 @@ body {
     text-align: right;
 }
 
-/* Milestones */
+/* ==== Milestones grid ==== */
 .milestones-grid {
     display: flex;
     flex-wrap: wrap;
@@ -180,10 +181,7 @@ body {
     border: 1px dashed var(--muted);
 }
 
-@media (max-width: 768px) {
-    .track-progress h1 { font-size: 2.2rem; }
-    .stats-grid { grid-template-columns: 1fr; }
-}
+/* ==== Bảng tiến độ từng ngày ==== */
 .daily-step-table {
     width: 100%;
     border-collapse: collapse;
@@ -227,10 +225,12 @@ body {
     color: #6c757d;
 }
 
+/* ==== Form update ==== */
 .update-form {
     display: flex;
     gap: 6px;
     justify-content: center;
+    align-items: center;
 }
 
 .update-form input[type="number"] {
@@ -253,4 +253,42 @@ body {
 
 .btn-update:hover {
     background-color: #0056b3;
+}
+
+/* ==== Accordion ==== */
+.accordion-item {
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    background: var(--white);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+}
+
+.accordion-button {
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 1rem 1.25rem;
+    background-color: #f9f9f9;
+    color: var(--text);
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: var(--primary);
+    color: white;
+}
+
+.accordion-body {
+    padding: 1.25rem;
+}
+
+/* ==== Responsive ==== */
+@media (max-width: 768px) {
+    .track-progress h1 {
+        font-size: 2.2rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
 }

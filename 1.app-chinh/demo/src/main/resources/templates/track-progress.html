@@ -4,16 +4,18 @@
     <meta charset="UTF-8" />
     <title>Hành Trình Bỏ Thuốc Của Bạn</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" th:href="@{/css/track-progress.css}" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
 </head>
 <body>
-<p style="color:red;">Phương pháp hiện tại: <span th:text="${method}">?</span></p>
 <section class="track-progress">
     <div class="container">
         <h1><i class="fas fa-rocket"></i> Hành Trình Bỏ Thuốc Của Bạn</h1>
         <p class="subtitle">Mỗi ngày không khói thuốc là một chiến thắng. Cùng xem bạn đã đi được bao xa!</p>
+
+        <!-- Thống kê tổng quan -->
         <div class="stats-grid">
             <div class="stat-card primary-stat">
                 <i class="fas fa-calendar-check icon"></i>
@@ -30,21 +32,21 @@
                 <h3>Số Điếu Đã Tránh</h3>
                 <p class="stat-number" th:text="${cigarettesAvoided}">0</p>
             </div>
-
-
         </div>
 
+        <!-- Phục hồi sức khỏe -->
         <div class="progress-card">
             <h2><i class="fas fa-heartbeat"></i> Phục Hồi Sức Khỏe</h2>
             <p class="progress-summary" th:text="${healthProgress.currentStatus}">Đang cập nhật...</p>
             <div class="progress-bar-container">
-                <div class="progress-bar" th:style="'width:' + ${healthProgress.percentage} + '%;'">
+                <div class="progress-bar" th:style="'width:' + ${healthProgress.percentage} + '%'">
                     <span th:text="${healthProgress.percentage} + '%'">0%</span>
                 </div>
             </div>
             <p class="next-goal"><strong>Mục tiêu tiếp theo:</strong> <span th:text="${healthProgress.nextMilestone}">---</span></p>
         </div>
 
+        <!-- Cột mốc đã đạt -->
         <div class="milestones-card">
             <h2><i class="fas fa-award"></i> Cột Mốc Đã Đạt</h2>
             <div class="milestones-grid">
@@ -59,50 +61,70 @@
             </div>
         </div>
 
+        <!-- Tiến độ từng ngày (gọn theo tuần) -->
         <div class="daily-steps-card">
-            <h2><i class="fas fa-list-check"></i> Tiến Độ Từng Ngày</h2>
-            <table class="daily-step-table">
-                <thead>
-                <tr>
-                    <th>Ngày</th>
-                    <th>Ngày thứ</th>
-                    <th>Mục tiêu</th>
-                    <th>Thực tế</th>
-                    <th>Trạng thái</th>
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="step : ${steps}">
-                    <td th:text="${#temporals.format(step.date, 'dd/MM/yyyy')}">--</td>
-                    <td th:text="${step.dayIndex}">--</td>
-                    <td th:text="${step.targetCigarettes + ' 🚬'}">--</td>
+            <h2><i class="fas fa-list-check"></i> Tiến Độ Từng Ngày (Theo Tuần)</h2>
 
-
-                    <td th:text="${step.actualCigarettes != null ? step.actualCigarettes + ' 🚬' : 'Chưa có'}"
-                        th:classappend="${step.actualCigarettes == null} ? 'text-gray' : ''">--</td>
-                    <td>
-        <span th:classappend="
-            ${step.completed} ? 'badge badge-success' :
-            (step.actualCigarettes != null ? 'badge badge-danger' : 'badge badge-neutral')"
-              th:text="${step.completed} ? '✅ Đạt' : (step.actualCigarettes != null ? '❌ Chưa đạt' : '-')">
-        </span>
-                    </td>
-                    <td>
-                        <form th:action="@{/track-progress/update/{id}(id=${step.id})}" method="post" class="update-form">
-                            <input type="number" name="actualCigarettes" min="0" placeholder="VD: 3" required />
-                            <input type="hidden" name="planId" th:value="${planId}" />
-                            <button type="submit" class="btn-update">Lưu</button>
-                        </form>
-                    </td>
-                </tr>
-
-                </tbody>
-            </table>
+            <div class="accordion" id="weeklyProgressAccordion">
+                <div th:each="entry : ${stepsByWeek}">
+                    <div class="accordion-item">
+                        <h3 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button"
+                                    data-bs-toggle="collapse"
+                                    th:attr="data-bs-target='#week-'+${entry.key}"
+                                    aria-expanded="false"
+                                    th:attrappend="aria-controls='week-'+${entry.key}">
+                                Tuần [[${entry.key}]]
+                            </button>
+                        </h3>
+                        <div th:id="'week-'+${entry.key}" class="accordion-collapse collapse" data-bs-parent="#weeklyProgressAccordion">
+                            <div class="accordion-body">
+                                <table class="daily-step-table">
+                                    <thead>
+                                    <tr>
+                                        <th>Ngày</th>
+                                        <th>Ngày thứ</th>
+                                        <th>Mục tiêu</th>
+                                        <th>Thực tế</th>
+                                        <th>Trạng thái</th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="step : ${entry.value}">
+                                        <td th:text="${#temporals.format(step.date, 'dd/MM/yyyy')}">--</td>
+                                        <td th:text="${step.dayIndex}">--</td>
+                                        <td th:text="${step.targetCigarettes + ' 🚬'}">--</td>
+                                        <td th:text="${step.actualCigarettes != null ? step.actualCigarettes + ' 🚬' : 'Chưa có'}"
+                                            th:classappend="${step.actualCigarettes == null} ? 'text-gray' : ''">--</td>
+                                        <td>
+                                            <span th:classappend="
+                                                ${step.completed} ? 'badge badge-success' :
+                                                (step.actualCigarettes != null ? 'badge badge-danger' : 'badge badge-neutral')"
+                                                  th:text="${step.completed} ? '✅ Đạt' : (step.actualCigarettes != null ? '❌ Chưa đạt' : '-')">
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <form th:action="@{/track-progress/update/{id}(id=${step.id})}" method="post" class="update-form">
+                                                <input type="number" name="actualCigarettes" min="0" placeholder="VD: 3" required />
+                                                <input type="hidden" name="planId" th:value="${planId}" />
+                                                <button type="submit" class="btn-update">Lưu</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+
     </div>
 </section>
 
+<!-- Counter animation -->
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const counters = document.querySelectorAll('.stat-number[data-target]');
@@ -122,7 +144,9 @@
             animate();
         });
     });
-
 </script>
+
+<!-- Bootstrap JS (Accordion) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

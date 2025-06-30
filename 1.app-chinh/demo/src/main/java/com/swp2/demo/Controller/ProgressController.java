@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import java.time.temporal.ChronoUnit;
 
 import java.math.BigDecimal;
 import java.time.*;
@@ -79,11 +80,7 @@ public class ProgressController {
             return "redirect:/login";
         }
 
-        QuitPlan plan = quitPlanRepository.findLatestByUserId(userId).stream()
-                .findFirst()
-                .orElse(null);
-
-
+        QuitPlan plan = quitPlanRepository.findLatestByUserId(userId).stream().findFirst().orElse(null);
         if (plan == null) {
             model.addAttribute("error", "Chưa có kế hoạch bỏ thuốc.");
             return "error";
@@ -100,6 +97,7 @@ public class ProgressController {
         model.addAttribute("achievedMilestones", getAchievedMilestones(daysSinceQuit, defineMilestones()));
         model.addAttribute("upcomingMilestones", getUpcomingMilestones(daysSinceQuit, defineMilestones()));
 
+        // 💡 Chuẩn bị danh sách step đã xử lý completed + target
         List<UserPlanStep> originalSteps = userPlanStepRepository.findByQuitPlan(plan);
         List<UserPlanStep> displaySteps = new ArrayList<>();
 
@@ -122,13 +120,20 @@ public class ProgressController {
                     copy.setCompleted(copy.getActualCigarettes() <= copy.getTargetCigarettes());
                 }
             }
-
             displaySteps.add(copy);
         }
 
-        model.addAttribute("steps", displaySteps);
+        // ✅ Gom theo tuần
+        Map<Integer, List<UserPlanStep>> stepsByWeek = new TreeMap<>();
+        for (UserPlanStep step : displaySteps) {
+            int week = (int) ChronoUnit.WEEKS.between(plan.getStartDate(), step.getDate()) + 1;
+            stepsByWeek.computeIfAbsent(week, k -> new ArrayList<>()).add(step);
+        }
+
+        model.addAttribute("stepsByWeek", stepsByWeek);
         model.addAttribute("planId", plan.getId());
 
+        // 🧮 Tính toán số điếu đã tránh & tiền tiết kiệm
         int pricePerCigarette = 0;
         if (plan.getDailySmokingCigarettes() != null && plan.getDailySmokingCigarettes() > 0) {
             pricePerCigarette = plan.getDailySpending().intValue() / plan.getDailySmokingCigarettes();
@@ -142,19 +147,9 @@ public class ProgressController {
         model.addAttribute("moneySaved", String.format("%,d", saved));
         model.addAttribute("method", plan.getMethod());
 
-        System.out.println("🚨 Kế hoạch: " + plan.getId() + " | Phương pháp: " + plan.getMethod());
-        for (UserPlanStep step : displaySteps) {
-            System.out.println("🗓️ Ngày " + step.getDayIndex() + " | Target: " + step.getTargetCigarettes() + " | Actual: " + step.getActualCigarettes());
-
-            System.out.println("✅ Session userId: " + userId);
-            quitPlanRepository.findLatestByUserId(userId).forEach(p ->
-                    System.out.println("👉 Plan ID: " + p.getId() + " | Method: " + p.getMethod())
-            );
-
-        }
-
         return "track-progress";
     }
+
 
     @PostMapping("/track-progress/update/{stepId}")
     public String updateStep(
