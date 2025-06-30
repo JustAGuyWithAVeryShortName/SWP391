@@ -10,10 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import java.time.temporal.ChronoUnit;
 
 import java.math.BigDecimal;
 import java.time.*;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,7 +28,6 @@ public class ProgressController {
 
     @Autowired
     private QuitPlanService quitPlanService;
-
 
     public static class HealthProgress {
         private String currentStatus;
@@ -82,7 +81,7 @@ public class ProgressController {
 
         QuitPlan plan = quitPlanRepository.findLatestByUserId(userId).stream().findFirst().orElse(null);
         if (plan == null) {
-            model.addAttribute("error", "Chưa có kế hoạch bỏ thuốc.");
+            model.addAttribute("error", "No quit plan found.");
             return "error";
         }
 
@@ -97,7 +96,6 @@ public class ProgressController {
         model.addAttribute("achievedMilestones", getAchievedMilestones(daysSinceQuit, defineMilestones()));
         model.addAttribute("upcomingMilestones", getUpcomingMilestones(daysSinceQuit, defineMilestones()));
 
-        // 💡 Chuẩn bị danh sách step đã xử lý completed + target
         List<UserPlanStep> originalSteps = userPlanStepRepository.findByQuitPlan(plan);
         List<UserPlanStep> displaySteps = new ArrayList<>();
 
@@ -123,7 +121,6 @@ public class ProgressController {
             displaySteps.add(copy);
         }
 
-        // ✅ Gom theo tuần
         Map<Integer, List<UserPlanStep>> stepsByWeek = new TreeMap<>();
         for (UserPlanStep step : displaySteps) {
             int week = (int) ChronoUnit.WEEKS.between(plan.getStartDate(), step.getDate()) + 1;
@@ -133,7 +130,6 @@ public class ProgressController {
         model.addAttribute("stepsByWeek", stepsByWeek);
         model.addAttribute("planId", plan.getId());
 
-        // 🧮 Tính toán số điếu đã tránh & tiền tiết kiệm
         int pricePerCigarette = 0;
         if (plan.getDailySmokingCigarettes() != null && plan.getDailySmokingCigarettes() > 0) {
             pricePerCigarette = plan.getDailySpending().intValue() / plan.getDailySmokingCigarettes();
@@ -149,7 +145,6 @@ public class ProgressController {
 
         return "track-progress";
     }
-
 
     @PostMapping("/track-progress/update/{stepId}")
     public String updateStep(
@@ -168,28 +163,28 @@ public class ProgressController {
 
     private HealthProgress getHealthProgress(long days) {
         if (days < 1)
-            return new HealthProgress("Nhịp tim bắt đầu giảm.", 10, "Mức CO trong máu giảm (1 ngày)");
+            return new HealthProgress("Heart rate starts to decrease.", 10, "CO level in blood drops (1 day)");
         if (days < 3)
-            return new HealthProgress("Mức CO giảm, Oxy tăng.", 25, "Nicotine được đào thải (3 ngày)");
+            return new HealthProgress("CO drops, oxygen level increases.", 25, "Nicotine eliminated (3 days)");
         if (days < 14)
-            return new HealthProgress("Nicotine đã được đào thải.", 40, "Chức năng phổi cải thiện (2 tuần)");
+            return new HealthProgress("Nicotine cleared from your body.", 40, "Lung function improves (2 weeks)");
         if (days < 30)
-            return new HealthProgress("Chức năng phổi & hô hấp cải thiện.", 60, "Tuần hoàn máu tốt hơn (1 tháng)");
+            return new HealthProgress("Better breathing and lung capacity.", 60, "Blood circulation improves (1 month)");
         if (days < 90)
-            return new HealthProgress("Tuần hoàn máu tốt, năng lượng tăng.", 80, "Phổi bắt đầu tự sửa chữa (3 tháng)");
-        return new HealthProgress("Phổi đang trong quá trình tự sửa chữa mạnh mẽ.", 100, "Bạn đang làm rất tốt!");
+            return new HealthProgress("Improved blood flow, more energy.", 80, "Lungs begin to repair (3 months)");
+        return new HealthProgress("Lungs are actively self-repairing.", 100, "You're doing great!");
     }
 
     private List<Milestone> defineMilestones() {
         return Arrays.asList(
-                new Milestone("1 Ngày Vàng", 1),
-                new Milestone("Thanh Lọc Nicotine", 3),
-                new Milestone("Tuần Đầu Tiên", 7),
-                new Milestone("Hô Hấp Cải Thiện", 14),
-                new Milestone("Chạm Mốc 1 Tháng", 30),
-                new Milestone("Năng Lượng Trở Lại", 90),
-                new Milestone("Nửa Năm Kiên Trì", 180),
-                new Milestone("Chúc Mừng 1 Năm", 365)
+                new Milestone("Golden Day", 1),
+                new Milestone("Nicotine Cleansing", 3),
+                new Milestone("First Week", 7),
+                new Milestone("Improved Breathing", 14),
+                new Milestone("One-Month Mark", 30),
+                new Milestone("Energy Returns", 90),
+                new Milestone("Half-Year Milestone", 180),
+                new Milestone("One Year Celebration", 365)
         );
     }
 

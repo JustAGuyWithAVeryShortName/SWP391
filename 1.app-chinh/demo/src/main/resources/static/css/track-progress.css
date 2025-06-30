@@ -292,3 +292,17 @@ body {
         grid-template-columns: 1fr;
     }
 }
+/* ==== Logo at Top ==== */
+.logo-container {
+    text-align: center;
+    margin: 2rem 0 1.5rem;
+}
+
+.logo-container img {
+    height: 145px;
+    transition: transform 0.3s ease;
+}
+
+.logo-container img:hover {
+    transform: scale(1.05);
+}
