@@ -12,4 +12,6 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
     boolean existsByUserIdAndContentAndCreatedAtBetween(Long userId, String content,
                                                         LocalDateTime start, LocalDateTime end);
+
+    void deleteByUserId(Long userId);
 }

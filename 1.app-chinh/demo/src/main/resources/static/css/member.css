@@ -47,6 +47,193 @@ body {
 main {
     padding-top: 90px; /* Tạo khoảng trống cho header fixed */
 }
+.chat-table-wrapper {
+    max-height: 300px;
+    overflow-y: auto;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid black;
+    height: 250px;
+}
+
+.chat-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.chat-table th,
+.chat-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.chat-table th {
+    background-color: #f0f0f0;
+    font-weight: bold;
+}
+
+/* Form nhập */
+.chat-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-form textarea {
+    width: 100%;
+    height: 100px;
+    padding: 10px;
+    resize: vertical;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    font-size: 1rem;
+}
+
+.chat-form .btn-primary {
+    align-self: flex-end;
+    padding: 8px 16px;
+    background-color: #007bff;
+    border: none;
+    color: #fff;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.chat-form .btn-primary:hover {
+    background-color: #0056b3;
+}
+
+/*==========================*/
+
+
+
+.dropdown-notice {
+    position: relative;
+}
+
+.dropdown-toggle-notice {
+    background: none;
+    border: none;
+    color: var(--medium-text-color);
+    font-weight: 600;
+    padding: 4px 0 3px 0;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.dropdown-menu-notice {
+    position: absolute;
+    top: 120%;
+    right: 0;
+    background-color: #e8f0fe;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    min-width: 260px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+    z-index: 999;
+}
+
+.dropdown-item-notice {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    color: #1a73e8;
+    font-weight: 500;
+    background: none;
+    text-align: left;
+    font-family: var(--font-primary);
+}
+
+.dropdown-notice:hover .dropdown-menu-notice {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-notice:hover .dropdown-toggle-notice i {
+    transform: rotate(180deg);
+    transition: transform 0.3s ease;
+}
+
+
+/* ==== làm Hi, name ==== */
+.dropdown-item {
+    display: block;
+    width: 100%;
+    padding: 10px 16px;
+    color: #333;
+    font-size: 0.95rem;
+    font-family: var(--font-primary);
+    text-align: left;
+    background: none;
+    border: none;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    appearance: none;         /* reset style nút cho Firefox/Safari */
+    -webkit-appearance: none; /* reset cho Safari */
+    font-weight: 510;
+}
+
+.dropdown-item:hover {
+    background-color: #f5f5f5;
+}
+
+.dropdown-toggle {
+    background: none;
+    border: none;
+    color: var(--medium-text-color);
+    font-weight: 600;
+    padding: 3px 0 3px 0;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+    font-family: 'Poppins', sans-serif;
+
+
+}
+.dropdown-toggle i {
+    transition: transform 0.3s ease;
+}
+
+.nav-item.dropdown {
+    position: relative;
+
+}
+.dropdown-menu {
+    position: absolute;
+    top: 120%;
+    right: 0;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    min-width: 180px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+    z-index: 999;
+}
+.nav-item.dropdown:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+.nav-item.dropdown:hover .dropdown-toggle i {
+    transform: rotate(180deg);
+}
 
 /* ==== HEADER (Synced with Home page) ==== */
 .main-header {
@@ -267,6 +454,40 @@ main {
 
 .plan button.btn-current:hover {
     transform: none;
+}
+
+/* ==== FOOTER ==== */
+.main-footer {
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    color: #ecf0f1;
+    padding: 80px 20px 40px;
+    text-align: center;
+}
+.footer-heading { font-size: 1.6em; color: var(--white-color); margin-bottom: 25px; font-weight: 600; letter-spacing: 1px; }
+.footer-address p { margin-bottom: 10px; font-size: 1em; }
+.social-icons { margin: 30px 0; display: flex; justify-content: center; gap: 20px; }
+.social-link img { width: 30px; height: 30px; filter: brightness(0) invert(1); opacity: 0.75; transition: transform 0.35s ease, opacity 0.35s ease; }
+.social-link:hover img { transform: scale(1.2) translateY(-3px); opacity: 1; }
+.copyright { font-size: 0.9em; color: #bdc3c7; margin-top: 35px; }
+
+/* ==== BACK TO TOP BUTTON ==== */
+.back-to-top {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background-color: var(--primary-color);
+    color: var(--white-color);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    opacity: 0; /* Hidden by default */
+    visibility: hidden; /* Hidden by default */
+    transition: all 0.4s;
+    z-index: 1000;
 }
 
 /* ---- RESPONSIVE CHO PLANS ---- */

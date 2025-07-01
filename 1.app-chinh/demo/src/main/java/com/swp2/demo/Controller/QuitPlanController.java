@@ -220,11 +220,17 @@ public class QuitPlanController {
                 notificationRepository.save(n);
             }
         } else if (!today.isBefore(startDate)) {
-            long daysPassed = ChronoUnit.DAYS.between(startDate, today) + 1;
+            long daysPassed = ChronoUnit.DAYS.between(startDate, today) ;
             long totalDays = ChronoUnit.DAYS.between(startDate, endDate) + 1;
             long daysLeft = totalDays - daysPassed;
 
-            String todayMessage = "Bạn đã cai được " + daysPassed + " ngày! Cố lên, còn " + daysLeft + " ngày nữa!";
+            String todayMessage;
+            if (daysPassed == 0) {
+                todayMessage = "🚀 Chúc mừng bạn đã bắt đầu kế hoạch cai thuốc hôm nay! Cố lên!";
+            } else {
+                todayMessage = "Bạn đã cai được " + daysPassed + " ngày! Cố lên, còn " + daysLeft + " ngày nữa!";
+            }
+
             boolean exists = notificationRepository.existsByUserIdAndContentAndCreatedAtBetween(
                     user.getId(),
                     todayMessage,
@@ -244,6 +250,19 @@ public class QuitPlanController {
 
         return "user-plan";
     }
+    @PostMapping("/user/plan/delete-notifications")
+    @Transactional
+    public String deleteAllNotifications(HttpSession session) {
+        User user = (User) session.getAttribute("loggedInUser");
+        if (user == null) return "redirect:/login";
+
+        notificationRepository.deleteByUserId(user.getId());
+
+        return "redirect:/notice";
+    }
+
+
+
 
     @Transactional
     @GetMapping("/plan/new")
