@@ -29,7 +29,6 @@ public class UserPlanStep {
     @JoinColumn(name = "quit_plan_id")
     private QuitPlan quitPlan;
 
-    // Getters and setters
     public Long getId() {
         return id;
     }
@@ -54,11 +53,11 @@ public class UserPlanStep {
         this.dayIndex = dayIndex;
     }
 
-    public int getTargetCigarettes() {
+    public Integer getTargetCigarettes() {
         return targetCigarettes;
     }
 
-    public void setTargetCigarettes(int targetCigarettes) {
+    public void setTargetCigarettes(Integer targetCigarettes) {
         this.targetCigarettes = targetCigarettes;
     }
 
@@ -78,14 +77,6 @@ public class UserPlanStep {
         this.completed = completed;
     }
 
-    public QuitPlan getQuitPlan() {
-        return quitPlan;
-    }
-
-    public void setQuitPlan(QuitPlan quitPlan) {
-        this.quitPlan = quitPlan;
-    }
-
     public Integer getAvoidedCigarettes() {
         return avoidedCigarettes;
     }
@@ -102,4 +93,11 @@ public class UserPlanStep {
         this.moneySaved = moneySaved;
     }
 
+    public QuitPlan getQuitPlan() {
+        return quitPlan;
+    }
+
+    public void setQuitPlan(QuitPlan quitPlan) {
+        this.quitPlan = quitPlan;
+    }
 }
