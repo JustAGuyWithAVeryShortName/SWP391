@@ -334,3 +334,7 @@ VALUES
 ('2025-06-26', 3, 13, NULL, 0, @quit_plan_id);
 
 
+ALTER TABLE user_plan_step ADD avoided_cigarettes INT;
+ALTER TABLE user_plan_step ADD money_saved INT;
+
+
