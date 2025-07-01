@@ -125,4 +125,13 @@ public class QuitPlan {
     public void setDailySpending(BigDecimal dailySpending) {
         this.dailySpending = dailySpending;
     }
+    public int getPricePerCigarette() {
+        if (dailySpending != null && dailySmokingCigarettes != null && dailySmokingCigarettes > 0) {
+            return dailySpending
+                    .divide(new BigDecimal(dailySmokingCigarettes), 0, java.math.RoundingMode.HALF_UP)
+                    .intValue();
+        }
+        return 0;
+    }
+
 }

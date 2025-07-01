@@ -6,7 +6,8 @@ import com.swp2.demo.entity.UserPlanStep;
 import com.swp2.demo.repository.UserPlanStepRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -23,7 +24,7 @@ public class QuitPlanService {
 
     public QuitPlan save(QuitPlan plan) {
         QuitPlan saved = repository.save(plan);
-        generateDailyPlan(saved, 20); // giả sử mặc định 20 điếu/ngày, có thể thay bằng thông số từ user
+        generateDailyPlan(saved, saved.getDailySmokingCigarettes() != null ? saved.getDailySmokingCigarettes() : 20);
         return saved;
     }
 
@@ -44,8 +45,17 @@ public class QuitPlanService {
         LocalDate end = quitPlan.getTargetDate();
 
         long totalDays = ChronoUnit.DAYS.between(start, end) + 1;
+        String method = quitPlan.getMethod();
 
-        String method = quitPlan.getMethod(); // lấy phương pháp từ plan
+
+        int pricePerCigarette = 0;
+        if (quitPlan.getDailySmokingCigarettes() != null && quitPlan.getDailySmokingCigarettes() > 0) {
+            BigDecimal dailySpending = quitPlan.getDailySpending();
+            BigDecimal dailyCigarettes = BigDecimal.valueOf(quitPlan.getDailySmokingCigarettes());
+            pricePerCigarette = dailySpending
+                    .divide(dailyCigarettes, RoundingMode.HALF_UP)
+                    .intValue();
+        }
 
         for (int i = 0; i < totalDays; i++) {
             UserPlanStep step = new UserPlanStep();
@@ -56,17 +66,22 @@ public class QuitPlanService {
             int target;
 
             if ("quit_abruptly".equalsIgnoreCase(method)) {
-                target = 0; // Cold turkey
+                target = 0;
             } else {
                 int dailyDecrease = (int) Math.ceil((double) initialCigarettesPerDay / totalDays);
                 target = Math.max(initialCigarettesPerDay - (i * dailyDecrease), 0);
             }
 
-
-
             step.setTargetCigarettes(target);
             step.setCompleted(false);
             step.setActualCigarettes(null);
+
+            // 👉 TÍNH số điếu tránh (giả định người dùng *không hút*)
+            int avoided = initialCigarettesPerDay - target;
+            step.setAvoidedCigarettes(Math.max(avoided, 0));
+
+            // 👉 TÍNH tiền tiết kiệm
+            step.setMoneySaved(step.getAvoidedCigarettes() * pricePerCigarette);
 
             userPlanStepRepository.save(step);
         }
@@ -89,6 +104,7 @@ public class QuitPlanService {
     public Optional<QuitPlan> getLatestQuitPlanByUsername(String username) {
         return repository.findTopByUser_UsernameOrderByIdDesc(username);
     }
+
 
 }
 

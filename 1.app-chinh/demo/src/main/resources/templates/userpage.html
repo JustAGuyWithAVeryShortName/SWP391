@@ -60,13 +60,13 @@
             <div class="card">
                 <i class="fas fa-chart-line icon"></i>
                 <h3>Track Progress</h3>
-                <p>See your health improvements, money saved, and milestones.</p>
+                <p>See how your health improves, money grows, and milestones unfold.</p>
                 <a th:href="@{/track-progress}" class="btn-primary">View Progress</a>
             </div>
             <div class="card">
                 <i class="fas fa-users icon"></i>
                 <h3>Community Support</h3>
-                <p>Connect with others, share experiences, and get motivated.</p>
+                <p>Connect with others, share your stories, and stay motivated throughout your journey.</p>
                 <a th:href="@{/messenger}" class="btn-primary">Find Support</a>
             </div>
         </div>
@@ -108,6 +108,8 @@
             }
         }
     }
+    <div th:replace="~{fragments/noticeDropdown :: noticeDropdown}"></div>
+
 </script>
 
 

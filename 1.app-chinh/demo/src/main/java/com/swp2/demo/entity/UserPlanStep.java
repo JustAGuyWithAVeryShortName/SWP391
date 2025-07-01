@@ -15,11 +15,15 @@ public class UserPlanStep {
 
     private int dayIndex;
 
-    private int targetCigarettes;
+    private Integer targetCigarettes;
 
     private Integer actualCigarettes;
 
     private boolean completed;
+
+    private Integer avoidedCigarettes;
+    private Integer moneySaved;
+
 
     @ManyToOne
     @JoinColumn(name = "quit_plan_id")
@@ -81,4 +85,21 @@ public class UserPlanStep {
     public void setQuitPlan(QuitPlan quitPlan) {
         this.quitPlan = quitPlan;
     }
+
+    public Integer getAvoidedCigarettes() {
+        return avoidedCigarettes;
+    }
+
+    public void setAvoidedCigarettes(Integer avoidedCigarettes) {
+        this.avoidedCigarettes = avoidedCigarettes;
+    }
+
+    public Integer getMoneySaved() {
+        return moneySaved;
+    }
+
+    public void setMoneySaved(Integer moneySaved) {
+        this.moneySaved = moneySaved;
+    }
+
 }

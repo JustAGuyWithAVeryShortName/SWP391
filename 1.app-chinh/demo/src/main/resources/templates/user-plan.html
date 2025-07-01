@@ -89,11 +89,11 @@
 
             <div class="calendar">
                 <div class="calendar-header" th:each="dayName : ${calendar.weekDays()}" th:text="${dayName}"></div>
-                <div th:each="day : ${calendar.days()}"
-                     th:class="'calendar-day ' + ${day.status()}"
-                     th:attr="data-title=${day.status() == 'start-date' ? 'Start Date' :
+                <div th:attr="data-title=${day.status() == 'start-date' ? 'Start Date' :
                                           day.status() == 'target-date' ? 'Target Date' :
                                           day.status() == 'today' ? 'Today' : null}"
+                     th:class="'calendar-day ' + ${day.status()}"
+                     th:each="day : ${calendar.days()}"
                      th:text="${day.dayNumber() != 0 ? day.dayNumber() : ''}"></div>
             </div>
         </section>

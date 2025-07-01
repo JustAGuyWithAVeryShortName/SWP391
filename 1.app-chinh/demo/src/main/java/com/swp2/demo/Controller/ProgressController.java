@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -74,10 +75,7 @@ public class ProgressController {
     @GetMapping("/track-progress")
     public String trackProgress(HttpSession session, Model model) {
         Long userId = (Long) session.getAttribute("userId");
-
-        if (userId == null) {
-            return "redirect:/login";
-        }
+        if (userId == null) return "redirect:/login";
 
         QuitPlan plan = quitPlanRepository.findLatestByUserId(userId).stream().findFirst().orElse(null);
         if (plan == null) {
@@ -99,6 +97,9 @@ public class ProgressController {
         List<UserPlanStep> originalSteps = userPlanStepRepository.findByQuitPlan(plan);
         List<UserPlanStep> displaySteps = new ArrayList<>();
 
+        int daily = plan.getDailySmokingCigarettes() != null ? plan.getDailySmokingCigarettes() : 20;
+        boolean missedTarget = false;
+
         for (UserPlanStep step : originalSteps) {
             UserPlanStep copy = new UserPlanStep();
             copy.setId(step.getId());
@@ -106,18 +107,21 @@ public class ProgressController {
             copy.setDayIndex(step.getDayIndex());
             copy.setActualCigarettes(step.getActualCigarettes());
             copy.setQuitPlan(step.getQuitPlan());
+            copy.setTargetCigarettes(step.getTargetCigarettes());
 
-            if ("quit_abruptly".equalsIgnoreCase(plan.getMethod())) {
-                copy.setTargetCigarettes(0);
-                if (copy.getActualCigarettes() != null) {
-                    copy.setCompleted(copy.getActualCigarettes() == 0);
-                }
-            } else {
-                copy.setTargetCigarettes(step.getTargetCigarettes());
-                if (copy.getActualCigarettes() != null) {
-                    copy.setCompleted(copy.getActualCigarettes() <= copy.getTargetCigarettes());
+            Integer target = step.getTargetCigarettes();
+            Integer actual = step.getActualCigarettes();
+
+            if (actual != null) {
+                int avoidedToday = daily - actual;
+                copy.setAvoidedCigarettes(avoidedToday);
+                copy.setCompleted(actual <= daily);
+
+                if (target != null && actual > target) {
+                    missedTarget = true;
                 }
             }
+
             displaySteps.add(copy);
         }
 
@@ -130,18 +134,29 @@ public class ProgressController {
         model.addAttribute("stepsByWeek", stepsByWeek);
         model.addAttribute("planId", plan.getId());
 
-        int pricePerCigarette = 0;
-        if (plan.getDailySmokingCigarettes() != null && plan.getDailySmokingCigarettes() > 0) {
-            pricePerCigarette = plan.getDailySpending().intValue() / plan.getDailySmokingCigarettes();
+        BigDecimal dailySpend = plan.getDailySpending() != null ? plan.getDailySpending() : BigDecimal.ZERO;
+        BigDecimal pricePerCig = daily > 0
+                ? dailySpend.divide(BigDecimal.valueOf(daily), 2, RoundingMode.HALF_UP)
+                : BigDecimal.ZERO;
+
+        int cumulativeAvoided = 0;
+        for (UserPlanStep s : displaySteps) {
+            Integer actual = s.getActualCigarettes();
+            if (actual != null) {
+                cumulativeAvoided += (daily - actual);
+            }
         }
 
-        int avoided = quitPlanService.calculateCigarettesAvoided(displaySteps);
-        int saved = quitPlanService.calculateMoneySaved(displaySteps, pricePerCigarette);
+        int avoided = cumulativeAvoided;
+        int saved = avoided > 0
+                ? pricePerCig.multiply(BigDecimal.valueOf(avoided)).intValue()
+                : 0;
 
         model.addAttribute("cigarettesAvoided", Math.max(0, avoided));
         model.addAttribute("cigarettesOver", Math.abs(Math.min(0, avoided)));
         model.addAttribute("moneySaved", String.format("%,d", saved));
         model.addAttribute("method", plan.getMethod());
+        model.addAttribute("missedTarget", missedTarget);
 
         return "track-progress";
     }
@@ -155,7 +170,22 @@ public class ProgressController {
         UserPlanStep step = userPlanStepRepository.findById(stepId).orElse(null);
         if (step != null) {
             step.setActualCigarettes(actual);
-            step.setCompleted(actual <= step.getTargetCigarettes());
+
+            QuitPlan plan = step.getQuitPlan();
+            int daily = plan.getDailySmokingCigarettes() != null ? plan.getDailySmokingCigarettes() : 20;
+
+            int avoided = daily - actual;
+            step.setAvoidedCigarettes(avoided);
+            step.setCompleted(actual <= daily);
+
+            int pricePerCigarette = 0;
+            if (daily > 0 && plan.getDailySpending() != null) {
+                pricePerCigarette = plan.getDailySpending()
+                        .divide(BigDecimal.valueOf(daily), 2, RoundingMode.HALF_UP)
+                        .intValue();
+            }
+
+            step.setMoneySaved(Math.max(0, avoided) * pricePerCigarette);
             userPlanStepRepository.save(step);
         }
         return "redirect:/track-progress";

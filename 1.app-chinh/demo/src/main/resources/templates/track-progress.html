@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
 </head>
 <body>
+
 <!-- Logo -->
 <div class="logo-container">
     <a th:href="@{/dashboard}">
@@ -21,6 +22,12 @@
     <div class="container">
 
         <h1><i class="fas fa-rocket"></i> Your Quit Smoking Journey</h1>
+
+        <!-- 🔔 Cảnh báo nếu có ngày vượt target -->
+        <div th:if="${missedTarget}" class="alert alert-warning mt-3" role="alert">
+            ⚠️ You've exceeded your smoking target on at least one day. Stay strong and keep going!
+        </div>
+
         <p class="subtitle">Every smoke-free day is a victory. See how far you’ve come!</p>
 
         <!-- Overview stats -->
@@ -103,11 +110,12 @@
                                         <td th:text="${#temporals.format(step.date, 'dd/MM/yyyy')}">--</td>
                                         <td th:text="${step.dayIndex}">--</td>
                                         <td th:text="${step.targetCigarettes + ' 🚬'}">--</td>
-                                        <td th:text="${step.actualCigarettes != null ? step.actualCigarettes + ' 🚬' : 'Not entered'}"
-                                            th:classappend="${step.actualCigarettes == null} ? 'text-gray' : ''">--</td>
+                                        <td th:classappend="${step.actualCigarettes != null and step.targetCigarettes != null and step.actualCigarettes > step.targetCigarettes} ? 'text-danger fw-bold' : ''">
+                                            <span th:text="${step.actualCigarettes != null ? step.actualCigarettes + ' 🚬' : 'Not entered'}"></span>
+                                            <span th:if="${step.actualCigarettes != null and step.targetCigarettes != null and step.actualCigarettes > step.targetCigarettes}" title="Exceeded daily target">❗</span>
+                                        </td>
                                         <td>
-                                            <span th:classappend="
-                                                ${step.completed} ? 'badge badge-success' :
+                                            <span th:classappend=" ${step.completed} ? 'badge badge-success' :
                                                 (step.actualCigarettes != null ? 'badge badge-danger' : 'badge badge-neutral')"
                                                   th:text="${step.completed} ? '✅ Successful' : (step.actualCigarettes != null ? '❌ Failed' : '-')">
                                             </span>
