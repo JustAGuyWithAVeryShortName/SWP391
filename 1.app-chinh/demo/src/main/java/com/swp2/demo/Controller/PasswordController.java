@@ -18,11 +18,10 @@ public class PasswordController {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @GetMapping("/change-password")
     public String showChangePasswordForm() {
+
         return "change-password";
     }
 
@@ -35,7 +34,7 @@ public class PasswordController {
 
         User user = userService.findByUsername(principal.getName());
 
-        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+        if (!oldPassword.equals(user.getPassword())) {
             model.addAttribute("message", "Mật khẩu cũ không chính xác.");
             return "change-password";
         }
@@ -45,7 +44,8 @@ public class PasswordController {
             return "change-password";
         }
 
-        user.setPassword(passwordEncoder.encode(newPassword));
+
+        user.setPassword(newPassword);
         userService.save(user);
         model.addAttribute("message", "Đổi mật khẩu thành công.");
         return "change-password";

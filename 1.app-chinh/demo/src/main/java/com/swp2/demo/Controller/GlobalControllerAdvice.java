@@ -17,6 +17,9 @@ public class GlobalControllerAdvice {
             model.addAttribute("fullName", user.getFirstName());
             model.addAttribute("userRole", user.getRole());
 
+            Object loginType = session.getAttribute("loginType");
+            boolean isUsernameLogin = "username".equals(loginType);
+            model.addAttribute("isUsernameLogin", isUsernameLogin);
 
         }
     }

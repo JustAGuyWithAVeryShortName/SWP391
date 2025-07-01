@@ -34,6 +34,12 @@
             <div class="dropdown-menu">
                 <a th:href="@{/profile}" class="dropdown-item">Profile</a>
                 <a th:href="@{/dashboard}" class="dropdown-item">View Plan</a>
+                <th:block sec:authorize="isAuthenticated()">
+                    <th:block th:if="${isUsernameLogin}">
+                        <a th:href="@{/change-password}" class="dropdown-item">Change Password</a>
+                    </th:block>
+                </th:block>
+
                 <form th:action="@{/logout}" method="post" class="logout-form">
                     <button type="submit" class="dropdown-item">Logout</button>
                 </form>

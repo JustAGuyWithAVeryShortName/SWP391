@@ -27,17 +27,21 @@ public class ResetPasswordController {
     //private PasswordEncoder passwordEncoder;
 
     @GetMapping("/reset-password")
-    public String showResetPasswordForm(@RequestParam("token") String token, Model model) {
-        var resetToken = passwordResetTokenRepository.findByToken(token);
+    public String showResetPasswordForm(@RequestParam(value = "token", required = false) String token, Model model) {
+        if (token == null || token.isBlank()) {
+            model.addAttribute("error", "Thiếu token. Vui lòng kiểm tra lại liên kết đặt lại mật khẩu.");
+            return "redirect:/login?tokenMissing";
+        }
 
+        var resetToken = passwordResetTokenRepository.findByToken(token);
         if (resetToken.isPresent() && resetToken.get().getExpiryDate().isAfter(LocalDateTime.now())) {
             model.addAttribute("token", token);
-            return "reset-password"; // Trang nhập mật khẩu mới
+            return "reset-password";
         } else {
-            model.addAttribute("error", "Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.");
-            return "reset-password-error";
+            return "redirect:/login?tokenExpired";
         }
     }
+
 
     @PostMapping("/reset-password")
     @Transactional
@@ -67,6 +71,5 @@ public class ResetPasswordController {
         passwordResetTokenRepository.delete(resetToken.get());
 
         model.addAttribute("message", "Đặt lại mật khẩu thành công! Bạn có thể đăng nhập lại.");
-        return "login"; // hoặc redirect đến trang login
-    }
+        return "redirect:/login?resetSuccess";    }
 }

@@ -39,6 +39,13 @@
             <div class="dropdown-menu">
                 <a th:href="@{/profile}" class="dropdown-item">Profile</a>
                 <a th:href="@{/dashboard}" class="dropdown-item">View Plan</a>
+
+                <th:block sec:authorize="isAuthenticated()">
+                    <th:block th:if="${isUsernameLogin}">
+                        <a th:href="@{/change-password}" class="dropdown-item">Change Password</a>
+                    </th:block>
+                </th:block>
+
                 <form th:action="@{/logout}" method="post" class="logout-form">
                     <button type="submit" class="dropdown-item">Logout</button>
                 </form>
@@ -150,12 +157,10 @@
         <div class="container">
             <h2 class="section-title">Features</h2>
             <div class="feature-grid">
-                <div class="feature-item">User Registration & Membership</div>
-                <div class="feature-item">Current Smoking Status Tracking</div>
+                <div class="feature-item">Your Smoking Status</div>
                 <div class="feature-item">Plan Builder</div>
                 <div class="feature-item">Progress Tracker</div>
                 <div class="feature-item">Notifications</div>
-                <div class="feature-item">Achievement Badges</div>
                 <div class="feature-item">Rating & Feedback System</div>
                 <div class="feature-item">Live Coaching Support</div>
             </div>

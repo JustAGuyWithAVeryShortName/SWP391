@@ -55,6 +55,7 @@ public class ForgotPasswordController {
             // ✅ Tạo URL reset
             String resetUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
                     + "/reset-password?token=" + token;
+
             String content = "Để đặt lại mật khẩu, vui lòng nhấn vào liên kết sau:\n" + resetUrl;
 
             emailService.sendEmail(user.getEmail(), "Đặt lại mật khẩu", content);
