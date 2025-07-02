@@ -1,7 +1,5 @@
 package com.swp2.demo.security;
 
-
-
 import com.swp2.demo.entity.User;
 import com.swp2.demo.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,7 +27,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         User user = null;
 
         if (authentication.getPrincipal() instanceof com.swp2.demo.security.CustomUserDetails userDetails) {
-             user = userService.findByUsername(userDetails.getUsername());
+            user = userService.findByUsername(userDetails.getUsername());
 
             session.setAttribute("loggedInUser", user);
             session.setAttribute("userId", user.getId());
@@ -38,9 +36,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             String email = oauth2User.getAttribute("email");
             String name = oauth2User.getAttribute("name");
 
-
-
-             user = userService.findByEmail(email);
+            user = userService.findByEmail(email);
 
             if (user == null) {
                 user = new User();
@@ -51,7 +47,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 user.setGender(null);
                 user.setDateOfBirth(null);
                 user.setRole(com.swp2.demo.entity.Role.Guest);
-                user.setPassword(UUID.randomUUID().toString());
+                user.setPassword(UUID.randomUUID().toString()); // Securely generate password for OAuth2 users
                 userService.save(user);
                 session.setAttribute("needsProfileUpdate", true);
             }
@@ -59,28 +55,35 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             session.setAttribute("userId", user.getId());
             session.setAttribute("loginType", "oauth2");
         }
-        if (user != null && user.getRole() == com.swp2.demo.entity.Role.Admin) {
-            response.sendRedirect("/admin");  // Nếu là Admin thì vào trang admin
-            return;
+
+        // --- Role-based Redirection (Highest Priority) ---
+        if (user != null) {
+            if (user.getRole() == com.swp2.demo.entity.Role.Admin) {
+                response.sendRedirect("/admin");
+                return; // Admin should ONLY go to /admin
+            } else if (user.getRole() == com.swp2.demo.entity.Role.Coach) {
+                response.sendRedirect("/messenger"); // Redirect Coach to /messenger
+                return; // Coach should ONLY go to /messenger (or their designated page)
+            }
         }
 
-        // Redirect nếu cần cập nhật profile
+        // --- Other Redirections (Lower Priority) ---
+
+        // Redirect if profile update is needed (e.g., new OAuth2 user)
         if (Boolean.TRUE.equals(session.getAttribute("needsProfileUpdate"))) {
             response.sendRedirect("/profile/edit");
             return;
         }
 
-
-
-        // Redirect về trang trước đó, nếu có
+        // Redirect to the URL prior to login, if available
         String redirectUrl = (String) session.getAttribute("url_prior_login");
-        if (redirectUrl != null) {
+        if (redirectUrl != null && !redirectUrl.isEmpty()) { // Also check if redirectUrl is not empty
             session.removeAttribute("url_prior_login");
             response.sendRedirect(redirectUrl);
-
-        } else {
-            response.sendRedirect("/dashboard");
+            return;
         }
 
+        // Default redirect if no specific redirection criteria are met
+        response.sendRedirect("/dashboard");
     }
 }

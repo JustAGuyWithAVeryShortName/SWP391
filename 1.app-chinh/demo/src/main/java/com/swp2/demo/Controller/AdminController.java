@@ -2,11 +2,12 @@ package com.swp2.demo.Controller;
 
 import com.swp2.demo.Repository.OrderRepository;
 import com.swp2.demo.Repository.UserRepository;
-import com.swp2.demo.Repository.FeedbackRepository; // Assuming you have this
+import com.swp2.demo.Repository.FeedbackRepository;
+import com.swp2.demo.Repository.NotificationRepository; // <-- IMPORTANT: Add this import!
 import com.swp2.demo.entity.Member;
 import com.swp2.demo.entity.Role;
 import com.swp2.demo.entity.User;
-import com.swp2.demo.entity.Feedback; // Import Feedback
+import com.swp2.demo.entity.Feedback;
 import com.swp2.demo.entity.dto.RegisterDTO;
 import com.swp2.demo.service.FeedbackService;
 import com.swp2.demo.service.UserService;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.transaction.annotation.Transactional; // <-- IMPORTANT: Add this import!
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -40,7 +42,10 @@ public class AdminController {
     private UserRepository userRepository;
 
     @Autowired
-    private FeedbackRepository feedbackRepository; // Inject FeedbackRepository
+    private FeedbackRepository feedbackRepository;
+
+    @Autowired // <-- IMPORTANT: Autowire NotificationRepository
+    private NotificationRepository notificationRepository;
 
     private final FeedbackService feedbackService;
 
@@ -57,11 +62,11 @@ public class AdminController {
         List<User> allUsers = userRepository.findAll();
 
         List<User> adminAndCoachUsers = allUsers.stream()
-                .filter(user -> user.getRole() == Role.Admin || user.getRole() == Role.Coach)
-                .toList();
+            .filter(user -> user.getRole() == Role.Admin || user.getRole() == Role.Coach)
+            .toList();
         List<User> normalUsers = allUsers.stream()
-                .filter(user -> user.getRole() != Role.Admin && user.getRole() != Role.Coach)
-                .toList();
+            .filter(user -> user.getRole() != Role.Admin && user.getRole() != Role.Coach)
+            .toList();
 
         model.addAttribute("adminCoachUsers", adminAndCoachUsers);
         model.addAttribute("normalUsers", normalUsers);
@@ -103,6 +108,7 @@ public class AdminController {
     }
 
     @PostMapping("/admin/accounts/delete/{id}")
+    @Transactional // Ensures all database operations within this method are part of a single transaction
     public String deleteAccount(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         Optional<User> userOptional = userRepository.findById(id);
 
@@ -114,31 +120,46 @@ public class AdminController {
                 redirectAttributes.addFlashAttribute("errorMessage", "Cannot delete an account with Admin role.");
             } else {
                 try {
-                    // Handle Feedback where this user is a coach (if you don't use ON DELETE SET NULL at DB level)
-                    // This assumes you have a method like findByCoach in your FeedbackRepository
+                    // --- IMPORTANT: Handle ALL related entities FIRST ---
+
+                    // 1. Handle Notifications
+                    // Delete all notifications associated with this user
+                    // You need a method in NotificationRepository, e.g., 'deleteByUserId(Long userId)'
+                    notificationRepository.deleteByUserId(id); // Using the user's ID
+
+                    // 2. Handle Feedback where this user is a coach
+                    // Set coach to null instead of deleting feedback if you want to keep feedback records
                     List<Feedback> feedbackAsCoach = feedbackRepository.findAllByCoach(userToDelete);
                     for (Feedback feedback : feedbackAsCoach) {
-                        feedback.setCoach(null); // Set coach to null instead of deleting feedback
+                        feedback.setCoach(null);
                         feedbackRepository.save(feedback);
                     }
+                    // If a user is giving feedback to someone else, and that feedback is tied to them
+                    // (e.g., feedback.setGivenBy(userToDelete)), you'd need to handle that as well.
+                    // For now, assuming Feedback is only linked to a coach.
 
-                    // For Payment and ChatMessage, if they don't have cascade,
-                    // you'd need similar manual steps here (e.g., delete associated payments, anonymize chat messages).
-                    // Example for Payment (if you want to delete them):
-                    // List<Payment> userPayments = paymentRepository.findByUserId(id); // Requires PaymentRepository and method
-                    // paymentRepository.deleteAll(userPayments);
+                    // 3. Handle other related entities (e.g., Orders, ChatMessages, Payments)
+                    // You need to explicitly delete or nullify foreign keys for ALL tables that reference `users`.
+                    // Example for Orders (if User has orders and you want to delete them):
+                    // orderRepository.deleteByUserId(id); // You'd need this method in OrderRepository
+                    // Example for Payments:
+                    // paymentRepository.deleteByUserId(id); // You'd need this method in PaymentRepository
+                    // Example for ChatMessages:
+                    // chatMessageRepository.deleteBySenderId(id); // If messages linked by sender
 
+                    // After handling all dependent entities, delete the user
                     userRepository.deleteById(id);
                     redirectAttributes.addFlashAttribute("successMessage", "Account deleted successfully!");
+
                 } catch (DataIntegrityViolationException e) {
                     redirectAttributes.addFlashAttribute("errorMessage",
-                            "This account cannot be deleted because it is associated with existing data that prevents direct deletion. Please ensure all related data is handled.");
-                    // Log the exception for more details in the server logs
+                        "This account cannot be deleted because it is still associated with existing data that prevents direct deletion. Please ensure all related data is handled or configure cascade delete at the database level.");
                     System.err.println("DataIntegrityViolationException when deleting user " + id + ": " + e.getMessage());
+                    e.printStackTrace(); // Always good for debugging
                 } catch (Exception e) {
                     redirectAttributes.addFlashAttribute("errorMessage", "Error deleting account: " + e.getMessage());
                     System.err.println("Unexpected error when deleting user " + id + ": " + e.getMessage());
-                    e.printStackTrace(); // Print stack trace for debugging
+                    e.printStackTrace();
                 }
             }
         } else {
@@ -165,12 +186,12 @@ public class AdminController {
         if (userRepository.findByUsername(registerDTO.getUsername()) != null) {
             model.addAttribute("my_error", "Username already exists.");
             model.addAttribute("registerDTO", registerDTO);
-            return "register/formAdmin"; // Corrected return view name
+            return "register/formAdmin";
         }
         if (userRepository.findByEmail(registerDTO.getEmail()) != null) {
             model.addAttribute("my_error", "Email already exists.");
             model.addAttribute("registerDTO", registerDTO);
-            return "register/formAdmin"; // Corrected return view name
+            return "register/formAdmin";
         }
 
         try {
@@ -196,22 +217,22 @@ public class AdminController {
             System.err.println("Error saving new account: " + e.getMessage());
             model.addAttribute("my_error", "An error occurred while adding the account. Please try again.");
             model.addAttribute("registerDTO", registerDTO);
-            return "register/formAdmin"; // Corrected return view name
+            return "register/formAdmin";
         }
     }
 
     @GetMapping("/admin/accounts/{id}")
     public String getUserDetail(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
-        // --- CHANGE STARTS HERE ---
-        User user = userService.findById(id); // Directly call findById which returns User (or null)
+        User user = userService.findById(id);
 
-        if (user == null) { // Check if the returned User object is null
+        if (user == null) {
             redirectAttributes.addFlashAttribute("errorMessage", "Account not found.");
-            return "redirect:admin/ratings";
+            // Typo: "redirect:admin/ratings" should likely be "redirect:/admin/accounts" or a dedicated error page.
+            // Or if it's meant to go to ratings, ensure that path exists.
+            return "redirect:/admin/accounts";
         }
 
-        model.addAttribute("user", user); // Add the found user to the model
-        // --- CHANGE ENDS HERE ---
+        model.addAttribute("user", user);
         return "profile-for-admin-feedback";
     }
 }
