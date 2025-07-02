@@ -1,5 +1,4 @@
-// src/main/java/com/swp2/demo/security/CustomAccessDeniedHandler.java
-package com.swp2.demo.security; // Or wherever your security classes are
+package com.swp2.demo.security;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,14 +8,11 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 
 import java.io.IOException;
 
-import static jakarta.servlet.RequestDispatcher.ERROR_EXCEPTION;
-import static jakarta.servlet.RequestDispatcher.ERROR_MESSAGE;
-import static jakarta.servlet.RequestDispatcher.ERROR_REQUEST_URI;
-import static jakarta.servlet.RequestDispatcher.ERROR_STATUS_CODE;
-
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
-    private String errorPage; // To store the path to your error controller, e.g., "/error"
+    // This field is less relevant now, as the exception will be handled by @ControllerAdvice
+    // but kept for compatibility if you have other uses.
+    private String errorPage;
 
     public CustomAccessDeniedHandler(String errorPage) {
         this.errorPage = errorPage;
@@ -24,18 +20,9 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-
-        // Log the exception for debugging
-        System.err.println("Access Denied: " + accessDeniedException.getMessage() + " for URI: " + request.getRequestURI());
-        accessDeniedException.printStackTrace();
-
-        // Set attributes that CustomErrorController can read
-        request.setAttribute(ERROR_STATUS_CODE, 403);
-        request.setAttribute(ERROR_MESSAGE, "You do not have permission to access this resource.");
-        request.setAttribute(ERROR_EXCEPTION, accessDeniedException); // Pass the exception itself
-        request.setAttribute(ERROR_REQUEST_URI, request.getRequestURI());
-
-        // Forward to the /error controller
-        request.getRequestDispatcher(errorPage).forward(request, response);
+        System.err.println("CustomAccessDeniedHandler: Re-throwing AccessDeniedException to be caught by @ControllerAdvice.");
+        // Re-throw the exception. Spring will then look for an @ExceptionHandler.
+        // This prevents the default Whitelabel Error Page from rendering prematurely.
+        throw accessDeniedException;
     }
 }

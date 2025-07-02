@@ -1,4 +1,4 @@
-package com.swp2.demo.Controller;
+package com.swp2.demo.security;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
