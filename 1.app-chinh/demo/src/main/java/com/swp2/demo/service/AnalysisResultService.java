@@ -1,7 +1,7 @@
 // In src/main/java/com/swp2/demo/service/AnalysisResultService.java
 package com.swp2.demo.service;
 
-import com.swp2.demo.Repository.AnalysisResultRepository; // Assuming you have this
+import com.swp2.demo.repository.AnalysisResultRepository; // Assuming you have this
 import com.swp2.demo.entity.AnalysisResultEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,4 +1,4 @@
-package com.swp2.demo.Repository;
+package com.swp2.demo.repository;
 
 
 import com.swp2.demo.entity.Member;
@@ -10,8 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import java.util.List;
 
 @Repository

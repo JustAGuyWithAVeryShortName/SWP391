@@ -1,8 +1,8 @@
 package com.swp2.demo.service;
 
 import com.swp2.demo.entity.*;
-import com.swp2.demo.Repository.ChatMessageRepository;
-import com.swp2.demo.Repository.UserRepository;
+import com.swp2.demo.repository.ChatMessageRepository;
+import com.swp2.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

@@ -1,7 +1,7 @@
 package com.swp2.demo.Controller;
 
 
-import com.swp2.demo.Repository.OrderRepository;
+import com.swp2.demo.repository.OrderRepository;
 import com.swp2.demo.entity.Member;
 import com.swp2.demo.entity.Order;
 import com.swp2.demo.entity.User;
@@ -15,7 +15,6 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 

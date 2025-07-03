@@ -1,4 +1,4 @@
-package com.swp2.demo.Repository;
+package com.swp2.demo.repository;
 
 import com.swp2.demo.entity.QuitPlan;
 import org.springframework.data.jpa.repository.JpaRepository;

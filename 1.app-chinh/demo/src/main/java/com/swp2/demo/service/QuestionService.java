@@ -1,6 +1,6 @@
 package com.swp2.demo.service;
 
-import com.swp2.demo.Repository.QuestionRepository;
+import com.swp2.demo.repository.QuestionRepository;
 import com.swp2.demo.entity.Question;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

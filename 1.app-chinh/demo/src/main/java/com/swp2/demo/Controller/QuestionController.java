@@ -1,9 +1,9 @@
 package com.swp2.demo.Controller;
 
-import com.swp2.demo.Repository.AnalysisResultRepository;
-import com.swp2.demo.Repository.OptionRepository;
-import com.swp2.demo.Repository.QuestionRepository;
-import com.swp2.demo.Repository.UserAnswerRepository;
+import com.swp2.demo.repository.AnalysisResultRepository;
+import com.swp2.demo.repository.OptionRepository;
+import com.swp2.demo.repository.QuestionRepository;
+import com.swp2.demo.repository.UserAnswerRepository;
 import com.swp2.demo.entity.*;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;

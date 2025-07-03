@@ -1,7 +1,7 @@
 package com.swp2.demo.Controller;
 
-import com.swp2.demo.Repository.PasswordResetTokenRepository;
-import com.swp2.demo.Repository.UserRepository;
+import com.swp2.demo.repository.PasswordResetTokenRepository;
+import com.swp2.demo.repository.UserRepository;
 import com.swp2.demo.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.security.crypto.password.PasswordEncoder;

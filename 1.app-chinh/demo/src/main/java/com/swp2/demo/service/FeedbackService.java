@@ -5,8 +5,8 @@ import java.util.Optional;
 
 import com.swp2.demo.entity.Feedback; // Your package
 import com.swp2.demo.entity.User;     // Your package
-import com.swp2.demo.Repository.FeedbackRepository; // Your package
-import com.swp2.demo.Repository.UserRepository;     // Your package
+import com.swp2.demo.repository.FeedbackRepository; // Your package
+import com.swp2.demo.repository.UserRepository;     // Your package
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;

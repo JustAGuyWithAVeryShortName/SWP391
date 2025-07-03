@@ -1,4 +1,4 @@
-package com.swp2.demo.Repository;
+package com.swp2.demo.repository;
 
 import jakarta.transaction.Transactional;
 

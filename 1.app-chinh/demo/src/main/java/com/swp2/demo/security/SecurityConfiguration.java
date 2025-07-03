@@ -1,8 +1,7 @@
 package com.swp2.demo.security;
 
-import com.swp2.demo.Repository.UserRepository;
+import com.swp2.demo.repository.UserRepository;
 import com.swp2.demo.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,11 +18,7 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import org.springframework.security.authorization.AuthorizationDecision;
-import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 
-import java.util.function.Supplier;
-
-import com.swp2.demo.entity.Member;
 import com.swp2.demo.entity.User;
 
 @Configuration
@@ -49,103 +44,46 @@ public class SecurityConfiguration {
     @Autowired
     private CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
-    @Autowired
-    private UserRepository userRepository;
 
     // We still define this, but its primary role will be to re-throw or let the exception propagate
     // so the @ControllerAdvice can catch it.
-    @Bean
-    public AccessDeniedHandler accessDeniedHandler() {
-        // You can leave the error page path, but it will mostly be handled by GlobalExceptionHandler
-        return new CustomAccessDeniedHandler("/error");
-    }
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .addFilterBefore(new UrlMemoryFilter(), UsernamePasswordAuthenticationFilter.class)
-            .authorizeHttpRequests(auth -> auth
-                // 1. ABSOLUTELY PUBLICLY ACCESSIBLE PATHS (PermitAll for everyone, including Admins)
-                .requestMatchers(
-                    "/", "/home", "/register/**", "/login", "/css/**", "/images/**", "/js/**",
-                    "/member", "/forgot-password", "/reset-password",
-                    "/ws/**", "/about_us", "/.well-known/**",
-                    "/spring-security-logout", // <-- Ensure this is permitted for ALL, including anonymous for proper logout flow
-                    "/error" // <-- Your custom error page
-                ).permitAll()
-                .requestMatchers(HttpMethod.POST, "/questionnaire").permitAll()
+                .addFilterBefore(new UrlMemoryFilter(), UsernamePasswordAuthenticationFilter.class)
 
-                // 2. ADMIN SPECIFIC RULE (Highest priority for security-sensitive admin paths)
-                .requestMatchers("/admin/**").hasAuthority("Admin")
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/", "/home", "/register/**", "/login", "/css/**", "/images/**", "/js/**",
+                                "/member", "/forgot-password", "/reset-password",
+                                "/ws/**","/about_us","/.well-known/**"
 
-                // 3. CHAT PAGES: Only Coach or PREMIUM Member can access
-                .requestMatchers(
-                    "/messenger",
-                    "/messages/**"
-                ).access((authenticationSupplier, context) -> {
-                    Authentication authentication = authenticationSupplier.get();
-                    // If not authenticated, deny immediately.
-                    if (!authentication.isAuthenticated()) {
-                        return new AuthorizationDecision(false);
-                    }
-                    String username = authentication.getName();
-                    User user = userRepository.findByUsername(username);
+                        ).permitAll()
+                        .requestMatchers(HttpMethod.POST, "/questionnaire").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/questionnaire").authenticated()
+                        .requestMatchers("/admin/**").hasAuthority("Admin")
+                        .requestMatchers("/profile").authenticated()
+                        .anyRequest().authenticated()
+                )
 
-                    boolean isCoach = authentication.getAuthorities().stream()
-                        .anyMatch(a -> a.getAuthority().equals("Coach"));
-                    boolean isPremiumMember = false;
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .loginProcessingUrl("/authenticateTheUser")
+                        .successHandler(customAuthenticationSuccessHandler)
+                        .permitAll()
+                )
 
-                    if (user != null && user.getRole().name().equals("Member") && user.getMember() != null) {
-                        // Assuming Member.PREMIUM is an enum value or static final field.
-                        // Corrected comparison:
-                        isPremiumMember = "PREMIUM".equals(user.getMember().toString()); // Use .name() or .toString() for enum comparison
-                    }
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/login")
+                        .successHandler(customAuthenticationSuccessHandler)
+                )
 
-                    return new AuthorizationDecision(isCoach || isPremiumMember);
-                })
-
-                // 4. GENERAL RULES FOR AUTHENTICATED USERS (Coach, Member, etc.)
-                // These apply to users who are logged in but are not "Admin" for /admin/** paths.
-                .requestMatchers(
-                    "/users",
-                    "/api/users/{userId}/profile",
-                    "/api/users/{userId}/latest-survey-answer",
-                    "/api/users/{userId}/latest-quit-plan",
-                    "/profile",
-                    "/questionnaire"
-                ).hasAnyAuthority("Coach", "Member")
-
-                // 5. CATCH-ALL FOR AUTHENTICATED USERS:
-                // Any other request not explicitly permitted or denied above,
-                // if the user is authenticated, check their role.
-                // This means an Admin will access anything if not caught by a specific deny.
-                .anyRequest().authenticated()
-            )
-
-            .formLogin(form -> form
-                .loginPage("/login")
-                .loginProcessingUrl("/authenticateTheUser")
-                .successHandler(customAuthenticationSuccessHandler)
-                .permitAll()
-            )
-
-            .oauth2Login(oauth2 -> oauth2
-                .loginPage("/login")
-                .successHandler(customAuthenticationSuccessHandler)
-            )
-
-            .logout(logout -> logout
-                .logoutUrl("/spring-security-logout")
-                .logoutSuccessUrl("/home")
-                .permitAll() // Ensure logout is accessible to all, including pre-logout state
-            )
-
-            .exceptionHandling(exceptions -> exceptions
-                // The accessDeniedHandler will primarily re-throw the AccessDeniedException
-                // which will then be caught by the @ControllerAdvice.
-                .accessDeniedHandler(accessDeniedHandler())
-            );
-
+                .logout(logout -> logout
+                        .logoutUrl("/spring-security-logout")
+                        .logoutSuccessUrl("/home")
+                );
         return http.build();
     }
 

@@ -1,6 +1,6 @@
 package com.swp2.demo.Controller;
 
-import com.swp2.demo.Repository.UserRepository;
+import com.swp2.demo.repository.UserRepository;
 import com.swp2.demo.entity.Role;
 import com.swp2.demo.entity.User;
 import com.swp2.demo.service.UserService;

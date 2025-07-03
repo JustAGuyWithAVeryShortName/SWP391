@@ -1,12 +1,10 @@
 package com.swp2.demo.service;
 
 import com.swp2.demo.entity.ChatMessage;
-import com.swp2.demo.Repository.ChatMessageRepository;
+import com.swp2.demo.repository.ChatMessageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 

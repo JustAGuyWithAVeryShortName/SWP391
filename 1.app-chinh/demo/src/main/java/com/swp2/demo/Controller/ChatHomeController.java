@@ -1,7 +1,7 @@
 package com.swp2.demo.Controller;
 
-import com.swp2.demo.Repository.MessageHomeRepository;
-import com.swp2.demo.Repository.UserRepository;
+import com.swp2.demo.repository.MessageHomeRepository;
+import com.swp2.demo.repository.UserRepository;
 import com.swp2.demo.entity.MessageHome;
 import com.swp2.demo.entity.User;
 import com.swp2.demo.entity.dto.MessageHomeDTO; // Ensure this is correct
@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.security.Principal;
-import java.time.LocalDateTime; // No longer strictly needed for @PrePersist but harmless
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors; // Import for stream().collect(Collectors.toList())

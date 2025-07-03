@@ -1,7 +1,7 @@
 package com.swp2.demo.Controller;
 
-import com.swp2.demo.Repository.NotificationRepository;
-import com.swp2.demo.Repository.UserRepository;
+import com.swp2.demo.repository.NotificationRepository;
+import com.swp2.demo.repository.UserRepository;
 import com.swp2.demo.entity.Notification;
 import com.swp2.demo.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;

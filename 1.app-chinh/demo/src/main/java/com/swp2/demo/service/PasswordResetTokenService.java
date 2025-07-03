@@ -1,10 +1,9 @@
 package com.swp2.demo.service;
 
 
-import com.swp2.demo.Repository.PasswordResetTokenRepository;
+import com.swp2.demo.repository.PasswordResetTokenRepository;
 import com.swp2.demo.entity.PasswordResetToken;
 import com.swp2.demo.entity.User;
-import com.swp2.demo.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

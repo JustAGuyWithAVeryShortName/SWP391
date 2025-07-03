@@ -2,7 +2,7 @@ package com.swp2.demo.Controller;
 
 import java.time.ZoneId;
 
-import com.swp2.demo.Repository.NotificationRepository;
+import com.swp2.demo.repository.NotificationRepository;
 import com.swp2.demo.entity.Notification;
 import com.swp2.demo.entity.QuitPlan;
 import com.swp2.demo.entity.User;
@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;

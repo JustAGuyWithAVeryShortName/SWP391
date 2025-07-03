@@ -1,6 +1,6 @@
 package com.swp2.demo.service;
 
-import com.swp2.demo.Repository.QuitPlanRepository;
+import com.swp2.demo.repository.QuitPlanRepository;
 import com.swp2.demo.entity.QuitPlan;
 import com.swp2.demo.entity.UserPlanStep;
 import com.swp2.demo.repository.UserPlanStepRepository;

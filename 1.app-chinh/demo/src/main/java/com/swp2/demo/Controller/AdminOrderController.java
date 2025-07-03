@@ -1,8 +1,7 @@
 package com.swp2.demo.Controller;
 
-import com.swp2.demo.Repository.OrderRepository;
-import com.swp2.demo.Repository.UserRepository;
-import com.swp2.demo.entity.Member;
+import com.swp2.demo.repository.OrderRepository;
+import com.swp2.demo.repository.UserRepository;
 import com.swp2.demo.entity.Order;
 import com.swp2.demo.entity.Role; // Import the Role enum
 import com.swp2.demo.entity.User;

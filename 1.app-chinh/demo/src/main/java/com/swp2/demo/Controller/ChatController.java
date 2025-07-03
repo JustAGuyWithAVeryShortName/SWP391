@@ -1,6 +1,6 @@
 package com.swp2.demo.Controller;
 
-import com.swp2.demo.Repository.ChatMessageRepository;
+import com.swp2.demo.repository.ChatMessageRepository;
 import com.swp2.demo.entity.AnalysisResultEntity; // Import AnalysisResultEntity
 import com.swp2.demo.entity.ChatMessage;
 import com.swp2.demo.entity.QuitPlan;
@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter; // For formatting date
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional; // For handling Optional return
