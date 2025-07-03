@@ -112,14 +112,15 @@ public class ProgressController {
             Integer target = step.getTargetCigarettes();
             Integer actual = step.getActualCigarettes();
 
-            if (actual != null) {
+            if (actual != null && target != null) {
                 int avoidedToday = daily - actual;
                 copy.setAvoidedCigarettes(avoidedToday);
-                copy.setCompleted(actual <= daily);
-
-                if (target != null && actual > target) {
+                copy.setCompleted(actual <= target); // ✅ So với target
+                if (actual > target) {
                     missedTarget = true;
                 }
+            } else {
+                copy.setCompleted(false); // ✅ Nếu chưa nhập hoặc thiếu target thì chưa hoàn thành
             }
 
             displaySteps.add(copy);
@@ -176,7 +177,12 @@ public class ProgressController {
 
             int avoided = daily - actual;
             step.setAvoidedCigarettes(avoided);
-            step.setCompleted(actual <= daily);
+
+            if (step.getTargetCigarettes() != null) {
+                step.setCompleted(actual <= step.getTargetCigarettes()); // ✅ So với target
+            } else {
+                step.setCompleted(false);
+            }
 
             int pricePerCigarette = 0;
             if (daily > 0 && plan.getDailySpending() != null) {

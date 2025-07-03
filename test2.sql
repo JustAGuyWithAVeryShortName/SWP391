@@ -96,10 +96,10 @@ CREATE TABLE user_plan_step (
     date DATE NOT NULL,
     day_index INT NOT NULL,
     target_cigarettes INT NOT NULL,
-    actual_cigarettes INT,
-    avoided_cigarettes INT,
-    money_saved INT,
-    completed BIT,
+    actual_cigarettes INT NULL,
+    avoided_cigarettes INT NULL,
+    money_saved INT NULL,
+    completed BIT NOT NULL DEFAULT 0,
     quit_plan_id BIGINT NOT NULL,
     CONSTRAINT fk_user_plan_step_quit_plan 
         FOREIGN KEY (quit_plan_id) REFERENCES quit_plan(id) ON DELETE CASCADE
@@ -311,33 +311,34 @@ DECLARE @userid INT = (SELECT user_id FROM Users WHERE username = 'member');
 INSERT INTO quit_plan (start_date, target_date, stages, custom_plan, daily_smoking_cigarettes, daily_spending, user_id)
 VALUES ('2025-06-24', '2025-07-24', 'Giảm dần', 'Kế hoạch mặc định', 15, 50000, @userid);
 
-	-- Lấy user_id theo username
-DECLARE @userid INT = (SELECT user_id FROM Users WHERE username = 'member');
+	-- Lấy user_id của user "member"
+DECLARE @userid BIGINT = (SELECT user_id FROM Users WHERE username = 'member');
 
--- Thêm kế hoạch bỏ thuốc cho user này
+-- Thêm kế hoạch bỏ thuốc
 INSERT INTO quit_plan (
-    start_date, target_date, stages, custom_plan, 
-	 method,
+    start_date, target_date, stages, custom_plan, method,
     daily_smoking_cigarettes, daily_spending, user_id
 )
 VALUES (
-    '2025-06-24', '2025-07-24', 'Giảm dần', 'Kế hoạch mặc định',
-	'quit_abruptly',
-    15, 50000, @userid
+    '2025-06-24', '2025-07-24', 'Giảm dần', 'Kế hoạch mặc định', 
+    'quit_abruptly', 15, 50000, @userid
 );
 
--- Lấy ID kế hoạch vừa chèn vào
+-- Ngay sau đó, lấy ID kế hoạch vừa tạo
 DECLARE @quit_plan_id BIGINT = SCOPE_IDENTITY();
 
--- Thêm các bước kế hoạch ngày theo đúng kế hoạch vừa tạo
-INSERT INTO user_plan_step (date, day_index, target_cigarettes, actual_cigarettes, completed, quit_plan_id)
-VALUES
-('2025-06-24', 1, 15, 13, 1, @quit_plan_id),
-('2025-06-25', 2, 14, 12, 0, @quit_plan_id),
-('2025-06-26', 3, 13, NULL, 0, @quit_plan_id);
+-- Kiểm tra lại nếu cần
+PRINT 'Inserted quit_plan_id = ' + CAST(@quit_plan_id AS VARCHAR);
 
+-- Thêm các bước kế hoạch
+INSERT INTO user_plan_step (date, day_index, target_cigarettes, actual_cigarettes, quit_plan_id)
+VALUES
+('2025-06-24', 1, 15, 13, @quit_plan_id),
+('2025-06-25', 2, 14, 12, @quit_plan_id),
+('2025-06-26', 3, 13, NULL, @quit_plan_id);
 
 ALTER TABLE user_plan_step ADD avoided_cigarettes INT;
 ALTER TABLE user_plan_step ADD money_saved INT;
+
 
 

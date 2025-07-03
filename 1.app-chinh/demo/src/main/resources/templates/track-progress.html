@@ -136,8 +136,11 @@
                                     </thead>
                                     <tbody>
                                     <tr th:each="step : ${entry.value}"
-                                        th:classappend="${step.completed} ? 'successful' : (step.actualCigarettes != null ? 'failed' : '')">
-                                        <td th:text="${#temporals.format(step.date, 'dd/MM/yyyy')}">--</td>
+                                        th:class="${(step.actualCigarettes == null) ? 'pending' :
+                ((step.targetCigarettes != null and step.actualCigarettes > step.targetCigarettes) ? 'failed' : 'successful')}">
+
+
+                                    <td th:text="${#temporals.format(step.date, 'dd/MM/yyyy')}">--</td>
                                         <td th:text="${step.dayIndex}">--</td>
                                         <td th:text="${step.targetCigarettes + ' 🚬'}">--</td>
                                         <td class="fw-bold"
@@ -146,8 +149,19 @@
                                             <span th:if="${step.actualCigarettes != null and step.targetCigarettes != null and step.actualCigarettes > step.targetCigarettes}" title="Exceeded target"> ❗</span>
                                         </td>
                                         <td>
-                                            <i class="fas" th:classappend="step.completed ? 'fa-check-circle text-success' : (step.actualCigarettes != null ? 'fa-times-circle text-danger' : 'fa-question-circle text-muted')"></i>
+                                            <i class="fas fa-check-circle text-success"
+                                               th:if="${step.actualCigarettes != null and step.targetCigarettes != null and step.actualCigarettes <= step.targetCigarettes}"></i>
+
+                                            <i class="fas fa-times-circle text-danger"
+                                               th:if="${step.actualCigarettes != null and step.targetCigarettes != null and step.actualCigarettes > step.targetCigarettes}"></i>
+
+                                            <i class="fas fa-question-circle text-muted"
+                                               th:if="${step.actualCigarettes == null}"></i>
+
+                                            <span class="d-none" th:text="'[debug: actual=' + step.actualCigarettes + ', target=' + step.targetCigarettes + ']'"></span>
                                         </td>
+
+
                                         <td>
                                             <form th:action="@{/track-progress/update/{id}(id=${step.id})}" method="post" class="update-form">
                                                 <input type="number" name="actualCigarettes" min="0" placeholder="e.g., 3" required />

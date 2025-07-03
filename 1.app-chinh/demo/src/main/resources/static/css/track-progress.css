@@ -306,3 +306,14 @@ body {
 .logo-container img:hover {
     transform: scale(1.05);
 }
+.daily-step-table tr.successful {
+    background-color: #e6f9ec; /* Xanh nhạt */
+}
+
+.daily-step-table tr.failed {
+    background-color: #ffe8e8; /* Đỏ nhạt */
+}
+
+.daily-step-table tr.pending {
+    background-color: #f0f0f0; /* Xám */
+}
