@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -73,14 +74,14 @@ public class ProgressController {
     }
 
     @GetMapping("/track-progress")
-    public String trackProgress(HttpSession session, Model model) {
+    public String trackProgress(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) return "redirect:/login";
 
         QuitPlan plan = quitPlanRepository.findLatestByUserId(userId).stream().findFirst().orElse(null);
         if (plan == null) {
-            model.addAttribute("error", "No quit plan found.");
-            return "error";
+            redirectAttributes.addFlashAttribute("noPlanMessage", "You haven't created a quit plan yet. Please create one to track your progress!");
+            return "redirect:/dashboard";
         }
 
         ZoneId zoneVN = ZoneId.of("Asia/Ho_Chi_Minh");
