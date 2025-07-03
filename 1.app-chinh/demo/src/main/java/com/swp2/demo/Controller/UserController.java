@@ -30,11 +30,12 @@ public class UserController {
         }
 
         model.addAttribute("username", user.getUsername());
+        model.addAttribute("memberType", user.getMember());
 
         boolean hasPlan = quitPlanService.hasPlan(user.getId());
         model.addAttribute("hasPlan", hasPlan);
 
-        return "userpage"; // hoặc tên file dashboard.html của bạn
+        return "userpage";
     }
 
     // ================= Helper ====================
