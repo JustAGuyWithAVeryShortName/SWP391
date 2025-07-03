@@ -164,7 +164,10 @@
 
                                         <td>
                                             <form th:action="@{/track-progress/update/{id}(id=${step.id})}" method="post" class="update-form">
-                                                <input type="number" name="actualCigarettes" min="0" placeholder="e.g., 3" required />
+                                                <input type="number" name="actualCigarettes"
+                                                       min="0" placeholder="e.g., 3"
+                                                       th:disabled="${step.date > T(java.time.LocalDate).now()}" required />
+
                                                 <input type="hidden" name="planId" th:value="${planId}" />
                                                 <button type="submit" class="btn-update">Save</button>
                                             </form>
