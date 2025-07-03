@@ -49,6 +49,7 @@
 </header>
 
 <main class="main-content">
+
     <div class="container">
         <div class="welcome-box">
             <h2>Good to See You Again!</h2>
@@ -136,6 +137,15 @@
         }
     }
 </script>
+
+<script th:if="${noPlanMessage}" th:inline="javascript">
+    /*<![CDATA[*/
+    var msg = /*[[${noPlanMessage}]]*/ "";
+    alert(msg);
+    /*]]>*/
+</script>
+
+
 
 
 </body>
