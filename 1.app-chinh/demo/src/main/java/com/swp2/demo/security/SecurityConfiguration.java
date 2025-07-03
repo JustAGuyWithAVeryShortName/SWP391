@@ -1,5 +1,6 @@
 package com.swp2.demo.security;
 
+import com.swp2.demo.entity.Member;
 import com.swp2.demo.repository.UserRepository;
 import com.swp2.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,17 +34,14 @@ public class SecurityConfiguration {
     public DaoAuthenticationProvider authenticationProvider(UserService userService) {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userService);
-        // WARNING: NoOpPasswordEncoder is NOT secure for production.
-        // It's highly recommended to use passwordEncoder() here.
         provider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
-        // For production, change to:
-        // provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
 
     @Autowired
     private CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
-
+    @Autowired
+    private UserRepository userRepository;
 
     // We still define this, but its primary role will be to re-throw or let the exception propagate
     // so the @ControllerAdvice can catch it.
@@ -65,8 +63,10 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/questionnaire").authenticated()
                         .requestMatchers("/admin/**").hasAuthority("Admin")
                         .requestMatchers("/profile").authenticated()
+
                         .anyRequest().authenticated()
                 )
+
 
                 .formLogin(form -> form
                         .loginPage("/login")
@@ -79,6 +79,8 @@ public class SecurityConfiguration {
                         .loginPage("/login")
                         .successHandler(customAuthenticationSuccessHandler)
                 )
+
+
 
                 .logout(logout -> logout
                         .logoutUrl("/spring-security-logout")
@@ -93,7 +95,7 @@ public class SecurityConfiguration {
             com.swp2.demo.entity.User user = userRepository.findByUsername(username);
 
             if (user == null) {
-                throw new UsernameNotFoundException("User not found: " + username);
+                throw new UsernameNotFoundException("User / email  not found: " + username);
             }
 
             return org.springframework.security.core.userdetails.User

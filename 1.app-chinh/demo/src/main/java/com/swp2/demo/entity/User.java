@@ -65,6 +65,10 @@ public class User {
     // For UserAnswer
     // Add @JsonIgnore to break the circular reference
     @JsonIgnore
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private PasswordResetToken passwordResetToken; // Changed from List to single instance
+
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserAnswer> userAnswers = new ArrayList<>();
 
