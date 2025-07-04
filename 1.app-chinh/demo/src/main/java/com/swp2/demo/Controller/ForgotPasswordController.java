@@ -42,6 +42,7 @@ public class ForgotPasswordController {
         if (user != null) {
             // ✅ Xóa các token cũ của user này (nếu muốn mỗi lần chỉ có 1 token đang hoạt động)
             tokenRepository.deleteByUserId(user.getId());
+            tokenRepository.flush();
 
             // ✅ Tạo token mới
             String token = UUID.randomUUID().toString();
@@ -59,9 +60,9 @@ public class ForgotPasswordController {
             String content = "Để đặt lại mật khẩu, vui lòng nhấn vào liên kết sau:\n" + resetUrl;
 
             emailService.sendEmail(user.getEmail(), "Đặt lại mật khẩu", content);
-            model.addAttribute("message", "Đã gửi email đặt lại mật khẩu!");
+            model.addAttribute("message", "Password reset email has been sent!");
         } else {
-            model.addAttribute("error", "Không tìm thấy tài khoản với email này.");
+            model.addAttribute("error", "Account with this email was not found.");
         }
 
         return "forgot-password";

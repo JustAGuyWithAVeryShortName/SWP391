@@ -65,8 +65,8 @@ public class User {
     // For UserAnswer
     // Add @JsonIgnore to break the circular reference
     @JsonIgnore
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private PasswordResetToken passwordResetToken; // Changed from List to single instance
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PasswordResetToken> passwordResetTokens;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -111,61 +111,26 @@ public class User {
     // Or just rely on default initialization.
 
     // Add getters and setters for the new collections
-    public List<UserAnswer> getUserAnswers() {
-        return userAnswers;
-    }
 
-    public void setUserAnswers(List<UserAnswer> userAnswers) {
-        this.userAnswers = userAnswers;
-    }
-
-    public List<QuitPlan> getQuitPlans() {
-        return quitPlans;
-    }
-
-    public void setQuitPlans(List<QuitPlan> quitPlans) {
-        this.quitPlans = quitPlans;
-    }
-
-    public List<AnalysisResultEntity> getAnalysisResults() {
-        return analysisResults;
-    }
-
-    public void setAnalysisResults(List<AnalysisResultEntity> analysisResults) {
-        this.analysisResults = analysisResults;
-    }
-
-    public List<Order> getOrders() {
-        return orders;
-    }
-
-    public void setOrders(List<Order> orders) {
-        this.orders = orders;
-    }
-
-    public List<Feedback> getAuthoredFeedback() {
-        return authoredFeedback;
-    }
-
-    public void setAuthoredFeedback(List<Feedback> authoredFeedback) {
-        this.authoredFeedback = authoredFeedback;
-    }
-
-    // Other getters and setters...
-    public Member getMember() {
-        return member;
-    }
-
-    public void setMember(Member member) {
+    public User(Long id, String username, String password, String firstName, String lastName, String email, Gender gender, LocalDate dateOfBirth, Role role, Member member, LocalDate createdAt, Status status, List<PasswordResetToken> passwordResetTokens, List<UserAnswer> userAnswers, List<QuitPlan> quitPlans, List<AnalysisResultEntity> analysisResults, List<Order> orders, List<Feedback> authoredFeedback) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.gender = gender;
+        this.dateOfBirth = dateOfBirth;
+        this.role = role;
         this.member = member;
-    }
-
-    public LocalDate getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDate createdAt) {
         this.createdAt = createdAt;
+        this.status = status;
+        this.passwordResetTokens = passwordResetTokens;
+        this.userAnswers = userAnswers;
+        this.quitPlans = quitPlans;
+        this.analysisResults = analysisResults;
+        this.orders = orders;
+        this.authoredFeedback = authoredFeedback;
     }
 
     public Long getId() {
@@ -240,11 +205,76 @@ public class User {
         this.role = role;
     }
 
+    public Member getMember() {
+        return member;
+    }
+
+    public void setMember(Member member) {
+        this.member = member;
+    }
+
+    public LocalDate getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDate createdAt) {
+        this.createdAt = createdAt;
+    }
+
     public Status getStatus() {
         return status;
     }
+
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public List<PasswordResetToken> getPasswordResetTokens() {
+        return passwordResetTokens;
+    }
+
+    public void setPasswordResetTokens(List<PasswordResetToken> passwordResetTokens) {
+        this.passwordResetTokens = passwordResetTokens;
+    }
+
+    public List<UserAnswer> getUserAnswers() {
+        return userAnswers;
+    }
+
+    public void setUserAnswers(List<UserAnswer> userAnswers) {
+        this.userAnswers = userAnswers;
+    }
+
+    public List<QuitPlan> getQuitPlans() {
+        return quitPlans;
+    }
+
+    public void setQuitPlans(List<QuitPlan> quitPlans) {
+        this.quitPlans = quitPlans;
+    }
+
+    public List<AnalysisResultEntity> getAnalysisResults() {
+        return analysisResults;
+    }
+
+    public void setAnalysisResults(List<AnalysisResultEntity> analysisResults) {
+        this.analysisResults = analysisResults;
+    }
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
+    }
+
+    public List<Feedback> getAuthoredFeedback() {
+        return authoredFeedback;
+    }
+
+    public void setAuthoredFeedback(List<Feedback> authoredFeedback) {
+        this.authoredFeedback = authoredFeedback;
     }
 
     @Override

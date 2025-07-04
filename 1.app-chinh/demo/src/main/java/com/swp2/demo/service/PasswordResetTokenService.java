@@ -24,6 +24,7 @@ public class PasswordResetTokenService {
     public void createPasswordResetToken(User user) {
         // ✅ Nếu muốn chỉ giữ token mới nhất → xóa token cũ
         passwordResetTokenRepository.deleteByUserId(user.getId());
+        passwordResetTokenRepository.flush();
 
         String newToken = UUID.randomUUID().toString();
         LocalDateTime expiryDate = LocalDateTime.now().plusHours(2);
