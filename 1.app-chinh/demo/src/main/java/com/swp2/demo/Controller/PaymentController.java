@@ -88,9 +88,51 @@ public class PaymentController {
         model.addAttribute("status", order.getStatus());
         return "payment";
     }
+    //sửa 7/7
+//    @GetMapping("/success")
+//    public String success() {
+//        return "success";
+//    }
+
     @GetMapping("/success")
-    public String success() {
-        return "success";
+    public String success(@AuthenticationPrincipal Object principal, Model model) {
+        User user = null;
+
+        if (principal instanceof CustomUserDetails userDetails) {
+            user = userService.findById(userDetails.getId());
+        } else if (principal instanceof OAuth2User oauth2User) {
+            String email = oauth2User.getAttribute("email");
+            user = userService.findByEmail(email);
+        }
+
+        if (user == null) return "redirect:/login";
+
+        // Tìm đơn hàng gần nhất
+        Order latestOrder = orderRepository.findTopByUserOrderByCreatedAtDesc(user).orElse(null);
+
+        if (latestOrder != null && "PENDING".equals(latestOrder.getStatus())) {
+            latestOrder.setStatus("PAID");
+            latestOrder.setConfirmedAt(LocalDateTime.now());
+            orderRepository.save(latestOrder);
+
+            user.setMember(latestOrder.getMemberPlan());
+            user.setRole(com.swp2.demo.entity.Role.Member);
+            userService.save(user);
+
+            // ✅ Cập nhật SecurityContext
+            var currentAuth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+            var newAuth = new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
+                    user,
+                    currentAuth.getCredentials(),
+                    java.util.List.of(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
+            );
+            org.springframework.security.core.context.SecurityContextHolder.getContext().setAuthentication(newAuth);
+        }
+
+        // ✅ Gán lại user vào model để Thymeleaf dùng
+        model.addAttribute("user", user);
+
+        return "success"; // Hiện trang success.html
     }
 
 }
