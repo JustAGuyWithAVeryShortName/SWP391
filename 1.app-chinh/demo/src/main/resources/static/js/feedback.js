@@ -1,22 +1,36 @@
 document.addEventListener('DOMContentLoaded', function() {
     const feedbackForm = document.getElementById('feedback-form');
-    const feedbackMessageDiv = document.getElementById('feedbackMessage');
-    const feedbackComment = document.getElementById('feedback-comment');
-    const ratingInputs = document.querySelectorAll('input[name="rating"]');
 
-    // Get CSRF token for Spring Security
-    const csrfToken = document.querySelector("meta[name='_csrf']") ? document.querySelector("meta[name='_csrf']").content : '';
-    const csrfHeader = document.querySelector("meta[name='_csrf_header']") ? document.querySelector("meta[name='_csrf_header']").content : '';
-
+    // Check if the form exists on the page
     if (feedbackForm) {
+        const feedbackMessageDiv = document.getElementById('feedbackMessage');
+        const feedbackComment = document.getElementById('feedback-comment');
+        const ratingInputs = document.querySelectorAll('input[name="rating"]');
+
+        // Get CSRF token. These will be null if the meta tags don't exist.
+        const csrfTokenEl = document.querySelector("meta[name='_csrf']");
+        const csrfHeaderEl = document.querySelector("meta[name='_csrf_header']");
+
         feedbackForm.addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent default form submission
+            event.preventDefault();
+
+            // FIX #1: Check for CSRF token existence before proceeding
+            if (!csrfTokenEl || !csrfHeaderEl) {
+                feedbackMessageDiv.textContent = 'Error: Cannot submit form. Security token is missing. Please refresh and log in.';
+                feedbackMessageDiv.style.color = 'red';
+                return;
+            }
+
+            const csrfToken = csrfTokenEl.content;
+            const csrfHeader = csrfHeaderEl.content;
 
             const selectedRating = document.querySelector('input[name="rating"]:checked');
-            const rating = selectedRating ? parseInt(selectedRating.value) : 0; // Default to 0 if no star is selected
+            // FIX #2: Use null instead of 0 for no rating
+            const rating = selectedRating ? parseInt(selectedRating.value) : null;
             const comment = feedbackComment.value.trim();
 
-            if (rating === 0 && comment === "") {
+            // FIX #2 (Part 2): Update validation to check for null
+            if (rating === null && comment === "") {
                 feedbackMessageDiv.textContent = 'Please provide a rating or a comment.';
                 feedbackMessageDiv.style.color = 'orange';
                 return;
@@ -34,18 +48,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    [csrfHeader]: csrfToken // Include CSRF token for security
+                    [csrfHeader]: csrfToken
                 },
                 body: JSON.stringify(feedbackData)
             })
                 .then(response => {
                     if (!response.ok) {
-                        // Check if response is JSON
                         return response.json().then(errorData => {
                             throw new Error(errorData.message || 'Failed to submit feedback.');
                         }).catch(() => {
-                            // If not JSON, throw generic error
-                            throw new Error('Failed to submit feedback (non-JSON response).');
+                            throw new Error('Failed to submit feedback (server returned non-JSON response).');
                         });
                     }
                     return response.json();
@@ -53,8 +65,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(data => {
                     feedbackMessageDiv.textContent = 'Thank you for your feedback!';
                     feedbackMessageDiv.style.color = 'green';
-                    feedbackComment.value = ''; // Clear comment field
-                    ratingInputs.forEach(input => input.checked = false); // Uncheck stars
+                    feedbackComment.value = '';
+                    ratingInputs.forEach(input => input.checked = false);
                 })
                 .catch(error => {
                     console.error('Error submitting feedback:', error);
@@ -63,7 +75,4 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
         });
     }
-
-    // Optional: Fetch and display existing feedback if needed (e.g., average rating)
-    // You would need another API endpoint for this.
 });
