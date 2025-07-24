@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.UUID;
 
@@ -89,7 +90,7 @@ public class ProfileController {
                                 BindingResult result,
                                 @AuthenticationPrincipal Object principal,
                                 HttpSession session,
-                                Model model) {
+                                Model model, RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             return "edit-profile";
         }
@@ -113,6 +114,7 @@ public class ProfileController {
             userService.save(user);
 
             session.setAttribute("loggedInUser", user);
+            redirectAttributes.addFlashAttribute("successMessage", "User profile updated successfully");
         }
 
         return "redirect:/profile";

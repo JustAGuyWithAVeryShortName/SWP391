@@ -67,6 +67,9 @@
 
 <div class="profile-container">
     <h2 class="profile-title"><i class="fa-solid fa-user-circle me-2"></i>Your Profile</h2>
+    <div th:if="${successMessage}" class="alert alert-success" style="text-align: center;">
+        <span th:text="${successMessage}"></span>
+    </div>
 
     <div class="profile-row">
         <span class="label">Username:</span>
