@@ -57,7 +57,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         return response.json().then(errorData => {
                             throw new Error(errorData.message || 'Failed to submit feedback.');
                         }).catch(() => {
-                            throw new Error('Failed to submit feedback (server returned non-JSON response).');
+                            //throw new Error('Failed to submit feedback (server returned non-JSON response).');
+                            throw new Error('Rating or comment is required.');
                         });
                     }
                     return response.json();
@@ -70,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
                 .catch(error => {
                     console.error('Error submitting feedback:', error);
-                    feedbackMessageDiv.textContent = 'Error: ' + error.message;
+                    feedbackMessageDiv.textContent =error.message;
                     feedbackMessageDiv.style.color = 'red';
                 });
         });
