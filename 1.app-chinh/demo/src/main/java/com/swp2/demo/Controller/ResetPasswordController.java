@@ -70,6 +70,6 @@ public class ResetPasswordController {
         // ✅ Xóa token sau khi đổi mật khẩu thành công
         passwordResetTokenRepository.delete(resetToken.get());
 
-        model.addAttribute("message", "Đặt lại mật khẩu thành công! Bạn có thể đăng nhập lại.");
+        model.addAttribute("message", "Password reset successful! You can log in again.");
         return "redirect:/login?resetSuccess";    }
 }

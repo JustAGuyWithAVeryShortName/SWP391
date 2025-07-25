@@ -35,19 +35,19 @@ public class PasswordController {
         User user = userService.findByUsername(principal.getName());
 
         if (!oldPassword.equals(user.getPassword())) {
-            model.addAttribute("message", "Mật khẩu cũ không chính xác.");
+            model.addAttribute("message", "Old password is incorrect.");
             return "change-password";
         }
 
         if (!newPassword.equals(confirmPassword)) {
-            model.addAttribute("message", "Mật khẩu mới và xác nhận không khớp.");
+            model.addAttribute("message", "New password and confirmation do not match.");
             return "change-password";
         }
 
 
         user.setPassword(newPassword);
         userService.save(user);
-        model.addAttribute("message", "Đổi mật khẩu thành công.");
+        model.addAttribute("message", "Password changed successfully.");
         return "change-password";
     }
 }

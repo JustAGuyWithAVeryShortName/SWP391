@@ -55,13 +55,13 @@ public class RegisterController {
         User existingUser = userService.findByUsername(username);
         if (existingUser != null) {
             model.addAttribute("registerUser", new RegisterUser());
-            model.addAttribute("my_error", "Tài khoản đã tồn tại");
+            model.addAttribute("my_error", "Account already exists");
             return "register/form";
         }
 
         User existingEmail = userService.findByEmail(registerUser.getEmail());
         if (existingEmail != null) {
-            model.addAttribute("my_error", "Email đã được sử dụng");
+            model.addAttribute("my_error", "Email already in use");
             return "register/form";
         }
 
