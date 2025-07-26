@@ -95,7 +95,7 @@ public class ChatController {
                 .map(user -> {
                     boolean isActive = finalActivePartner != null &&
                             finalActivePartner.getUsername().equals(user.getUsername());
-                    return new ConversationDTO(user.getUsername(), user, isActive, "No recent messages", "N/A");
+                    return new ConversationDTO(user.getUsername(), user, isActive, "No recent messages", "");
                 })
                 .collect(Collectors.toList());
 
