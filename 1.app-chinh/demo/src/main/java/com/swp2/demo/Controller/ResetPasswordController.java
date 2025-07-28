@@ -58,7 +58,7 @@ public class ResetPasswordController {
 
         if (!password.equals(confirmPassword)) {
             model.addAttribute("token", token); // giữ lại token để user nhập lại form
-            model.addAttribute("error", "Mật khẩu mới và xác nhận không khớp.");
+            model.addAttribute("error", "New password and confirmation do not match.");
             return "reset-password";
         }
 

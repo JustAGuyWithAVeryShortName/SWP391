@@ -26,6 +26,30 @@
     --border-radius-standard: 10px;
     --border-radius-soft: 14px;
 }
+/* --- Back to Top Button --- */
+.back-to-top {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background-color: var(--primary-color);
+    color: var(--white-color);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s;
+    z-index: 1000;
+}
+body:not(:first-child) .back-to-top {
+    opacity: 1;
+    visibility: visible;
+}
+
 
 /* ==== BASE STYLES ==== */
 *, *::before, *::after { box-sizing: border-box; }
